@@ -17,6 +17,27 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
+# SISTEMA DE ACCESO Y SEGURIDAD (VÍA BÓVEDA SECRETA)
+# ---------------------------------------------------------------------------
+USUARIOS_PERMITIDOS = st.secrets["passwords"]
+
+
+def mostrar_login():
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.info("🔒 **Acceso Restringido:** Plataforma exclusiva para clientes.")
+
+        usuario = st.text_input("Usuario")
+        contrasena = st.text_input("Contraseña", type="password")
+
+        if st.button("Ingresar al Dashboard", use_container_width=True):
+            if usuario in USUARIOS_PERMITIDOS and USUARIOS_PERMITIDOS[usuario] == contrasena:
+                st.session_state["autenticado"] = True
+                st.rerun()
+            else:
+                st.error("❌ Credenciales incorrectas o usuario no registrado.")
+# ---------------------------------------------------------------------------
 # ESTILOS VISUALES Y TEMAS
 # ---------------------------------------------------------------------------
 with st.sidebar:
@@ -84,7 +105,6 @@ WATCHLIST = {
     "TSLA": {"name": "Tesla", "cedear": "TSLA.BA", "underlying": "TSLA", "ratio": 15},
     "KO": {"name": "Coca-Cola", "cedear": "KO.BA", "underlying": "KO", "ratio": 5},
     "MELI": {"name": "Mercado Libre", "cedear": "MELI.BA", "underlying": "MELI", "ratio": 120},
-    "XOM": {"name": "Exxon Mobil", "cedear": "XOM.BA", "underlying": "XOM", "ratio": 10},
     "VIST": {"name": "Vista Energy", "cedear": "VIST.BA", "underlying": "VIST", "ratio": 3},
     "GOOGL": {"name": "Google", "cedear": "GOOGL.BA", "underlying": "GOOGL", "ratio": 58},
     "JPM": {"name": "JP Morgan", "cedear": "JPM.BA", "underlying": "JPM", "ratio": 15},
@@ -103,14 +123,13 @@ WATCHLIST = {
     "CAT": {"name": "Caterpillar", "cedear": "CAT.BA", "underlying": "CAT", "ratio": 20},
     "BNY": {"name": "Bank of New York", "cedear": "BNY.BA", "underlying": "BNY", "ratio": 2},
     "XLE": {"name": "ETF Energy", "cedear": "XLE.BA", "underlying": "XLE", "ratio": 2},
-    "XLP": {"name": "ETF Consumo", "cedear": "XLP.BA", "underlying": "XLP", "ratio": 16},
+    "XLP": {"name": "ETF Consumo Basico", "cedear": "XLP.BA", "underlying": "XLP", "ratio": 16},
     "XLU": {"name": "ETF Utilities", "cedear": "XLU.BA", "underlying": "XLU", "ratio": 15},
     "ARKK": {"name": "ARK Innovation", "cedear": "ARKK.BA", "underlying": "ARKK", "ratio": 10},
     "EWZ": {"name": "ETF Brasil", "cedear": "EWZ.BA", "underlying": "EWZ", "ratio": 2},
     "IBIT": {"name": "ETF Bitcoin", "cedear": "IBIT.BA", "underlying": "IBIT", "ratio": 10},
     "QQQ": {"name": "NASDAQ", "cedear": "QQQ.BA", "underlying": "QQQ", "ratio": 20},
     "DIA": {"name": "Dow Jones", "cedear": "DIA.BA", "underlying": "DIA", "ratio": 20},
-    "XLK": {"name": "Technology Sector", "cedear": "XLK.BA", "underlying": "XLK", "ratio": 46},
     "USO": {"name": "United State OIL", "cedear": "USO.BA", "underlying": "USO", "ratio": 15},
     "XLV": {"name": "ETF Health Care", "cedear": "XLV.BA", "underlying": "XLV", "ratio": 29},
     "ABBV": {"name": "ABBVIE Inc", "cedear": "ABBV.BA", "underlying": "ABBV", "ratio": 10},
@@ -131,13 +150,81 @@ WATCHLIST = {
     "BBD": {"name": "Banco Bradesco", "cedear": "BBD.BA", "underlying": "BBD", "ratio": 1},
     "SPCX": {"name": "SPACEX", "cedear": "SPCX.BA", "underlying": "SPCX", "ratio": 50},
     "MU": {"name": "Micron Technology", "cedear": "MU.BA", "underlying": "MU", "ratio": 5},
-    "NU": {"name": "Nubank", "cedear": "NU.BA", "underlying": "NU", "ratio": 2}
-
-
-
-
-
-
+    "NU": {"name": "Nubank", "cedear": "NU.BA", "underlying": "NU", "ratio": 2},
+    "LMT": {"name": "Lockheed Martin", "cedear": "LMT.BA", "underlying": "LMT", "ratio": 20},
+    "LRCX": {"name": "LAM Research", "cedear": "LRCX.BA", "underlying": "LRCX", "ratio": 56},
+    "COPX": {"name": "Global Miners", "cedear": "COPX.BA", "underlying": "COPX", "ratio": 14},
+    "SLV": {"name": "Silver ETF", "cedear": "SLV.BA", "underlying": "SLV", "ratio": 6},
+    "ASML": {"name": "ASML Holding", "cedear": "ASML.BA", "underlying": "ASML", "ratio": 146},
+    "BA": {"name": "Boeing Comp", "cedear": "BA.BA", "underlying": "BA", "ratio": 24},
+    "BKR": {"name": "Backer Hughes", "cedear": "BKR.BA", "underlying": "BKR", "ratio": 7},
+    "BMY": {"name": "Bristol M", "cedear": "BMY.BA", "underlying": "BMY", "ratio": 3},
+    "BG": {"name": "Bunge Limited", "cedear": "BNG.BA", "underlying": "BG", "ratio": 5},
+    "BRK-B": {"name": "Berkshire Hathaway", "cedear": "BRKB.BA", "underlying": "BRK-B", "ratio": 22},
+    "BAC": {"name": "Bank of America", "cedear": "BA.C.BA", "underlying": "BAC", "ratio": 4},
+    "CEG": {"name": "Constellation Energy", "cedear": "CEG.C.BA", "underlying": "CEG", "ratio": 45},
+    "CL": {"name": "Colgate Palmolive", "cedear": "CL.BA", "underlying": "CL", "ratio": 3},
+    "COIN": {"name": "Coinbase", "cedear": "COIN.BA", "underlying": "COIN", "ratio": 27},
+    "COST": {"name": "Costco Wholsale", "cedear": "COST.BA", "underlying": "COST", "ratio": 48},
+    "CRM": {"name": "SALESFORCE", "cedear": "CRM.BA", "underlying": "CRM", "ratio": 18},
+    "CRWD": {"name": "CROWDSTRIKE", "cedear": "CRWD.BA", "underlying": "CRWD", "ratio": 79},
+    "CSCO": {"name": "Cisco Systems", "cedear": "CSCO.BA", "underlying": "CSCO", "ratio": 5},
+    "CVX": {"name": "Chevron Corp", "cedear": "CVX.BA", "underlying": "CVX", "ratio": 16},
+    "DE": {"name": "DEERE Comp", "cedear": "DE.BA", "underlying": "DE", "ratio": 40},
+    "DELL": {"name": "DELL", "cedear": "DELL.BA", "underlying": "DELL", "ratio": 74},
+    "EMBJ": {"name": "Embraer", "cedear": "EMBJ.BA", "underlying": "EMBJ", "ratio": 1},
+    "EBAY": {"name": "EBAY", "cedear": "EBAY.BA", "underlying": "EBAY", "ratio": 2},
+    "EWJ": {"name": "ETF Japan", "cedear": "EWJ.BA", "underlying": "EWJ", "ratio": 2},
+    "GEV": {"name": "GE VERNOVA", "cedear": "GEV.BA", "underlying": "GEV", "ratio": 180},
+    "GM": {"name": "General Motors", "cedear": "GM.BA", "underlying": "GM", "ratio": 6},
+    "GS": {"name": "Goldman Sachs", "cedear": "GS.BA", "underlying": "GS", "ratio": 13},
+    "GT": {"name": "Goodyear Tire", "cedear": "GT.BA", "underlying": "GT", "ratio": 2},
+    "HALL": {"name": "Halliburton", "cedear": "HAL.BA", "underlying": "HAL", "ratio": 2},
+    "HD": {"name": "Home Depot", "cedear": "HD.BA", "underlying": "HD", "ratio": 32},
+    "HON": {"name": "Honeywell", "cedear": "HON.BA", "underlying": "HON", "ratio": 8},
+    "HPQ": {"name": "Hp Inc", "cedear": "HPQ.BA", "underlying": "HPQ", "ratio": 1},
+    "HSY": {"name": "Hershey Company", "cedear": "HSY.BA", "underlying": "HSY", "ratio": 21},
+    "HUT": {"name": "Hut 8 Mining", "cedear": "HUT.BA", "underlying": "HUT", "ratio": 5},
+    "ITA": {"name": "Aeropace & Defense", "cedear": "ITA.BA", "underlying": "ITA", "ratio": 50},
+    "IREN": {"name": "IREN", "cedear": "IREN.BA", "underlying": "IREN", "ratio": 12},
+    "ITUB": {"name": "ITAU Unibanco", "cedear": "ITUB.BA", "underlying": "ITUB", "ratio": 1},
+    "JNJ": {"name": "Johnson & Johnson", "cedear": "JNJ.BA", "underlying": "JNJ", "ratio": 15},
+    "MDLZ": {"name": "Mondelez", "cedear": "MDLZ.BA", "underlying": "MDLZ", "ratio": 15},
+    "MMM": {"name": "3 M", "cedear": "CRWD.BA", "underlying": "MMM", "ratio": 10},
+    "MS": {"name": "Morgan Stanley", "cedear": "MS.BA", "underlying": "MS", "ratio": 1},
+    "MSTR": {"name": "Microstrategy", "cedear": "MSTR.BA", "underlying": "MSTR", "ratio": 20},
+    "NFLX": {"name": "Netflix", "cedear": "NFLX.BA", "underlying": "NFLX", "ratio": 48},
+    "O": {"name": "Realty Income", "cedear": "O.BA", "underlying": "O", "ratio": 13},
+    "ORCL": {"name": "Oracle Corp", "cedear": "ORCL.BA", "underlying": "ORCL", "ratio": 3},
+    "OXY": {"name": "Occidental Petroleum", "cedear": "OXY.BA", "underlying": "OXY", "ratio": 5},
+    "PAGS": {"name": "Pagseguro", "cedear": "PAGS.BA", "underlying": "PAGS", "ratio": 3},
+    "PBR": {"name": "Petrobras", "cedear": "PBR.BA", "underlying": "PBR", "ratio": 1},
+    "PG": {"name": "Procter & Gamble", "cedear": "PG.BA", "underlying": "PG", "ratio": 15},
+    "PLTR": {"name": "Palantir Technologies", "cedear": "PLTR.BA", "underlying": "PLTR", "ratio": 3},
+    "PYPL": {"name": "Paypal", "cedear": "PYPL.BA", "underlying": "PYPL", "ratio": 8},
+    "QCOM": {"name": "Qualcom Inc", "cedear": "QCOM.BA", "underlying": "QCOM", "ratio": 11},
+    "RACE": {"name": "Ferrari", "cedear": "RACE.BA", "underlying": "RACE", "ratio": 83},
+    "RGTI": {"name": "Rigetti Computing", "cedear": "RGTI.BA", "underlying": "RGTI", "ratio": 2},
+    "SBUX": {"name": "Starbucks", "cedear": "SBUX.BA", "underlying": "SBUX", "ratio": 12},
+    "XOM": {"name": "Exxom Mobil", "cedear": "XOM.BA", "underlying": "XOM", "ratio": 10},
+    "XLY": {"name": "Consumo Discrecional ETF", "cedear": "XLY.BA", "underlying": "XLY", "ratio": 43},
+    "XLB": {"name": "Materials Select", "cedear": "XLB.BA", "underlying": "XLB", "ratio": 18},
+    "XLC": {"name": "Communication Services", "cedear": "XLC.BA", "underlying": "XLC", "ratio": 79},
+    "XLI": {"name": "Industrial Select", "cedear": "XLI.BA", "underlying": "XLI", "ratio": 28},
+    "XLK": {"name": "Technology Select", "cedear": "XLK.BA", "underlying": "XLK", "ratio": 46},
+    "VALE": {"name": "Vale Do Rio Doce", "cedear": "VALE.BA", "underlying": "VALE", "ratio": 2},
+    "URA": {"name": "Global X Uranium", "cedear": "URA.BA", "underlying": "URA", "ratio": 5},
+    "UL": {"name": "Unilever NV NY", "cedear": "UL.BA", "underlying": "UL", "ratio": 3},
+    "UBER": {"name": "UBER Technologies", "cedear": "UBER.BA", "underlying": "UBER", "ratio": 2},
+    "TXN": {"name": "Texas Instruments", "cedear": "TXN.BA", "underlying": "TXN", "ratio": 5},
+    "UAL": {"name": "United Airlines", "cedear": "UAL.BA", "underlying": "UAL", "ratio": 5},
+    "TWLO": {"name": "Twilio Inc", "cedear": "TWLO.BA", "underlying": "TWLO", "ratio": 36},
+    "TSM": {"name": "Taiwan Semic. Manuf.", "cedear": "TSM.BA", "underlying": "TSM", "ratio": 9},
+    "TM": {"name": "Toyota Motors", "cedear": "TM.BA", "underlying": "TM", "ratio": 15},
+    "SYY": {"name": "Sysco Corporation", "cedear": "SYY.BA", "underlying": "SYY", "ratio": 8},
+    "STLA": {"name": "Stellantis NV", "cedear": "STLA.BA", "underlying": "STLA", "ratio": 5},
+    "SPOT": {"name": "Spotify Tech", "cedear": "SPOT.BA", "underlying": "SPOT", "ratio": 28},
+    "SNDK": {"name": "Sandisk Corp", "cedear": "SNDK.BA", "underlying": "SNDK", "ratio": 170}
 }
 
 
@@ -636,4 +723,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "autenticado" not in st.session_state:
+        st.session_state["autenticado"] = False
+
+    if not st.session_state["autenticado"]:
+        mostrar_login()
+    else:
+        st.sidebar.button("Cerrar Sesión", on_click=lambda: st.session_state.update({"autenticado": False}))
+        main()
