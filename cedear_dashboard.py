@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 import yfinance as yf
 import plotly.graph_objects as go
+import plotly.express as px
 from plotly.subplots import make_subplots
 
 warnings.filterwarnings("ignore")
@@ -92,6 +93,260 @@ def pintar_volumen(val):
             pass
     return ''
 
+
+def mostrar_carteras_sugeridas():
+    st.header("🎯 Carteras Cuantitativas Optimizadas")
+    st.markdown(
+        "Modelos de asignación estructurados matemáticamente mediante la **Frontera Eficiente de Markowitz**, priorizando el control estricto del riesgo (Drawdown y VaR).")
+
+    # Creación de la interfaz por pestañas
+    tab_cons, tab_agre = st.tabs(["🛡️ Perfil Conservador", "🚀 Perfil Agresivo"])
+
+    # ---------------------------------------------------------
+    # PESTAÑA CONSERVADORA
+    # ---------------------------------------------------------
+    with tab_cons:
+        st.subheader("Estrategia de Preservación y Flujo")
+
+        # Fila de métricas institucionales
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric(label="Rendimiento Proyectado", value="16.17%")
+        col2.metric(label="Riesgo (Volatilidad)", value="10.43%")
+        col3.metric(label="Caída Máxima (DD)", value="-3.15%")
+        col4.metric(label="VaR 95% Mensual", value="-3.62%")
+
+        st.divider()
+
+        col_grafico, col_texto = st.columns([1.5, 1])
+
+        with col_grafico:
+            # Renta Fija (65%) + Renta Variable (35%) ajustado a base 100
+            df_cons = pd.DataFrame({
+                "Activo": ["Renta Fija (ONs/Bonos)", "ACWI", "ABBV", "AIG", "AGRO", "ABT", "AAPL"],
+                "Porcentaje": [65.0, 6.8, 4.8, 4.3, 3.3, 3.1, 2.7]
+            })
+
+            fig_cons = px.pie(df_cons, values='Porcentaje', names='Activo', hole=0.45)
+            fig_cons.update_traces(textposition='inside', textinfo='percent+label',
+                                   marker=dict(line=dict(color='#000000', width=1)))
+            fig_cons.update_layout(showlegend=False, margin=dict(t=0, b=0, l=0, r=0))
+
+            st.plotly_chart(fig_cons, use_container_width=True)
+
+        with col_texto:
+            st.markdown("#### Composición Renta Variable (35%)")
+            st.markdown("""
+            * **ACWI:** 19.6% (del bloque variable)
+            * **ABBV:** 13.7% 
+            * **AIG:** 12.4%
+            * **AGRO:** 9.6%
+            * **ABT:** 9.1%
+            * **AAPL:** 7.7%
+            """)
+
+            # El gancho comercial (Lead Magnet)
+            st.info(
+                "🔒 **Gestión de Renta Fija (65%)**\n\nEl núcleo de esta cartera se ancla en instrumentos de renta fija corporativa (Obligaciones Negociables). Para estructurar esta posición según tu horizonte temporal, consultá directamente con la asesoría.")
+
+    # ---------------------------------------------------------
+    # PESTAÑA AGRESIVA
+    # ---------------------------------------------------------
+    with tab_agre:
+        st.subheader("Estrategia de Crecimiento Acelerado")
+
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric(label="Rendimiento Proyectado", value="63.06%")
+        col2.metric(label="Riesgo (Volatilidad)", value="19.28%")
+        col3.metric(label="Caída Máxima (DD)", value="-5.17%")
+        col4.metric(label="VaR 95% Mensual", value="-3.93%")
+
+        st.divider()
+
+        col_grafico, col_texto = st.columns([1.5, 1])
+
+        with col_grafico:
+            # Renta Fija (30%) + Renta Variable (70%) ajustado a base 100
+            df_agre = pd.DataFrame({
+                "Activo": ["Renta Fija Táctica", "AMGN", "AMD", "AAPL", "AGRO", "ABBV", "ANF", "AMAT"],
+                "Porcentaje": [30.0, 17.5, 11.9, 11.6, 8.0, 5.0, 4.5, 4.3]
+            })
+
+            fig_agre = px.pie(df_agre, values='Porcentaje', names='Activo', hole=0.45)
+            fig_agre.update_traces(textposition='inside', textinfo='percent+label',
+                                   marker=dict(line=dict(color='#000000', width=1)))
+            fig_agre.update_layout(showlegend=False, margin=dict(t=0, b=0, l=0, r=0))
+
+            st.plotly_chart(fig_agre, use_container_width=True)
+
+        with col_texto:
+            st.markdown("#### Composición Renta Variable (70%)")
+            st.markdown("""
+            * **AMGN:** 25.0% (del bloque variable)
+            * **AMD:** 17.0%
+            * **AAPL:** 16.6%
+            * **AGRO:** 11.5%
+            * **ABBV:** 7.1%
+            * **ANF:** 6.5%
+            * **AMAT:** 6.1%
+            """)
+
+            st.warning(
+                "⚡ **Gestión de Renta Fija (30%)**\n\nReserva de liquidez y estabilización táctica de la cartera. Contactá a tu asesor para definir la exposición en bonos soberanos o liquidez inmediata.")
+
+
+# --- ACÁ TERMINA TU FUNCIÓN ANTERIOR ---
+# def mostrar_carteras_sugeridas():
+#     ... (código de las carteras) ...
+
+# --- PEGÁ ESTO JUSTO DEBAJO ---
+
+def obtener_ultimo_cierre():
+    # Usamos Pandas en lugar de la librería datetime problemática
+    ahora = pd.Timestamp.now()
+
+    if ahora.hour < 18:
+        cierre = ahora - pd.Timedelta(days=1)
+    else:
+        cierre = ahora
+
+    return cierre.strftime("%Y-%m-%d")
+
+
+@st.cache_data
+def calcular_rrg_v4(fecha_cierre, lista_tickers):
+    tickers_us = [str(t).replace('.BA', '') for t in lista_tickers]
+    if 'SPY' not in tickers_us:
+        tickers_us.append('SPY')
+
+    tickers_us = list(set(tickers_us))
+
+    # Descargamos los datos
+    data = yf.download(tickers_us, period="6mo", progress=False)
+
+    # EL BLINDAJE: Armamos nuestra propia tabla de precios a prueba de fallos
+    df_precios = pd.DataFrame()
+
+    if isinstance(data.columns, pd.MultiIndex):
+        for ticker in tickers_us:
+            # Buscamos en qué nivel del índice ocultó Yahoo Finance el Ticker
+            if ticker in data.columns.get_level_values(1):
+                try:
+                    df_precios[ticker] = data['Adj Close', ticker]
+                except:
+                    try:
+                        df_precios[ticker] = data['Close', ticker]
+                    except:
+                        pass
+            elif ticker in data.columns.get_level_values(0):
+                try:
+                    df_precios[ticker] = data[ticker, 'Adj Close']
+                except:
+                    try:
+                        df_precios[ticker] = data[ticker, 'Close']
+                    except:
+                        pass
+    else:
+        # Si por milagro devuelve una tabla simple
+        if 'Adj Close' in data:
+            df_precios = data['Adj Close']
+        elif 'Close' in data:
+            df_precios = data['Close']
+        else:
+            df_precios = data
+
+    if df_precios.empty or 'SPY' not in df_precios.columns:
+        return pd.DataFrame()
+
+    resultados = []
+    spy = df_precios['SPY'].dropna()
+
+    for ticker in tickers_us:
+        if ticker == 'SPY' or ticker not in df_precios.columns:
+            continue
+
+        try:
+            activo = df_precios[ticker].dropna()
+
+            # Sincronizamos las fechas exactas para evitar desfases por feriados
+            fechas_comunes = activo.index.intersection(spy.index)
+            if len(fechas_comunes) < 55:
+                continue
+
+            activo = activo.loc[fechas_comunes]
+            spy_alineado = spy.loc[fechas_comunes]
+
+            rs_ratio = activo / spy_alineado
+
+            media_50 = rs_ratio.rolling(window=50).mean()
+            std_50 = rs_ratio.rolling(window=50).std()
+
+            rs_norm = (rs_ratio - media_50) / std_50
+            momentum = rs_norm.diff(10)
+
+            x_actual = rs_norm.iloc[-1]
+            y_actual = momentum.iloc[-1]
+
+            if pd.isna(x_actual) or pd.isna(y_actual):
+                continue
+
+            if x_actual > 0 and y_actual > 0:
+                cuadrante, color = "Líderes", "#00FF00"
+            elif x_actual < 0 and y_actual > 0:
+                cuadrante, color = "Mejorando", "#00BFFF"
+            elif x_actual > 0 and y_actual < 0:
+                cuadrante, color = "Debilitándose", "#FFD700"
+            else:
+                cuadrante, color = "Rezagados", "#FF4500"
+
+            resultados.append({
+                "Ticker": ticker,
+                "Fuerza_X": float(round(x_actual, 2)),
+                "Momentum_Y": float(round(y_actual, 2)),
+                "Cuadrante": cuadrante,
+                "Color": color
+            })
+        except Exception:
+            continue
+
+    return pd.DataFrame(resultados).dropna()
+
+
+def mostrar_radar_rotacion():
+    st.header("📡 Radar de Rotación Sectorial (RRG)")
+    st.markdown("Monitoreo algorítmico de flujos de capital frente al S&P 500 (SPY).")
+
+    with st.spinner("Descargando historial y armando matriz cuantitativa..."):
+        llave_cierre = obtener_ultimo_cierre()
+        mis_200_tickers = list(WATCHLIST.keys())
+
+        # Llamamos a la V4
+        df_rrg = calcular_rrg_v4(llave_cierre, mis_200_tickers)
+
+    if not df_rrg.empty:
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            fig = px.scatter(df_rrg, x="Fuerza_X", y="Momentum_Y", text="Ticker",
+                             color="Cuadrante",
+                             color_discrete_map={
+                                 "Líderes": "#00FF00", "Mejorando": "#00BFFF",
+                                 "Debilitándose": "#FFD700", "Rezagados": "#FF4500"
+                             })
+            fig.add_hline(y=0, line_width=1, line_dash="dash", line_color="gray")
+            fig.add_vline(x=0, line_width=1, line_dash="dash", line_color="gray")
+            fig.update_traces(textposition='top center',
+                              marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
+            fig.update_layout(height=600, template="plotly_dark", showlegend=True)
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col2:
+            st.subheader("🏆 Oportunidades")
+            oportunidades = df_rrg[df_rrg["Cuadrante"].isin(["Líderes", "Mejorando"])].sort_values(by="Momentum_Y",
+                                                                                                   ascending=False).head(
+                10)
+            for index, row in oportunidades.iterrows():
+                st.success(f"**{row['Ticker']}** ({row['Cuadrante']})")
+    else:
+        st.error("⚠️ Yahoo Finance rechazó la conexión. Esperá unos minutos e intentá recargar la página.")
 
 # ---------------------------------------------------------------------------
 # 1) UNIVERSO DE ACTIVOS
@@ -224,7 +479,18 @@ WATCHLIST = {
     "SYY": {"name": "Sysco Corporation", "cedear": "SYY.BA", "underlying": "SYY", "ratio": 8},
     "STLA": {"name": "Stellantis NV", "cedear": "STLA.BA", "underlying": "STLA", "ratio": 5},
     "SPOT": {"name": "Spotify Tech", "cedear": "SPOT.BA", "underlying": "SPOT", "ratio": 28},
-    "SNDK": {"name": "Sandisk Corp", "cedear": "SNDK.BA", "underlying": "SNDK", "ratio": 170}
+    "SNDK": {"name": "Sandisk Corp", "cedear": "SNDK.BA", "underlying": "SNDK", "ratio": 170},
+    "HIMS": {"name": "Hims & Hers Healths", "cedear": "HIMS.BA", "underlying": "HIMS", "ratio": 4},
+    "SPY": {"name": "SPDR S&P 500 ETF Trust", "cedear": "SPY.BA", "underlying": "SPY", "ratio": 60},
+    "IBB": {"name": "ETF Biotechnology", "cedear": "IBB.BA", "underlying": "IBB", "ratio": 27},
+    "MRVL": {"name": "Marvell Technology", "cedear": "MRVL.BA", "underlying": "MRVL", "ratio": 14},
+    "PANW": {"name": "Palo Alto Networks", "cedear": "PANW.BA", "underlying": "PANW", "ratio": 50},
+    "PSX": {"name": "Phillips 66", "cedear": "PSX.BA", "underlying": "PSX", "ratio": 6},
+    "EQNR": {"name": "Equinor ASA", "cedear": "EQNR.BA", "underlying": "EQNR", "ratio": 6},
+    "SMH": {"name": "VanEck Semiconductor ETF", "cedear": "SMH.BA", "underlying": "SMH", "ratio": 50},
+    "GPRK": {"name": "GeoPark", "cedear": "GPRK.BA", "underlying": "GPRK", "ratio": 1},
+    "GGB": {"name": "Gerdau", "cedear": "GGB.BA", "underlying": "GGB", "ratio": 0.25}
+
 }
 
 
@@ -388,9 +654,13 @@ def analyze_asset(key, cfg, ccl_real):
             else:
                 score -= 1
 
-        # MACD negativo
-        if macd_line.iloc[idx] < macd_signal.iloc[idx]:
-            score -= 1
+        # MACD ajustado por aceleración (evita falsos negativos en inicios de rebote)
+        if macd_line.iloc[idx] > macd_signal.iloc[idx]:
+            score += 1  # El histograma es positivo, acompaña la tendencia
+        elif macd_line.iloc[idx] < macd_signal.iloc[idx] and (macd_line.iloc[idx] > macd_line.iloc[idx - 1]):
+            pass  # NEUTRAL: Está bajo la señal, pero la curva ya empezó a subir. No lo castigamos.
+        else:
+            score -= 1  # Histograma negativo y cayendo
 
         # 3. GATILLOS DE ENTRADA
         # Cruce Rápido al alza (SMA 10 cruza SMA 20)
@@ -428,23 +698,28 @@ def analyze_asset(key, cfg, ccl_real):
     score_prev, senal_prev = score_dia(-2)
     score_act, senal_act = score_dia(-1)
 
-    alerta_giro = None
-    if "VENTA" in senal_prev and "COMPRA" in senal_act:
-        alerta_giro = "GIRO ALCISTA"
-    elif "COMPRA" in senal_prev and "VENTA" in senal_act:
-        alerta_giro = "GIRO BAJISTA"
-
-    # ¡SUBIMOS ESTA LÍNEA ACÁ! Calculamos la variación del día antes de tomar decisiones
+    # 1. PRIMERO calculamos la variación del día (chg_1d)
     chg_1d = (close_u.iloc[-1] / close_u.iloc[-2] - 1) * 100 if len(close_u) > 1 else 0
+
+    # 2. LUEGO evaluamos los giros cruzando las señales con la realidad de hoy
+    alerta_giro = None
+    if "VENTA" in senal_prev and "COMPRA" in senal_act and chg_1d > 0:
+        alerta_giro = "GIRO ALCISTA"
+    elif "COMPRA" in senal_prev and "VENTA" in senal_act and chg_1d < 0:
+        alerta_giro = "GIRO BAJISTA"
 
     # --------------------------------------------------------
     # INTERVENCIÓN SUPREMA DEL VOLUMEN (SMART MONEY)
     # --------------------------------------------------------
     if "COMPRA" in senal_act:
         if vol_relativo > 120:
-            senal_act = "COMPRA CONFIRMADA"
+            # Usamos tu variable chg_1d para ver el color de la vela
+            if chg_1d > 0:
+                senal_act = "COMPRA CONFIRMADA"  # Subió con volumen: Acumulación
+            else:
+                senal_act = "ALERTA: DISTRIBUCIÓN"  # Bajó con volumen: Institucionales huyendo
         elif vol_relativo < 80:
-            senal_act = "FALSA RUPTURA"
+            senal_act = "FALSA RUPTURA"  # Subió, pero sin volumen que lo respalde
 
     # NUEVA REGLA: Veto a ventas por Ruptura Institucional (Breakout)
     if "VENTA" in senal_act:
@@ -452,7 +727,8 @@ def analyze_asset(key, cfg, ccl_real):
         if vol_relativo > 120 and chg_1d > 0:
             senal_act = "MANTENER (BREAKOUT)"
 
-    if penalizaciones and "COMPRA" in senal_act: senal_act = "VETADO (RIESGO)"
+    if penalizaciones and "COMPRA" in senal_act:
+        senal_act = "VETADO (RIESGO)"
 
     # Precios y CCL (chg_1d ya está calculado arriba, así que lo borramos de acá)
     precio_ars = hist_cedear["Close"].iloc[-1] if (hist_cedear is not None and not hist_cedear.empty) else np.nan
@@ -688,6 +964,18 @@ def main():
 
     fig.update_layout(height=950, xaxis_rangeslider_visible=False, template=bg_color, margin=dict(t=30, b=20, l=10, r=10))
  # <--- ¡Verificá que esta línea esté UNA SOLA VEZ!
+
+
+
+    # Sección de las carteras (esta ya la tenías)
+    mostrar_carteras_sugeridas()
+
+    st.divider()  # Dibuja la línea gris separadora
+
+    # Agregá esta línea para mostrar el radar de rotación
+    mostrar_radar_rotacion()
+
+
 
     # ---------------------------------------------------------------------------
     # GLOSARIO Y METODOLOGÍA (Menú desplegable)
