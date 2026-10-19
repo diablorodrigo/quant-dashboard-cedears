@@ -11,6 +11,7 @@ import streamlit as st
 import yfinance as yf
 
 from zeta.carteras import tickers_variable
+from zeta.rotacion import simbolos_extra
 from zeta.indicadores import atr, bollinger, ema, macd, rsi, sma
 from zeta.senales import (
     aplicar_riesgo,
@@ -259,6 +260,7 @@ def cargar_panel(clave: str) -> dict:
     reloj = time.perf_counter()
     simbolos_usd = [cfg["underlying"] for cfg in WATCHLIST.values()]
     simbolos_usd.extend(tickers_variable())
+    simbolos_usd.extend(simbolos_extra())
     simbolos_usd.append("SPY")
     simbolos_ars = [cfg["cedear"] for cfg in WATCHLIST.values()]
 

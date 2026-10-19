@@ -15,6 +15,7 @@ from zeta.carteras import PERFILES, composicion, metricas_historicas, pesos_vari
 from zeta.datos import cargar_panel, ficha_activo
 from zeta.indicadores import bollinger, ema, macd, rsi, sma
 from zeta.marca import LOGO, LOGO_HEADER, SITIO, WHATSAPP, aviso, linea_identidad
+from zeta.rotacion import INDICES, PALETA, SECTORES, armar_rotacion, cedears_visibles, texto_periodo
 from zeta.rrg import calcular_rrg
 from zeta.senales import (
     ALCISTA_CON_VOLUMEN,
@@ -590,6 +591,169 @@ def vista_radar() -> None:
     )
 
 
+def _tabla_ranking(bloque: pd.DataFrame) -> pd.DataFrame:
+    ordenado = bloque.sort_values(["Fuerza", "Momentum"], ascending=False)
+    filas = []
+    for fila in ordenado.itertuples(index=False):
+        filas.append(
+            {
+                "Símbolo": fila.Ticker,
+                "Nombre": fila.Nombre,
+                "Cuadrante": fila.Cuadrante,
+                "Fuerza": f"{fila.Fuerza:.1f}",
+                "Momentum": f"{fila.Momentum:.1f}",
+                "1 semana": texto_periodo(fila.ex_1s, fila.flecha_1s),
+                "1 mes": texto_periodo(fila.ex_1m, fila.flecha_1m),
+                "3 meses": texto_periodo(fila.ex_3m, fila.flecha_3m),
+            }
+        )
+    return pd.DataFrame(filas)
+
+
+def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
+    fig = go.Figure()
+    color_texto = "#e7eeea" if st.session_state.get("tema") == "Oscuro" else "#1c2430"
+    posiciones = ["top center", "bottom center", "middle right", "middle left"]
+    for indice, (ticker, grupo) in enumerate(colas.groupby("Ticker", sort=False)):
+        grupo = grupo.sort_values("Orden")
+        nombre = str(grupo["Nombre"].iloc[0])
+        n = len(grupo)
+        textos = [""] * n
+        textos[-1] = ticker
+        fig.add_trace(
+            go.Scatter(
+                x=grupo["Fuerza"],
+                y=grupo["Momentum"],
+                mode="lines+markers+text",
+                name=f"{ticker} · {nombre}",
+                text=textos,
+                textposition=posiciones[indice % len(posiciones)],
+                textfont=dict(size=12, color=color_texto),
+                line=dict(color=PALETA.get(ticker, "#3e5568"), width=2),
+                marker=dict(
+                    size=[8 + 8 * (i / max(n - 1, 1)) for i in range(n)],
+                    color=PALETA.get(ticker, "#3e5568"),
+                    line=dict(width=0.6, color=color_texto),
+                ),
+                hovertemplate=f"{ticker} · {nombre}<br>Fuerza %{{x:.1f}}<br>Momentum %{{y:.1f}}<extra></extra>",
+            )
+        )
+
+    xs = colas["Fuerza"]
+    ys = colas["Momentum"]
+    pad_x = max(3.0, float(xs.max() - xs.min()) * 0.22)
+    pad_y = max(3.0, float(ys.max() - ys.min()) * 0.28)
+    x0, x1 = min(float(xs.min()), 100.0) - pad_x, max(float(xs.max()), 100.0) + pad_x
+    y0, y1 = min(float(ys.min()), 100.0) - pad_y, max(float(ys.max()), 100.0) + pad_y
+    for xa, xb, ya, yb, color in (
+        (100, x1, 100, y1, "rgba(31,122,77,0.08)"),
+        (x0, 100, 100, y1, "rgba(29,106,138,0.08)"),
+        (100, x1, y0, 100, "rgba(176,122,48,0.10)"),
+        (x0, 100, y0, 100, "rgba(163,59,50,0.08)"),
+    ):
+        fig.add_shape(type="rect", x0=xa, x1=xb, y0=ya, y1=yb, fillcolor=color, line_width=0, layer="below")
+    fig.add_hline(y=100, line_width=1, line_color="#8aa099")
+    fig.add_vline(x=100, line_width=1, line_color="#8aa099")
+    margen_x = (x1 - x0) * 0.012
+    margen_y = (y1 - y0) * 0.012
+    for x, y, texto, ancla_x, ancla_y, color in (
+        (x1 - margen_x, y1 - margen_y, "Líder", "right", "top", "#1f7a4d"),
+        (x0 + margen_x, y1 - margen_y, "Mejorando", "left", "top", "#1d6a8a"),
+        (x1 - margen_x, y0 + margen_y, "Debilitándose", "right", "bottom", "#b07a30"),
+        (x0 + margen_x, y0 + margen_y, "Rezagado", "left", "bottom", "#a33b32"),
+    ):
+        fig.add_annotation(
+            x=x,
+            y=y,
+            text=texto,
+            showarrow=False,
+            xanchor=ancla_x,
+            yanchor=ancla_y,
+            font=dict(color=color, size=14),
+        )
+    fig.update_layout(
+        height=680,
+        template=_plantilla(),
+        margin=dict(t=36, b=48, l=24, r=24),
+        legend_title_text="",
+        legend=dict(font=dict(size=12)),
+        xaxis=dict(title="Fuerza relativa (100 = promedio de 6 meses)", range=[x0, x1]),
+        yaxis=dict(title="Momentum (100 = hace 10 ruedas)", range=[y0, y1]),
+    )
+    return fig
+
+
+def vista_rotacion() -> None:
+    panel = panel_o_aviso()
+    if panel is None:
+        return
+    st.markdown("### Rotación sectorial")
+    rotacion = armar_rotacion(panel["precios_usd"])
+    st.markdown(f"**{rotacion['frase']}**")
+    st.caption(
+        "Lectura descriptiva de cómo se movieron los sectores contra SPY. "
+        "No es una instrucción de compra ni de venta."
+    )
+
+    colas = rotacion["colas"]
+    if colas.empty:
+        st.error("No alcanzó la historia para armar el gráfico de rotación. Recargá en unos minutos.")
+    else:
+        st.plotly_chart(_grafico_rotacion(colas), width="stretch", theme=None, key="rotacion_rrg")
+        st.caption(
+            "Cada cola son las últimas cinco semanas, una marca por semana. El punto grande es el cierre de hoy. "
+            "Arriba a la derecha: Líder. Arriba a la izquierda: Mejorando. "
+            "Abajo a la derecha: Debilitándose. Abajo a la izquierda: Rezagado."
+        )
+
+    ranking = rotacion["ranking"]
+    if ranking.empty:
+        st.warning("Sin ranking: Yahoo no devolvió los ETF de sector.")
+    else:
+        st.markdown("**Fuerza y ritmo contra SPY**")
+        st.caption(
+            "El porcentaje es el exceso de retorno contra SPY en 1 semana, 1 mes y 3 meses. "
+            "▲ ganó ritmo contra la ventana anterior del mismo largo; ▼ lo perdió; → quedó parejo."
+        )
+        sectores = ranking[ranking["Grupo"] == "Sector"]
+        indices = ranking[ranking["Grupo"] == "Índice"]
+        st.markdown("Sectores")
+        st.dataframe(_tabla_ranking(sectores), width="stretch", hide_index=True)
+        if not indices.empty:
+            st.markdown("Índices")
+            st.dataframe(_tabla_ranking(indices), width="stretch", hide_index=True)
+
+    if rotacion["sin_datos"]:
+        st.caption("Sin serie suficiente en Yahoo: " + ", ".join(rotacion["sin_datos"]) + ".")
+
+    presentes = set(panel["filas"]["ticker"].astype(str))
+    mapa = []
+    for ticker, datos in SECTORES.items():
+        nombres = cedears_visibles(ticker, presentes)
+        etf = WATCHLIST.get(ticker)
+        mapa.append(
+            {
+                "Sector": datos["nombre"],
+                "ETF": ticker,
+                "CEDEAR del ETF": etf["cedear"] if etf else "—",
+                "CEDEARs del panel": ", ".join(nombres) if nombres else "—",
+            }
+        )
+    st.markdown("**CEDEARs del panel en cada sector**")
+    st.dataframe(pd.DataFrame(mapa), width="stretch", hide_index=True)
+    indices_cedear = []
+    for ticker, nombre in INDICES.items():
+        cfg = WATCHLIST.get(ticker)
+        if cfg:
+            indices_cedear.append(f"{nombre} ({ticker}) → {cfg['cedear']}")
+        else:
+            indices_cedear.append(f"{nombre} ({ticker}) no tiene CEDEAR en el panel")
+    st.caption(
+        "Es el recorte que sigue este tablero, no la cartera completa del ETF. "
+        "Índices: " + " · ".join(indices_cedear) + "."
+    )
+
+
 def _torta(tabla: pd.DataFrame) -> go.Figure:
     fig = px.pie(
         tabla,
@@ -709,6 +873,13 @@ Japón (`EWJ`) ratio 14 y el sector de comunicaciones (`XLC`) ratio 19.
 **Radar.** Fuerza relativa contra SPY, normalizada a 50 ruedas, y su cambio a 10 ruedas.
 Arriba a la derecha: líderes. Arriba a la izquierda: mejorando. Abajo a la derecha: debilitándose.
 Abajo a la izquierda: rezagados.
+
+**Rotación sectorial.** Otra cuenta, sobre los ETF de sector (XLK, XLF, XLE, XLV, XLY, XLP, XLI, XLB, XLU, XLRE, XLC)
+y los índices QQQ, IWM, EEM, EWZ y ARGT, siempre contra SPY. La fuerza es el ratio de precios suavizado,
+puesto en 100 contra su promedio de unos seis meses. El momentum compara esa fuerza con la de diez ruedas atrás.
+La cola del gráfico son las últimas cinco semanas. Las flechas de 1 semana, 1 mes y 3 meses dicen si el
+exceso contra SPY de esa ventana mejoró o empeoró contra la ventana anterior del mismo largo.
+El listado de CEDEARs es el recorte de este panel, no la cartera completa del ETF.
 
 **Carteras modelo.** Los pesos de renta fija se respetan. Las métricas (rendimiento compuesto,
 volatilidad anualizada, caída máxima, VaR 95% diario, Sharpe y Sortino) las calcula QuantStats

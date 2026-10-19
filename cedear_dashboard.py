@@ -18,6 +18,7 @@ from zeta.vistas import (
     vista_monitor,
     vista_radar,
     vista_resumen,
+    vista_rotacion,
 )
 
 st.set_page_config(
@@ -46,6 +47,7 @@ st.navigation(
         st.Page(vista_monitor, title="Monitor", icon=":material/monitoring:"),
         st.Page(vista_activo, title="Análisis por activo", icon=":material/query_stats:"),
         st.Page(vista_radar, title="Radar", icon=":material/radar:"),
+        st.Page(vista_rotacion, title="Rotación sectorial", icon=":material/timeline:"),
         st.Page(vista_carteras, title="Carteras modelo", icon=":material/pie_chart:"),
         st.Page(vista_metodologia, title="Metodología", icon=":material/menu_book:"),
     ]

@@ -24,6 +24,16 @@ from zeta.senales import (
     etiqueta_por_puntaje,
     giro,
 )
+from zeta.rotacion import (
+    SECTORES,
+    _bloque,
+    _flecha,
+    cola_reciente,
+    cuadrante,
+    curvas_rrg,
+    frase_rotacion,
+    simbolos_extra,
+)
 from zeta.tiempo import clave_cierre
 from zeta.universo import WATCHLIST
 
@@ -108,6 +118,82 @@ class Carteras(unittest.TestCase):
         self.assertLess(stats["inicio"], stats["fin"])
         self.assertTrue(pd.notna(stats["rendimiento"]))
         self.assertLess(stats["caida_maxima"], 0.01)
+
+
+class Rotacion(unittest.TestCase):
+    def test_cuadrantes_en_castellano(self):
+        self.assertEqual(cuadrante(110, 110), "Líder")
+        self.assertEqual(cuadrante(100, 100), "Líder")
+        self.assertEqual(cuadrante(110, 99.9), "Debilitándose")
+        self.assertEqual(cuadrante(99.9, 110), "Mejorando")
+        self.assertEqual(cuadrante(90, 90), "Rezagado")
+
+    def test_la_cola_entra_en_cuatro_a_seis_marcas(self):
+        idx = pd.bdate_range("2025-01-01", periods=40)
+        curva = pd.DataFrame({"fuerza": range(40), "momentum": range(40)}, index=idx)
+        cola = cola_reciente(curva)
+        self.assertGreaterEqual(len(cola), 4)
+        self.assertLessEqual(len(cola), 6)
+        self.assertEqual(cola.index[-1], idx[-1])
+
+    def test_la_flecha_sigue_al_exceso(self):
+        self.assertEqual(_flecha(0.02, 0.0), "▲")
+        self.assertEqual(_flecha(-0.02, 0.0), "▼")
+        self.assertEqual(_flecha(0.001, 0.0), "→")
+        idx = pd.bdate_range("2025-06-01", periods=40)
+        spy = pd.Series(100.0, index=idx)
+        activo = pd.Series(100.0, index=idx)
+        activo.iloc[-10:-5] = 101.0
+        activo.iloc[-5:] = 110.0
+        exceso, flecha = _bloque(activo, spy, 5)
+        self.assertGreater(exceso, 0.05)
+        self.assertEqual(flecha, "▲")
+
+    def test_la_frase_nombra_quien_entra_y_quien_sale(self):
+        sectores = pd.DataFrame(
+            [
+                {"Nombre": "Tecnología", "Cuadrante": "Líder", "Ritmo": "▲"},
+                {"Nombre": "Energía", "Cuadrante": "Debilitándose", "Ritmo": "▼"},
+            ]
+        )
+        frase = frase_rotacion(sectores)
+        self.assertIn("Tecnología", frase)
+        self.assertIn("Energía", frase)
+        self.assertTrue(frase.startswith("Está rotando a favor de"))
+        self.assertIn("está saliendo de", frase)
+        self.assertIn("No hay datos", frase_rotacion(pd.DataFrame()))
+
+    def test_cada_cedear_mapeado_esta_en_el_panel(self):
+        self.assertEqual(simbolos_extra(), ["XLRE", "ARGT"])
+        for datos in SECTORES.values():
+            for ticker in datos["cedears"]:
+                self.assertIn(ticker, WATCHLIST)
+
+    def test_una_serie_que_acelera_queda_lider_y_una_que_cae_rezagada(self):
+        n = 260
+        idx = pd.bdate_range("2024-01-02", periods=n)
+        spy = pd.Series(100.0, index=idx)
+        lider = [100 * (1.0003 ** i) for i in range(n)]
+        piso = lider[-25]
+        for i in range(25):
+            lider[-25 + i] = piso * (1.004 ** i)
+        curva = curvas_rrg(pd.Series(lider, index=idx), spy)
+        fuerza = float(curva["fuerza"].iloc[-1])
+        momentum = float(curva["momentum"].iloc[-1])
+        self.assertGreater(fuerza, 100)
+        self.assertGreater(momentum, 100)
+        self.assertEqual(cuadrante(fuerza, momentum), "Líder")
+
+        flojo = [100 * (1.0003 ** i) for i in range(n)]
+        techo = flojo[-40]
+        for i in range(40):
+            flojo[-40 + i] = techo * (0.997 ** i)
+        curva_b = curvas_rrg(pd.Series(flojo, index=idx), spy)
+        fuerza_b = float(curva_b["fuerza"].iloc[-1])
+        momentum_b = float(curva_b["momentum"].iloc[-1])
+        self.assertLess(fuerza_b, 100)
+        self.assertLess(momentum_b, 100)
+        self.assertEqual(cuadrante(fuerza_b, momentum_b), "Rezagado")
 
 
 if __name__ == "__main__":
