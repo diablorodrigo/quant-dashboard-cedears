@@ -17,6 +17,48 @@ st.set_page_config(
     layout="wide"
 )
 
+
+@st.cache_data(ttl=86400)  # Guarda los datos por 24 horas
+def obtener_fundamentales(ticker_symbol):
+    try:
+        tk = yf.Ticker(ticker_symbol)
+        info = tk.info
+
+        # Lógica de alerta por proximidad de balance (Earnings)
+        alerta_balance = False
+        try:
+            fechas_balance = tk.earnings_dates
+            if fechas_balance is not None and not fechas_balance.empty:
+                fechas_futuras = fechas_balance[fechas_balance.index > pd.Timestamp.now(tz=fechas_balance.index.tz)]
+                if not fechas_futuras.empty:
+                    proximo = fechas_futuras.index.min()
+                    dias_restantes = (proximo - pd.Timestamp.now(tz=proximo.tz)).days
+                    if 0 <= dias_restantes <= 7:
+                        alerta_balance = True
+        except:
+            pass  # Si falla el calendario de YF, pasa de largo sin romper el tablero
+
+        return {
+            "Sector": info.get('sector', 'Desconocido'),
+            "PER Trailing": info.get('trailingPE', None),
+            "PER Forward": info.get('forwardPE', None),
+            "PEG Ratio": info.get('pegRatio', None),
+            "ROE": info.get('returnOnEquity', None),
+            "Margen Neto": info.get('profitMargins', None),
+            "Deuda/Patrimonio": info.get('debtToEquity', None),
+            "Free Cash Flow": info.get('freeCashflow', None),
+            "Crecimiento Ingresos": info.get('revenueGrowth', None),
+            "Precio Actual": info.get('currentPrice', None),
+            "Precio Objetivo": info.get('targetMeanPrice', None),
+            "Consenso": info.get('recommendationKey', 'N/A'),
+            "Dividend Yield": info.get('dividendYield', None),
+            "Payout Ratio": info.get('payoutRatio', None),
+            "Alerta Balance": alerta_balance
+        }
+    except Exception:
+        # Modo a prueba de fallos por si un ticker no tiene datos disponibles
+        return {"Sector": "Desconocido", "Alerta Balance": False}
+
 # ---------------------------------------------------------------------------
 # SISTEMA DE ACCESO Y SEGURIDAD (VÍA BÓVEDA SECRETA)
 # ---------------------------------------------------------------------------
@@ -299,7 +341,7 @@ def calcular_rrg_v4(fecha_cierre, lista_tickers):
                 cuadrante, color = "Rezagados", "#FF4500"
 
             resultados.append({
-                "Ticker": ticker,
+                "Ticker": ticker,  # Volvé a poner ticker acá
                 "Fuerza_X": float(round(x_actual, 2)),
                 "Momentum_Y": float(round(y_actual, 2)),
                 "Cuadrante": cuadrante,
@@ -336,7 +378,7 @@ def mostrar_radar_rotacion():
             fig.update_traces(textposition='top center',
                               marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
             fig.update_layout(height=600, template="plotly_dark", showlegend=True)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="radar_unico_rrg")
 
         with col2:
             st.subheader("🏆 Oportunidades")
@@ -489,7 +531,9 @@ WATCHLIST = {
     "EQNR": {"name": "Equinor ASA", "cedear": "EQNR.BA", "underlying": "EQNR", "ratio": 6},
     "SMH": {"name": "VanEck Semiconductor ETF", "cedear": "SMH.BA", "underlying": "SMH", "ratio": 50},
     "GPRK": {"name": "GeoPark", "cedear": "GPRK.BA", "underlying": "GPRK", "ratio": 1},
-    "GGB": {"name": "Gerdau", "cedear": "GGB.BA", "underlying": "GGB", "ratio": 0.25}
+    "GGB": {"name": "Gerdau", "cedear": "GGB.BA", "underlying": "GGB", "ratio": 0.25},
+    "YPF": {"name": "YPF", "cedear": "YPFD.BA", "underlying": "YPF", "ratio": 10}
+
 
 }
 
@@ -600,6 +644,7 @@ def get_analyst_consensus(ticker):
 # ---------------------------------------------------------------------------
 # 4) MOTOR DE ANÁLISIS TÉCNICO Y GESTIÓN DE RIESGO
 # ---------------------------------------------------------------------------
+
 def analyze_asset(key, cfg, ccl_real):
     cedear_t, under_t, ratio = cfg["cedear"], cfg["underlying"], cfg["ratio"]
 
@@ -708,6 +753,11 @@ def analyze_asset(key, cfg, ccl_real):
     elif "COMPRA" in senal_prev and "VENTA" in senal_act and chg_1d < 0:
         alerta_giro = "GIRO BAJISTA"
 
+
+
+
+
+
     # --------------------------------------------------------
     # INTERVENCIÓN SUPREMA DEL VOLUMEN (SMART MONEY)
     # --------------------------------------------------------
@@ -758,205 +808,290 @@ def analyze_asset(key, cfg, ccl_real):
 def main():
     st.title("📊 Dashboard Quant Institucional")
 
-    # --- NUEVA LÍNEA DE FECHA Y HORA ---
-    st.caption(
-        f"⏱️ **Última actualización de precios y métricas:** {datetime.now().strftime('%d/%m/%Y a las %H:%M:%S')}")
-    st.markdown("---")
+    # ==========================================
+    # ==========================================
+    # ESTRUCTURA DE PESTAÑAS (TABS)
+    # ==========================================
+    tab_tecnico, tab_fundamental, tab_global, tab_sectores = st.tabs([
+        "📈 Análisis Técnico (Smart Money)",
+        "🏢 Análisis Fundamental",
+        "🌍 Señal Global",
+        "🔄 Rotación Sectorial"
+    ])
 
-    ccl_ref = get_aapl_ccl()
-    col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
-    col_kpi1.metric("Benchmark CCL (AAPL)", f"${ccl_ref:.2f}" if ccl_ref else "N/D")
-    col_kpi2.metric("Motor Técnico", "100% Subyacente USD")
-    col_kpi3.metric("Filtro Estructural", "Gates Stage 2 Activo")
+    # 1. PESTAÑA TÉCNICA (Tu tablero actual)
+    with tab_tecnico:
 
-    with st.spinner("Descargando métricas y evaluando riesgos..."):
-        results = [analyze_asset(k, v, ccl_ref) for k, v in WATCHLIST.items()]
-        results = [r for r in results if r is not None]
+        # --- ACÁ ENCENDEMOS EL MOTOR ---
+        ccl_real = get_aapl_ccl()
+        results = []
 
-    df_res = pd.DataFrame(results)
+        with st.spinner("Analizando algoritmos técnicos..."):
+            for key, cfg in WATCHLIST.items():
+                res = analyze_asset(key, cfg, ccl_real)
+                if res is not None:
+                    results.append(res)
 
-    # ---------------- RANKINGS ----------------
-    st.markdown("---")
-    st.markdown("<h3 style='color: #4a69bd;'>🏆 Rankings del Día (USD)</h3>", unsafe_allow_html=True)
+            # --- ENCENDIDO DEL MOTOR TÉCNICO ---
+            ccl_real = get_aapl_ccl()
+            results = []
+            with st.spinner("Analizando algoritmos técnicos..."):
+                for key, cfg in WATCHLIST.items():
+                    res = analyze_asset(key, cfg, ccl_real)
+                    if res is not None:
+                        results.append(res)
 
-    col_g, col_p, col_rs_o, col_rs_u = st.columns(4)
+            df_res = pd.DataFrame(results)
 
-    df_ganadores = df_res.sort_values(by="chg_1d_%", ascending=False).head(5)[["ticker", "chg_1d_%"]].copy()
-    df_ganadores["chg_1d_%"] = df_ganadores["chg_1d_%"].apply(lambda x: f"{x}%")
+            # ---------------- RANKINGS ----------------
+        st.markdown("---")
+        st.markdown("<h3 style='color: #4a69bd;'>🏆 Rankings del Día (USD)</h3>", unsafe_allow_html=True)
 
-    df_perdedores = df_res.sort_values(by="chg_1d_%", ascending=True).head(5)[["ticker", "chg_1d_%"]].copy()
-    df_perdedores["chg_1d_%"] = df_perdedores["chg_1d_%"].apply(lambda x: f"{x}%")
+        col_g, col_p, col_rs_o, col_rs_u = st.columns(4)
 
-    df_sobrevendidos = df_res.sort_values(by="rsi14", ascending=True).head(5)[["ticker", "rsi14"]].copy()
-    df_sobrevendidos["rsi14"] = df_sobrevendidos["rsi14"].apply(lambda x: f"{x:.2f}")  # Forzado a 2 decimales
+        df_ganadores = df_res.sort_values(by="chg_1d_%", ascending=False).head(5)[["ticker", "chg_1d_%"]].copy()
+        df_ganadores["chg_1d_%"] = df_ganadores["chg_1d_%"].apply(lambda x: f"{x}%")
 
-    df_sobrecomprados = df_res.sort_values(by="rsi14", ascending=False).head(5)[["ticker", "rsi14"]].copy()
-    df_sobrecomprados["rsi14"] = df_sobrecomprados["rsi14"].apply(lambda x: f"{x:.2f}")  # Forzado a 2 decimales
+        df_perdedores = df_res.sort_values(by="chg_1d_%", ascending=True).head(5)[["ticker", "chg_1d_%"]].copy()
+        df_perdedores["chg_1d_%"] = df_perdedores["chg_1d_%"].apply(lambda x: f"{x}%")
 
-    with col_g:
-        st.markdown(
-            "<div style='background-color: #dff9fb; padding: 5px; border-radius: 5px;'><b style='color: #27ae60;'>🔥 Top Subas</b></div><br>",
-            unsafe_allow_html=True)
-        st.dataframe(df_ganadores.style.map(pintar_porcentajes), hide_index=True)
-    with col_p:
-        st.markdown(
-            "<div style='background-color: #ffcccc; padding: 5px; border-radius: 5px;'><b style='color: #c0392b;'>🩸 Top Bajas</b></div><br>",
-            unsafe_allow_html=True)
-        st.dataframe(df_perdedores.style.map(pintar_porcentajes), hide_index=True)
-    with col_rs_o:
-        st.markdown(
-            "<div style='background-color: #e8f7f0; padding: 5px; border-radius: 5px;'><b style='color: #16a085;'>📉 Sobrevendidos (Rebote)</b></div><br>",
-            unsafe_allow_html=True)
-        st.dataframe(df_sobrevendidos, hide_index=True)
-    with col_rs_u:
-        st.markdown(
-            "<div style='background-color: #fceae8; padding: 5px; border-radius: 5px;'><b style='color: #e74c3c;'>📈 Sobrecomprados (Riesgo)</b></div><br>",
-            unsafe_allow_html=True)
-        st.dataframe(df_sobrecomprados, hide_index=True)
+        df_sobrevendidos = df_res.sort_values(by="rsi14", ascending=True).head(5)[["ticker", "rsi14"]].copy()
+        df_sobrevendidos["rsi14"] = df_sobrevendidos["rsi14"].apply(lambda x: f"{x:.2f}")  # Forzado a 2 decimales
 
-    st.markdown("---")
+        df_sobrecomprados = df_res.sort_values(by="rsi14", ascending=False).head(5)[["ticker", "rsi14"]].copy()
+        df_sobrecomprados["rsi14"] = df_sobrecomprados["rsi14"].apply(lambda x: f"{x:.2f}")  # Forzado a 2 decimales
 
-    giros = [r for r in results if r["alerta_giro"]]
-    if giros:
-        st.markdown("<h3 style='color: #e1b12c;'>⚡ Alertas de Reversión Corto Plazo</h3>", unsafe_allow_html=True)
-        for g in giros:
-            if g["alerta_giro"] == "GIRO ALCISTA":
-                st.success(f"🚀 **{g['ticker']} ({g['nombre']})** cruzó al alza (Compra).")
-            else:
-                st.error(f"⚠️ **{g['ticker']} ({g['nombre']})** cruzó a la baja (Venta).")
+        with col_g:
+            st.markdown(
+                "<div style='background-color: #dff9fb; padding: 5px; border-radius: 5px;'><b style='color: #27ae60;'>🔥 Top Subas</b></div><br>",
+                unsafe_allow_html=True)
+            st.dataframe(df_ganadores.style.map(pintar_porcentajes), hide_index=True)
+        with col_p:
+            st.markdown(
+                "<div style='background-color: #ffcccc; padding: 5px; border-radius: 5px;'><b style='color: #c0392b;'>🩸 Top Bajas</b></div><br>",
+                unsafe_allow_html=True)
+            st.dataframe(df_perdedores.style.map(pintar_porcentajes), hide_index=True)
+        with col_rs_o:
+            st.markdown(
+                "<div style='background-color: #e8f7f0; padding: 5px; border-radius: 5px;'><b style='color: #16a085;'>📉 Sobrevendidos (Rebote)</b></div><br>",
+                unsafe_allow_html=True)
+            st.dataframe(df_sobrevendidos, hide_index=True)
+        with col_rs_u:
+            st.markdown(
+                "<div style='background-color: #fceae8; padding: 5px; border-radius: 5px;'><b style='color: #e74c3c;'>📈 Sobrecomprados (Riesgo)</b></div><br>",
+                unsafe_allow_html=True)
+            st.dataframe(df_sobrecomprados, hide_index=True)
 
-    st.markdown("<h3 style='color: #4a69bd;'>📋 Monitor General de Mercado</h3>", unsafe_allow_html=True)
+        st.markdown("---")
 
-    # Tabla principal con RSI formateado, Precio ARS restituido y Penalizaciones claras
-    df_display = pd.DataFrame([{
-        "Ticker": r["ticker"],
-        "Precio USD": f"${r['precio_usd']}",
-        "Var 1D": f"{r['chg_1d_%']}%",
-        "RSI": f"{r['rsi14']:.2f}",  # Formato estricto para evitar decimales infinitos
-        "Vol Relativo": f"{r['vol_relativo_%']}%",
-        "Gates Stage 2": "✅ Sí" if r["gates_stage_2"] else "❌ No",
-        "Señal": r["senal"],
-        "Penalizaciones": " | ".join(r["penalizaciones"]) if len(r["penalizaciones"]) > 0 else "Ninguna",
-        "Precio ARS": f"${r['precio_ars']}",
-        "Gap vs CCL": f"{r['gap_vs_ccl_%']}%" if r["gap_vs_ccl_%"] != "N/D" else "N/D"
-    } for r in results])
+        giros = [r for r in results if r["alerta_giro"]]
+        if giros:
+            st.markdown("<h3 style='color: #e1b12c;'>⚡ Alertas de Reversión Corto Plazo</h3>", unsafe_allow_html=True)
+            for g in giros:
+                if g["alerta_giro"] == "GIRO ALCISTA":
+                    st.success(f"🚀 **{g['ticker']} ({g['nombre']})** cruzó al alza (Compra).")
+                else:
+                    st.error(f"⚠️ **{g['ticker']} ({g['nombre']})** cruzó a la baja (Venta).")
 
-    st.dataframe(df_display.style.map(pintar_senal, subset=["Señal"])
-                 .map(pintar_porcentajes, subset=["Var 1D", "Gap vs CCL"])
-                 .map(pintar_volumen, subset=["Vol Relativo"]), hide_index=True)
+        st.markdown("<h3 style='color: #4a69bd;'>📋 Monitor General de Mercado</h3>", unsafe_allow_html=True)
 
-    st.markdown("<h3 style='color: #4a69bd;'>🔍 Análisis Profundo por Activo</h3>", unsafe_allow_html=True)
-    ticker_seleccionado = st.selectbox(
-        "Seleccioná un activo para desplegar su estructura:", options=[r["ticker"] for r in results],
-        format_func=lambda x: f"{x} - {WATCHLIST[x]['name']}"
-    )
+        # Tabla principal con RSI formateado, Precio ARS restituido y Penalizaciones claras
+        # --- CÁLCULO DE SEÑAL GLOBAL (A PRUEBA DE FALLOS) ---
+    with tab_global:
+        st.markdown("<h3 style='color: #4a69bd;'>📋 Monitor de Señal Global</h3>", unsafe_allow_html=True)
 
-    data_sel = next(r for r in results if r["ticker"] == ticker_seleccionado)
-    hist = data_sel["_hist"]
-    ind = data_sel["_ind"]
+        # Nos aseguramos de que el motor técnico ya haya terminado de analizar
+        if 'results' in locals() and len(results) > 0:
+            datos_para_tabla = []
 
-    # ---------------------------------------------------------------------------
-    # COMPARATIVA: NUESTRO MOTOR VS. CONSENSO WALL STREET
-    # ---------------------------------------------------------------------------
-    st.markdown("#### ⚖️ Nuestro Algoritmo Cuantitativo vs. Consenso Wall Street")
+            with st.spinner("Cruzando algoritmos con datos de Wall Street..."):
+                for r in results:
+                    ticker_simbolo = r["ticker"]
 
-    col_motor, col_gauge = st.columns([1, 1.2])
-    consensus = get_analyst_consensus(data_sel["ticker"])
+                    # 1. Puntaje Técnico
+                    score_tec = 0
+                    if "COMPRA" in r["senal"]:
+                        score_tec = 3
+                    elif "VENTA" in r["senal"]:
+                        score_tec = -3
 
-    with col_motor:
-        st.markdown(f"**Diagnóstico Técnico (Corto Plazo):**")
-        st.subheader(f"📌 {data_sel['senal']}")
-        st.write(f"- **Precio USD actual:** ${data_sel['precio_usd']}")
-        st.write(f"- **RSI (14):** {float(data_sel['rsi14']):.2f}")
-        st.write(f"- **Volumen Relativo:** {data_sel['vol_relativo_%']}%")
-        st.write(f"- **Estructura EMA 200 (Stage 2):** {'Alineada' if data_sel['gates_stage_2'] else 'Deteriorada'}")
+                    # 2. Puntaje Fundamental
+                    ticker_eeuu = WATCHLIST[ticker_simbolo]["underlying"]
+                    datos_fund = obtener_fundamentales(ticker_eeuu)
 
-        # Nota interpretativa automática de divergencia
-        if "COMPRA" in data_sel['senal'] and consensus and consensus.get("score") and consensus["score"] <= 2.2:
-            st.success("🎯 **Convergencia Fuerte:** Tendencia cuantitativa y visión fundamental coinciden al alza.")
-        elif "VENTA" in data_sel['senal'] and consensus and consensus.get("score") and consensus["score"] <= 2.2:
-            st.warning(
-                "⚠️ **Divergencia de Plazos:** Wall Street es optimista a 12 meses, pero el motor técnico marca deterioro inminente. Riesgo de corto plazo.")
+                    score_fund = 0
+                    if datos_fund.get("Precio Objetivo") and datos_fund.get("Precio Actual"):
+                        upside = ((datos_fund["Precio Objetivo"] / datos_fund["Precio Actual"]) - 1) * 100
+                        if upside > 15:
+                            score_fund += 1
+                        elif upside < 0:
+                            score_fund -= 1
 
-    with col_gauge:
-        if consensus and consensus.get("score") is not None:
-            # yfinance usa 1=Compra Fuerte a 5=Venta Fuerte. Invertimos para el velocímetro:
-            score_visual = 6.0 - consensus["score"]
+                    if datos_fund.get("ROE") and datos_fund.get("ROE") > 0.15: score_fund += 1
 
-            fig_gauge = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=round(score_visual, 2),
-                number={'valueformat': '.2f', 'suffix': ' / 5.00'},
-                title={
-                    'text': f"<b>Consenso Analistas ({consensus['recommendation']})</b><br><span style='font-size:0.8em;color:gray;'>Base: {consensus.get('num_analysts', 'N/D')} firmas</span>"},
-                gauge={
-                    'axis': {'range': [1, 5], 'tickvals': [1, 2, 3, 4, 5],
-                             'ticktext': ['Venta Fuerte', 'Venta', 'Conservar', 'Comprar', 'Compra Fuerte']},
-                    'bar': {'color': "#2c3e50" if tema_grafico == "Claro ☀️" else "#ecf0f1", 'thickness': 0.28},
-                    'steps': [
-                        {'range': [1, 1.8], 'color': '#e74c3c'},
-                        {'range': [1.8, 2.6], 'color': '#e67e22'},
-                        {'range': [2.6, 3.4], 'color': '#f1c40f'},
-                        {'range': [3.4, 4.2], 'color': '#2ecc71'},
-                        {'range': [4.2, 5.0], 'color': '#27ae60'}
-                    ]
-                }
-            ))
-            fig_gauge.update_layout(height=260, margin=dict(t=50, b=10, l=30, r=30), template=bg_color)
-            st.plotly_chart(fig_gauge, width="stretch", key=f"gauge_{ticker_seleccionado}")
+                    per = datos_fund.get("PER Trailing")
+                    if per and isinstance(per, (int, float)) and per > 30: score_fund -= 1
 
-            if consensus.get("target_price"):
-                target = consensus["target_price"]
-                upside = ((target / data_sel['precio_usd']) - 1) * 100
-                st.caption(
-                    f"🎯 **Precio Objetivo a 12 meses:** ${target:.2f} ({'+' if upside >= 0 else ''}{upside:.1f}% vs actual)")
+                    score_fund_limitado = max(-2, min(score_fund, 2))
+
+                    # 3. Suma Global
+                    score_global = score_tec + score_fund_limitado
+
+                    # 4. Traducción a Señal Definitiva
+                    if score_global >= 3:
+                        senal_global = "🟢 COMPRA GLOBAL"
+                    elif score_global <= -3:
+                        senal_global = "🔴 VENTA GLOBAL"
+                    elif score_global > 0:
+                        senal_global = "🟡 MANTENER (+)"
+                    elif score_global < 0:
+                        senal_global = "🟠 MANTENER (-)"
+                    else:
+                        senal_global = "⚪ NEUTRAL"
+
+                    datos_para_tabla.append({
+                        "Ticker": ticker_simbolo,
+                        "Precio USD": f"${r['precio_usd']}",
+                        "Var 1D": f"{r['chg_1d_%']}%",
+                        "RSI": f"{r['rsi14']:.2f}",
+                        "Vol Relativo": f"{r['vol_relativo_%']}%",
+                        "Señal Técnica": r["senal"],
+                        "Score Fund.": score_fund_limitado,
+                        "SEÑAL GLOBAL": senal_global,
+                        "Penalizaciones": " | ".join(r["penalizaciones"]) if len(
+                            r["penalizaciones"]) > 0 else "Ninguna",
+                        "Precio ARS": f"${r['precio_ars']}"
+                    })
+
+            # ACÁ SE DIBUJA LA TABLA EN LA PANTALLA
+            df_display = pd.DataFrame(datos_para_tabla)
+            st.dataframe(df_display.style.map(pintar_senal, subset=["Señal Técnica"])
+                         .map(pintar_porcentajes, subset=["Var 1D"])
+                         .map(pintar_volumen, subset=["Vol Relativo"]), hide_index=True)
         else:
-            st.info("Sin cobertura institucional de analistas para este activo.")
+            st.info("Esperando datos del motor técnico...")
+    with tab_sectores:
+        mostrar_radar_rotacion()
 
-    st.markdown("---")
+        df_display = pd.DataFrame(datos_para_tabla)
 
-    fig = make_subplots(rows=4, cols=1, shared_xaxes=True, vertical_spacing=0.04, row_heights=[0.50, 0.15, 0.20, 0.15],
-                        subplot_titles=(f"{data_sel['nombre']} ({data_sel['ticker']}) - Cotización USD",
-                                        "Volumen Institucional", "RSI (14)", "MACD"))
+        # Lo dibujamos
+        st.dataframe(df_display.style.map(pintar_senal, subset=["Señal Técnica"])
+                     .map(pintar_porcentajes, subset=["Var 1D"])
+                     .map(pintar_volumen, subset=["Vol Relativo"]), hide_index=True)
 
-    # Panel 1: Velas y Medias
-    fig.add_trace(
-        go.Candlestick(x=hist.index, open=hist["Open"], high=hist["High"], low=hist["Low"], close=hist["Close"],
-                       name="Precio"), row=1, col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["sma10"], name="SMA 10", line=dict(color="#00e5ff", width=1.5)), row=1,
-                  col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["sma20"], name="SMA 20", line=dict(color="#ffd600", width=1.5)), row=1,
-                  col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["sma50"], name="SMA 50", line=dict(color="#ff9100", width=1.5)), row=1,
-                  col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["ema200"], name="EMA 200", line=dict(color=ema_color, width=2.5)),
-                  row=1, col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["boll_up"], name="Banda Sup", line=dict(color="gray", dash="dot")),
-                  row=1, col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["boll_low"], name="Banda Inf", line=dict(color="gray", dash="dot")),
-                  row=1, col=1)
+        st.markdown("<h3 style='color: #4a69bd;'>🔍 Análisis Profundo por Activo</h3>", unsafe_allow_html=True)
+        ticker_seleccionado = st.selectbox(
+                "Seleccioná un activo para desplegar su estructura:", options=[r["ticker"] for r in results],
+                format_func=lambda x: f"{x} - {WATCHLIST[x]['name']}"
+            )
 
-    # Panel 2: Volumen
-    colors = ['#26de81' if row['Close'] >= row['Open'] else '#fc5c65' for index, row in hist.iterrows()]
-    fig.add_trace(go.Bar(x=hist.index, y=hist["Volume"], name="Volumen", marker_color=colors), row=2, col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["vol_sma20"], name="Promedio Vol 20d",
-                             line=dict(color="#f39c12", width=1.5, dash="dash")), row=2, col=1)
+        data_sel = next(r for r in results if r["ticker"] == ticker_seleccionado)
+        hist = data_sel["_hist"]
+        ind = data_sel["_ind"]
 
-    # Panel 3: RSI
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["rsi14"], name="RSI", line=dict(color="#b388ff", width=1.5)), row=3,
-                  col=1)
-    fig.add_hline(y=70, line_dash="dash", line_color="#ff5252", row=3, col=1)
-    fig.add_hline(y=30, line_dash="dash", line_color="#69f0ae", row=3, col=1)
+        # ---------------------------------------------------------------------------
+            # COMPARATIVA: NUESTRO MOTOR VS. CONSENSO WALL STREET
+            # ---------------------------------------------------------------------------
+        st.markdown("#### ⚖️ Nuestro Algoritmo Cuantitativo vs. Consenso Wall Street")
 
-    # Panel 4: MACD
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["macd"], name="MACD", line=dict(color="#448aff", width=1.5)), row=4,
-                  col=1)
-    fig.add_trace(go.Scatter(x=hist.index, y=ind["macd_signal"], name="Signal", line=dict(color="#ffab40", width=1.5)),
-                  row=4, col=1)
+        col_motor, col_gauge = st.columns([1, 1.2])
+        consensus = get_analyst_consensus(data_sel["ticker"])
 
-    fig.update_layout(height=950, xaxis_rangeslider_visible=False, template=bg_color,
-                      margin=dict(t=30, b=20, l=10, r=10))
-    st.plotly_chart(fig, width="stretch")
+        with col_motor:
+                st.markdown(f"**Diagnóstico Técnico (Corto Plazo):**")
+                st.subheader(f"📌 {data_sel['senal']}")
+                st.write(f"- **Precio USD actual:** ${data_sel['precio_usd']}")
+                st.write(f"- **RSI (14):** {float(data_sel['rsi14']):.2f}")
+                st.write(f"- **Volumen Relativo:** {data_sel['vol_relativo_%']}%")
+                st.write(f"- **Estructura EMA 200 (Stage 2):** {'Alineada' if data_sel['gates_stage_2'] else 'Deteriorada'}")
+
+                # Nota interpretativa automática de divergencia
+                if "COMPRA" in data_sel['senal'] and consensus and consensus.get("score") and consensus["score"] <= 2.2:
+                    st.success("🎯 **Convergencia Fuerte:** Tendencia cuantitativa y visión fundamental coinciden al alza.")
+                elif "VENTA" in data_sel['senal'] and consensus and consensus.get("score") and consensus["score"] <= 2.2:
+                    st.warning(
+                        "⚠️ **Divergencia de Plazos:** Wall Street es optimista a 12 meses, pero el motor técnico marca deterioro inminente. Riesgo de corto plazo.")
+
+        with col_gauge:
+                if consensus and consensus.get("score") is not None:
+                    # yfinance usa 1=Compra Fuerte a 5=Venta Fuerte. Invertimos para el velocímetro:
+                    score_visual = 6.0 - consensus["score"]
+
+                    fig_gauge = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=round(score_visual, 2),
+                        number={'valueformat': '.2f', 'suffix': ' / 5.00'},
+                        title={
+                            'text': f"<b>Consenso Analistas ({consensus['recommendation']})</b><br><span style='font-size:0.8em;color:gray;'>Base: {consensus.get('num_analysts', 'N/D')} firmas</span>"},
+                        gauge={
+                            'axis': {'range': [1, 5], 'tickvals': [1, 2, 3, 4, 5],
+                                     'ticktext': ['Venta Fuerte', 'Venta', 'Conservar', 'Comprar', 'Compra Fuerte']},
+                            'bar': {'color': "#2c3e50" if tema_grafico == "Claro ☀️" else "#ecf0f1", 'thickness': 0.28},
+                            'steps': [
+                                {'range': [1, 1.8], 'color': '#e74c3c'},
+                                {'range': [1.8, 2.6], 'color': '#e67e22'},
+                                {'range': [2.6, 3.4], 'color': '#f1c40f'},
+                                {'range': [3.4, 4.2], 'color': '#2ecc71'},
+                                {'range': [4.2, 5.0], 'color': '#27ae60'}
+                            ]
+                        }
+                    ))
+                    fig_gauge.update_layout(height=260, margin=dict(t=50, b=10, l=30, r=30), template=bg_color)
+                    st.plotly_chart(fig_gauge, width="stretch", key=f"gauge_{ticker_seleccionado}")
+
+                if consensus.get("target_price"):
+                    target = consensus["target_price"]
+                    upside = ((target / data_sel['precio_usd']) - 1) * 100
+                    st.caption(
+                        f"🎯 **Precio Objetivo a 12 meses:** ${target:.2f} ({'+' if upside >= 0 else ''}{upside:.1f}% vs actual)")
+                else:
+                    st.info("Sin cobertura institucional de analistas para este activo.")
+
+        st.markdown("---")
+
+        fig = make_subplots(rows=4, cols=1, shared_xaxes=True, vertical_spacing=0.04, row_heights=[0.50, 0.15, 0.20, 0.15],
+                            subplot_titles=(f"{data_sel['nombre']} ({data_sel['ticker']}) - Cotización USD",
+                                            "Volumen Institucional", "RSI (14)", "MACD"))
+
+        # Panel 1: Velas y Medias
+        fig.add_trace(
+            go.Candlestick(x=hist.index, open=hist["Open"], high=hist["High"], low=hist["Low"], close=hist["Close"],
+                           name="Precio"), row=1, col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["sma10"], name="SMA 10", line=dict(color="#00e5ff", width=1.5)), row=1,
+                      col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["sma20"], name="SMA 20", line=dict(color="#ffd600", width=1.5)), row=1,
+                      col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["sma50"], name="SMA 50", line=dict(color="#ff9100", width=1.5)), row=1,
+                      col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["ema200"], name="EMA 200", line=dict(color=ema_color, width=2.5)),
+                      row=1, col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["boll_up"], name="Banda Sup", line=dict(color="gray", dash="dot")),
+                      row=1, col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["boll_low"], name="Banda Inf", line=dict(color="gray", dash="dot")),
+                      row=1, col=1)
+
+        # Panel 2: Volumen
+        colors = ['#26de81' if row['Close'] >= row['Open'] else '#fc5c65' for index, row in hist.iterrows()]
+        fig.add_trace(go.Bar(x=hist.index, y=hist["Volume"], name="Volumen", marker_color=colors), row=2, col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["vol_sma20"], name="Promedio Vol 20d",
+                                 line=dict(color="#f39c12", width=1.5, dash="dash")), row=2, col=1)
+
+        # Panel 3: RSI
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["rsi14"], name="RSI", line=dict(color="#b388ff", width=1.5)), row=3,
+                      col=1)
+        fig.add_hline(y=70, line_dash="dash", line_color="#ff5252", row=3, col=1)
+        fig.add_hline(y=30, line_dash="dash", line_color="#69f0ae", row=3, col=1)
+
+        # Panel 4: MACD
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["macd"], name="MACD", line=dict(color="#448aff", width=1.5)), row=4,
+                      col=1)
+        fig.add_trace(go.Scatter(x=hist.index, y=ind["macd_signal"], name="Signal", line=dict(color="#ffab40", width=1.5)),
+                      row=4, col=1)
+
+        fig.update_layout(height=950, xaxis_rangeslider_visible=False, template=bg_color,
+                          margin=dict(t=30, b=20, l=10, r=10))
+        st.plotly_chart(fig, width="stretch")
 
 
 # (Acá termina el código de los paneles del gráfico MACD, RSI, etc.)
@@ -970,10 +1105,69 @@ def main():
     # Sección de las carteras (esta ya la tenías)
     mostrar_carteras_sugeridas()
 
-    st.divider()  # Dibuja la línea gris separadora
 
-    # Agregá esta línea para mostrar el radar de rotación
-    mostrar_radar_rotacion()
+
+    # ==========================================
+    # 2. PESTAÑA FUNDAMENTAL
+    # ==========================================
+    with tab_fundamental:
+        st.markdown("### 🏢 Análisis Fundamental y Valuación")
+
+        lista_fundamental = []
+
+        with st.spinner("Descargando balances y métricas desde Wall Street..."):
+            for t in WATCHLIST.keys():
+                ticker_eeuu = WATCHLIST[t]["underlying"]
+                datos = obtener_fundamentales(ticker_eeuu)
+
+                # --- MOTOR DE SCORING FUNDAMENTAL ---
+                score_fund = 0
+
+                # Regla A: Upside (Precio Objetivo vs Precio Actual)
+                if datos.get("Precio Objetivo") and datos.get("Precio Actual"):
+                    upside_pct = ((datos["Precio Objetivo"] / datos["Precio Actual"]) - 1) * 100
+                    if upside_pct > 15:
+                        score_fund += 1
+                    elif upside_pct < 0:
+                        score_fund -= 1
+
+                # Regla B: Rentabilidad (ROE > 15%)
+                if datos.get("ROE") and datos.get("ROE") > 0.15: score_fund += 1
+
+                # Regla C: Valuación (PER > 30 es caro)
+                per = datos.get("PER Trailing")
+                if per and isinstance(per, (int, float)) and per > 30: score_fund -= 1
+
+                # Limitamos el peso fundamental a +/- 2
+                score_fund_limitado = max(-2, min(score_fund, 2))
+
+                # Etiqueta visual para la tabla
+                if score_fund_limitado >= 1:
+                    calificacion = "🟢 Subvaluada"
+                elif score_fund_limitado <= -1:
+                    calificacion = "🔴 Sobrevaluada"
+                else:
+                    calificacion = "⚪ Precio Justo"
+
+                # Guardamos todo en la lista
+                lista_fundamental.append({
+                    "Ticker": t,
+                    "Sector": datos.get("Sector", "-"),
+                    "Score Fund.": score_fund_limitado,
+                    "Estado": calificacion,
+                    "Alerta Balance": "⚠️ Próx. 7 días" if datos.get("Alerta Balance") else "Normal",
+                    "PER": round(per, 2) if isinstance(per, (int, float)) else "-",
+                    "ROE (%)": round(datos.get("ROE", 0) * 100, 2) if datos.get("ROE") else "-",
+                    "FCF": datos.get("Free Cash Flow", "-")
+                })
+
+        # Mostramos la tabla en pantalla
+        if len(lista_fundamental) > 0:
+            df_fund = pd.DataFrame(lista_fundamental)
+            st.dataframe(df_fund, use_container_width=True, hide_index=True)
+        else:
+            st.warning("No se pudieron cargar los datos fundamentales.")
+
 
 
 
