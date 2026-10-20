@@ -15,7 +15,7 @@ from zeta.analisis_global import armar_analisis_global
 from zeta.carteras import PERFILES, composicion, metricas_historicas, pesos_variable
 from zeta.datos import cargar_panel, ficha_activo
 from zeta.indicadores import bollinger, ema, macd, rsi, sma
-from zeta.marca import LOGO, LOGO_HEADER, SITIO, WHATSAPP, aviso, linea_identidad, selector_tema
+from zeta.marca import LOGO, LOGO_HEADER, aviso, linea_identidad, mostrar_enlaces, selector_tema
 from zeta.paleta import paleta, tema_activo
 from zeta.rotacion import (
     INDICES,
@@ -123,8 +123,7 @@ def barra_lateral() -> None:
     st.sidebar.markdown("**Zeta Finance**")
     st.sidebar.caption(linea_identidad())
     selector_tema()
-    st.sidebar.link_button("zetafinance.com.ar", SITIO, width="stretch")
-    st.sidebar.link_button("WhatsApp", WHATSAPP, width="stretch")
+    mostrar_enlaces(barra=True)
 
     def _salir():
         st.session_state["autenticado"] = False
@@ -1286,6 +1285,4 @@ El consenso de analistas y el calendario se piden solo cuando se abre un activo,
         """
     )
     st.markdown("### Contacto")
-    c1, c2 = st.columns(2)
-    c1.link_button("Escribir por WhatsApp", WHATSAPP, width="stretch")
-    c2.link_button("zetafinance.com.ar", SITIO, width="stretch")
+    mostrar_enlaces(en_fila=True)

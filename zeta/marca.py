@@ -15,6 +15,14 @@ FAVICON = RAIZ / "assets" / "favicon.png"
 
 SITIO = "https://www.zetafinance.com.ar"
 WHATSAPP = "https://wa.me/5493496462977"
+INSTAGRAM = "https://www.instagram.com/cristianbernaldez.ok/"
+INSTAGRAM_TEXTO = "@cristianbernaldez.ok"
+
+ENLACES = (
+    ("zetafinance.com.ar", SITIO, ":material/language:"),
+    ("WhatsApp", WHATSAPP, ":material/chat:"),
+    (INSTAGRAM_TEXTO, INSTAGRAM, ":material/photo_camera:"),
+)
 
 # Número público de la matrícula. Un secreto `matricula` lo puede reemplazar.
 MATRICULA_CNV = "2103"
@@ -201,18 +209,39 @@ def _css() -> str:
         margin-top: -0.35rem;
         margin-bottom: 0.6rem;
       }}
-      .zeta-wa {{
+      .zeta-flotantes {{
         position: fixed;
         right: 16px;
         bottom: 16px;
         z-index: 1000;
-        background: {p["whatsapp"]};
-        color: {p["whatsapp_texto"]} !important;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.45rem;
+      }}
+      .zeta-flotantes a {{
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
         padding: 0.65rem 0.95rem;
         border-radius: 999px;
         text-decoration: none;
         font-weight: 700;
         box-shadow: 0 8px 20px {p["sombra"]};
+      }}
+      .zeta-flotantes svg {{
+        width: 16px;
+        height: 16px;
+        flex: 0 0 auto;
+      }}
+      .zeta-wa {{
+        background: {p["whatsapp"]};
+        color: {p["whatsapp_texto"]} !important;
+      }}
+      .zeta-ig {{
+        background: {tarjeta};
+        color: {texto} !important;
+        border: 1px solid {borde};
       }}
       .zeta-tabla-marco {{
         max-height: 520px;
@@ -315,8 +344,36 @@ def _css() -> str:
         }}
       }}
     </style>
-    <a class="zeta-wa" href="{WHATSAPP}" target="_blank" rel="noopener">WhatsApp</a>
+    <div class="zeta-flotantes">
+      <a class="zeta-ig" href="{INSTAGRAM}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="4" y="4" width="16" height="16" rx="5"></rect>
+          <circle cx="12" cy="12" r="3.5"></circle>
+          <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none"></circle>
+        </svg>
+        {INSTAGRAM_TEXTO}
+      </a>
+      <a class="zeta-wa" href="{WHATSAPP}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+          <path d="M12.04 3.2A8.7 8.7 0 0 0 4.7 16.3L3.6 20.4l4.2-1.1a8.7 8.7 0 0 0 4.24 1.08h.01a8.7 8.7 0 0 0 0-17.4zm5.06 12.3c-.21.6-1.23 1.1-1.7 1.17-.43.06-.98.09-1.58-.1-.36-.11-.83-.27-1.43-.53-2.52-1.09-4.16-3.63-4.29-3.8-.12-.17-1.04-1.38-1.04-2.63s.66-1.86.89-2.12c.23-.26.51-.32.68-.32h.49c.16 0 .37-.06.58.44.21.52.73 1.8.8 1.93.06.13.1.28.02.45-.08.17-.12.28-.24.43-.12.15-.25.33-.36.44-.12.12-.24.25-.1.49.13.23.6.99 1.29 1.6.89.79 1.64 1.04 1.87 1.16.23.11.37.1.5-.06.14-.17.58-.67.73-.9.16-.23.31-.19.52-.11.21.08 1.34.63 1.57.75.23.11.38.17.44.26.06.1.06.55-.15 1.15z"/>
+        </svg>
+        WhatsApp
+      </a>
+    </div>
     """
+
+
+def mostrar_enlaces(*, barra: bool = False, en_fila: bool = False) -> None:
+    """Web, WhatsApp e Instagram, con ícono y texto. Los colores salen del tema."""
+    if en_fila and not barra:
+        columnas = st.columns(len(ENLACES))
+        for columna, (etiqueta, url, icono) in zip(columnas, ENLACES):
+            with columna:
+                st.link_button(etiqueta, url, icon=icono, width="stretch")
+        return
+    destino = st.sidebar if barra else st
+    for etiqueta, url, icono in ENLACES:
+        destino.link_button(etiqueta, url, icon=icono, width="stretch")
 
 
 def selector_tema() -> None:
@@ -375,4 +432,4 @@ def vista_login() -> None:
                 st.rerun()
             else:
                 st.error("Credenciales incorrectas o usuario no registrado.")
-        st.link_button("zetafinance.com.ar", SITIO)
+        mostrar_enlaces()
