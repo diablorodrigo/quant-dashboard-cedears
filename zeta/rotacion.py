@@ -86,21 +86,6 @@ INDICES: dict[str, str] = {
     "ARGT": "Argentina",
 }
 
-PALETA = {
-    "XLK": "#1e3a34",
-    "XLF": "#1d6a8a",
-    "XLE": "#8d6b4a",
-    "XLV": "#2f6f4e",
-    "XLY": "#b07a30",
-    "XLP": "#5c7a72",
-    "XLI": "#3e5568",
-    "XLB": "#a33b32",
-    "XLU": "#6e7f8d",
-    "XLRE": "#7a5c8a",
-    "XLC": "#1f7a4d",
-}
-
-
 def simbolos_extra() -> list[str]:
     """Símbolos que no están en el universo de CEDEARs y hacen falta acá."""
     return ["XLRE", "ARGT"]
@@ -282,3 +267,71 @@ def texto_periodo(valor: float | None, flecha: str) -> str:
 def cedears_visibles(ticker_sector: str, presentes: set[str]) -> list[str]:
     pedidos = SECTORES.get(ticker_sector, {}).get("cedears", [])
     return [t for t in pedidos if t in presentes]
+
+
+def _caja_etiqueta(x0: float, x1: float, y0: float, y1: float) -> tuple[float, float]:
+    """Ancho y alto aproximados de una sigla (XLK) en unidades del gráfico."""
+    return max(x1 - x0, 1e-6) * 0.078, max(y1 - y0, 1e-6) * 0.062
+
+
+def ubicar_etiquetas(
+    puntos: list[tuple[str, float, float]],
+    x0: float,
+    x1: float,
+    y0: float,
+    y1: float,
+) -> dict[str, tuple[float, float]]:
+    """Acomoda cada sigla al lado de su punto, sin tapar el punto ni a otra sigla."""
+    ancho, alto = _caja_etiqueta(x0, x1, y0, y1)
+    margen_x, margen_y = ancho * 0.55, alto * 0.55
+    puestos: dict[str, tuple[float, float]] = {}
+    for indice, (ticker, x, y) in enumerate(puntos):
+        vx, vy = x, y
+        if abs(vx) < 1e-6 and abs(vy) < 1e-6:
+            vx, vy = 1.0, 0.15 * ((indice % 5) - 2)
+        largo = float(np.hypot(vx, vy))
+        ux, uy = vx / largo, vy / largo
+        px, py = -uy, ux
+        costado = ((indice % 3) - 1) * 0.4
+        puestos[ticker] = (
+            x + ux * ancho * 1.05 + px * ancho * costado,
+            y + uy * alto * 1.05 + py * alto * costado,
+        )
+
+    def _clamp(lx: float, ly: float) -> tuple[float, float]:
+        return (
+            min(max(lx, x0 + margen_x), x1 - margen_x),
+            min(max(ly, y0 + margen_y), y1 - margen_y),
+        )
+
+    for _ in range(70):
+        tickers = list(puestos)
+        for i, ti in enumerate(tickers):
+            xi, yi = puestos[ti]
+            for tj in tickers[i + 1 :]:
+                xj, yj = puestos[tj]
+                adx = (xi - xj) / ancho
+                ady = (yi - yj) / alto
+                dist = float(np.hypot(adx, ady))
+                if dist >= 1.2:
+                    continue
+                if dist < 1e-6:
+                    adx, ady, dist = 1.0, 0.3, 1.0
+                empuje = (1.2 - dist) * 0.55
+                ux, uy = adx / dist, ady / dist
+                puestos[ti] = _clamp(xi + ux * empuje * ancho, yi + uy * empuje * alto)
+                puestos[tj] = _clamp(xj - ux * empuje * ancho, yj - uy * empuje * alto)
+                xi, yi = puestos[ti]
+        for ticker, x, y in puntos:
+            lx, ly = puestos[ticker]
+            adx = (lx - x) / (ancho * 0.7)
+            ady = (ly - y) / (alto * 0.7)
+            dist = float(np.hypot(adx, ady))
+            if dist >= 1:
+                puestos[ticker] = _clamp(lx, ly)
+                continue
+            if dist < 1e-6:
+                adx, ady, dist = 1.0, 0.2, 1.0
+            falta = 1 - dist
+            puestos[ticker] = _clamp(lx + (adx / dist) * falta * ancho * 0.7, ly + (ady / dist) * falta * alto * 0.7)
+    return puestos

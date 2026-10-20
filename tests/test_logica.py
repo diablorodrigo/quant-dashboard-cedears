@@ -27,12 +27,14 @@ from zeta.senales import (
 from zeta.rotacion import (
     SECTORES,
     _bloque,
+    _caja_etiqueta,
     _flecha,
     cola_reciente,
     cuadrante,
     curvas_rrg,
     frase_rotacion,
     simbolos_extra,
+    ubicar_etiquetas,
 )
 from zeta.tiempo import clave_cierre
 from zeta.universo import WATCHLIST
@@ -194,6 +196,38 @@ class Rotacion(unittest.TestCase):
         self.assertLess(fuerza_b, 100)
         self.assertLess(momentum_b, 100)
         self.assertEqual(cuadrante(fuerza_b, momentum_b), "Rezagado")
+
+    def test_las_etiquetas_no_se_pisan(self):
+        puntos = [
+            ("XLE", 2.9, 0.9),
+            ("XLV", 2.8, 1.6),
+            ("XLK", 2.7, -1.2),
+            ("XLP", 1.4, 2.2),
+            ("XLF", 0.4, 1.0),
+            ("XLC", -0.6, 1.4),
+            ("XLB", -1.2, 0.5),
+            ("XLY", -1.6, 2.2),
+            ("XLI", -1.9, 0.6),
+            ("XLRE", -3.5, 1.8),
+            ("XLU", -6.4, 3.1),
+        ]
+        x0, x1, y0, y1 = -8.0, 8.0, -4.5, 4.5
+        puestos = ubicar_etiquetas(puntos, x0, x1, y0, y1)
+        ancho, alto = _caja_etiqueta(x0, x1, y0, y1)
+        self.assertEqual(set(puestos), {ticker for ticker, _, _ in puntos})
+        for ticker, x, y in puntos:
+            lx, ly = puestos[ticker]
+            self.assertGreaterEqual(lx, x0)
+            self.assertLessEqual(lx, x1)
+            self.assertGreaterEqual(ly, y0)
+            self.assertLessEqual(ly, y1)
+            self.assertGreater((((lx - x) / ancho) ** 2 + ((ly - y) / alto) ** 2) ** 0.5, 0.45)
+        claves = list(puestos)
+        for i, ti in enumerate(claves):
+            for tj in claves[i + 1 :]:
+                dx = abs(puestos[ti][0] - puestos[tj][0]) / ancho
+                dy = abs(puestos[ti][1] - puestos[tj][1]) / alto
+                self.assertGreater((dx ** 2 + dy ** 2) ** 0.5, 0.95, f"{ti} y {tj}")
 
 
 if __name__ == "__main__":

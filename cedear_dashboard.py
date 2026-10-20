@@ -30,8 +30,7 @@ st.set_page_config(
 
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
-if "tema" not in st.session_state:
-    st.session_state["tema"] = "Claro"
+st.session_state["tema"] = "Oscuro"
 
 aplicar_estilos()
 

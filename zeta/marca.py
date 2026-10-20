@@ -37,13 +37,9 @@ def linea_identidad() -> str:
     return f"Cristian Bernaldez — Asesor registrado CNV, Matrícula N° {matricula()}"
 
 
-def _css(oscuro: bool) -> str:
-    if oscuro:
-        fondo, tarjeta, texto, mute, borde = "#121816", "#1c2622", "#e7eeea", "#b7c4bc", "#2c3b34"
-        sidebar = "#18211d"
-    else:
-        fondo, tarjeta, texto, mute, borde = "#f4f7f5", "#ffffff", "#1c2430", "#5c6b66", "#d5e0da"
-        sidebar = "#e7eeea"
+def _css() -> str:
+    fondo, tarjeta, texto, mute, borde = "#0e1412", "#16201c", "#e7eeea", "#9eb0a6", "#24312b"
+    sidebar = "#121a17"
     return f"""
     <style>
       .stApp {{
@@ -77,7 +73,7 @@ def _css(oscuro: bool) -> str:
       .zeta-aviso {{
         background: {tarjeta};
         border: 1px solid {borde};
-        border-left: 4px solid #1e3a34;
+        border-left: 4px solid #5dbe8a;
         border-radius: 12px;
         padding: 0.75rem 0.95rem;
         margin: 0.2rem 0 0.8rem;
@@ -132,8 +128,7 @@ def _css(oscuro: bool) -> str:
 
 
 def aplicar_estilos() -> None:
-    oscuro = st.session_state.get("tema") == "Oscuro"
-    st.markdown(_css(oscuro), unsafe_allow_html=True)
+    st.markdown(_css(), unsafe_allow_html=True)
 
 
 def aviso() -> None:
