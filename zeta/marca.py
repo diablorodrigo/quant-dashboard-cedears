@@ -107,6 +107,18 @@ def _css() -> str:
       .zeta-aviso strong {{
         color: {texto};
       }}
+      .zeta-datos {{
+        background: {tarjeta};
+        border: 1px solid {borde};
+        border-left: 4px solid {p["acento"]};
+        border-radius: 12px;
+        padding: 0.75rem 0.95rem;
+        margin: 0.15rem 0 0.35rem;
+        color: {texto};
+        font-size: 1.02rem;
+        font-weight: 650;
+        line-height: 1.45;
+      }}
       .zeta-sub {{
         color: {mute};
         font-size: 0.92rem;

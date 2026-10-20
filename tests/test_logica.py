@@ -37,7 +37,7 @@ from zeta.rotacion import (
     ubicar_etiquetas,
 )
 from zeta.paleta import TEMA_DEFAULT, TEMAS
-from zeta.tiempo import clave_cierre
+from zeta.tiempo import clave_cierre, linea_datos, mercado_cedears_abierto
 from zeta.universo import WATCHLIST
 
 
@@ -81,6 +81,27 @@ class Tiempo(unittest.TestCase):
         self.assertEqual(clave_cierre(lunes_manana), "2026-10-16")
         self.assertEqual(clave_cierre(lunes_noche), "2026-10-19")
         self.assertEqual(clave_cierre(domingo), "2026-10-16")
+
+    def test_el_sello_usa_la_descarga_y_no_cambia_con_la_hora_de_apertura(self):
+        zona = "America/Argentina/Buenos_Aires"
+        descarga = pd.Timestamp("2026-10-19 21:40", tz=zona)
+        consulta = pd.Timestamp("2026-10-20 09:15", tz=zona)
+        texto = linea_datos(descarga, pd.Timestamp("2026-10-17"), consulta, pd.Timestamp("2026-10-16"))
+        self.assertIn("Datos actualizados: 19/10/2026 21:40 (hora Argentina)", texto)
+        self.assertIn("Mercado de CEDEARs cerrado", texto)
+        self.assertIn("Precios de Yahoo con demora de unos 15 minutos", texto)
+        self.assertIn("Última rueda en la serie: 17/10/2026", texto)
+        self.assertIn("Precios en pesos al 16/10/2026", texto)
+        self.assertNotIn("09:15", texto)
+        self.assertNotIn("20/10/2026", texto)
+
+    def test_la_rueda_local_abre_a_las_once_y_cierra_a_las_diecisiete(self):
+        zona = "America/Argentina/Buenos_Aires"
+        self.assertTrue(mercado_cedears_abierto(pd.Timestamp("2026-10-19 11:00", tz=zona)))
+        self.assertTrue(mercado_cedears_abierto(pd.Timestamp("2026-10-19 16:59", tz=zona)))
+        self.assertFalse(mercado_cedears_abierto(pd.Timestamp("2026-10-19 10:59", tz=zona)))
+        self.assertFalse(mercado_cedears_abierto(pd.Timestamp("2026-10-19 17:00", tz=zona)))
+        self.assertFalse(mercado_cedears_abierto(pd.Timestamp("2026-10-18 12:00", tz=zona)))
 
 
 class Universo(unittest.TestCase):

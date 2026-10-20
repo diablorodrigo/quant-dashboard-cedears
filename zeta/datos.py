@@ -21,6 +21,7 @@ from zeta.senales import (
     etiqueta_por_puntaje,
     giro,
 )
+from zeta.tiempo import ahora_art
 from zeta.universo import WATCHLIST
 
 MIN_RUEDAS = 210
@@ -70,6 +71,18 @@ def _extraer(data: pd.DataFrame, tickers: list[str]) -> dict[str, pd.DataFrame]:
         if limpio is not None:
             encontrados[tickers[0]] = limpio
     return encontrados
+
+
+def _ultima_fecha(series: dict[str, pd.DataFrame]) -> str | None:
+    """Fecha de la última vela, no la hora en que se armó la página."""
+    fechas = []
+    for historia in series.values():
+        if historia is None or historia.empty:
+            continue
+        fechas.append(pd.Timestamp(historia.index.max()))
+    if not fechas:
+        return None
+    return max(fechas).strftime("%Y-%m-%d")
 
 
 def _descargar_lote(tickers: list[str], period: str) -> dict[str, pd.DataFrame]:
@@ -309,6 +322,10 @@ def cargar_panel(clave: str) -> dict:
         "sin_precio_usd": [k for k, cfg in WATCHLIST.items() if cfg["underlying"] in faltan_usd],
         "sin_precio_ars": [k for k, cfg in WATCHLIST.items() if cfg["cedear"] in faltan_ars],
         "sin_historia": sin_historia,
+        # Queda congelado con la caché: no es la hora en que el cliente abrió la página.
+        "obtenido_en": ahora_art().isoformat(),
+        "ultima_rueda": _ultima_fecha(usd),
+        "ultima_rueda_ars": _ultima_fecha(ars),
     }
 
 
@@ -354,4 +371,5 @@ def ficha_activo(ticker_subyacente: str, clave: str) -> dict:
         "dividendo": info.get("dividendYield"),
         "dias_balance": dias,
         "balance_cerca": balance_en_ventana(dias),
+        "obtenido_en": ahora_art().isoformat(),
     }

@@ -33,7 +33,7 @@ from zeta.senales import (
     SESGO_ALCISTA,
     SESGO_ALCISTA_MARCADO,
 )
-from zeta.tiempo import ahora_art, clave_cierre, texto_actualizacion
+from zeta.tiempo import ahora_art, clave_cierre, linea_datos
 from zeta.universo import WATCHLIST
 
 TRADUCCION_CONSENSO = {
@@ -131,6 +131,32 @@ def barra_lateral() -> None:
     st.sidebar.button("Cerrar sesión", on_click=_salir, width="stretch")
 
 
+def aviso_datos(panel: dict | None, extra: str = "", precios: bool = True) -> None:
+    """Sello visible. La hora es la de la descarga cacheada, no la de abrir la página."""
+    import html
+
+    if not panel or not panel.get("obtenido_en"):
+        texto = "Datos actualizados: sin una descarga vigente. Usá Actualizar datos para pedirla de nuevo."
+    elif precios:
+        texto = linea_datos(
+            pd.Timestamp(panel["obtenido_en"]),
+            pd.Timestamp(panel["ultima_rueda"]) if panel.get("ultima_rueda") else None,
+            ultima_rueda_ars=pd.Timestamp(panel["ultima_rueda_ars"]) if panel.get("ultima_rueda_ars") else None,
+        )
+        if extra:
+            texto = f"{texto} · {extra}"
+    else:
+        obtenido = ahora_art(pd.Timestamp(panel["obtenido_en"]))
+        texto = f"Datos actualizados: {obtenido:%d/%m/%Y %H:%M} (hora Argentina)"
+        if extra:
+            texto = f"{texto} · {extra}"
+    st.markdown(f'<div class="zeta-datos">{html.escape(texto)}</div>', unsafe_allow_html=True)
+
+
+def _refrescar_datos() -> None:
+    st.cache_data.clear()
+
+
 def encabezado() -> None:
     import base64
 
@@ -150,12 +176,23 @@ def encabezado() -> None:
             <div style="font-size:1.65rem;font-weight:700;line-height:1.15;letter-spacing:-0.02em;">
               Zeta Finance · Panel de análisis
             </div>
-            <p class="zeta-sub" style="margin:0.15rem 0 0;">CEDEARs · {texto_actualizacion()}</p>
+            <p class="zeta-sub" style="margin:0.15rem 0 0;">CEDEARs</p>
           </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+    try:
+        with st.spinner("Descargando cotizaciones de Yahoo Finance…"):
+            panel = cargar_panel(clave_cierre())
+    except Exception:
+        logging.exception("No se pudo leer el sello de la descarga")
+        panel = None
+    texto, boton = st.columns([5.2, 1], vertical_alignment="center")
+    with texto:
+        aviso_datos(panel)
+    with boton:
+        st.button("Actualizar datos", on_click=_refrescar_datos, width="stretch")
     aviso()
 
 
@@ -528,8 +565,15 @@ def vista_activo() -> None:
     )
     fila = df.loc[df["ticker"] == ticker].iloc[0]
     hist = panel["historicos"][ticker]
+    aviso_datos(panel, extra="Precio y gráfico de este activo")
     with st.spinner("Consultando consenso y calendario…"):
         ficha = ficha_activo(WATCHLIST[ticker]["underlying"], clave_cierre())
+    if ficha.get("obtenido_en"):
+        aviso_datos(
+            {"obtenido_en": ficha["obtenido_en"]},
+            extra="Consenso y calendario de este activo",
+            precios=False,
+        )
 
     dias = ficha.get("dias_balance")
     if ficha.get("balance_cerca"):
@@ -584,6 +628,7 @@ def vista_radar() -> None:
     if panel is None:
         return
     st.markdown("### Radar de fuerza relativa")
+    aviso_datos(panel)
     st.caption(
         "Cada punto compara el subyacente contra SPY. "
         "La fuerza es el z-score de 50 ruedas del ratio de precios y el momentum es su cambio a 10 ruedas. "
@@ -865,6 +910,7 @@ def vista_rotacion() -> None:
     if panel is None:
         return
     st.markdown("### Rotación sectorial")
+    aviso_datos(panel)
     rotacion = armar_rotacion(panel["precios_usd"])
     st.markdown(f"**{rotacion['frase']}**")
     st.caption(
@@ -948,10 +994,11 @@ def _torta(tabla: pd.DataFrame) -> go.Figure:
     return _cerrar_grafico(fig)
 
 
-def _bloque_cartera(clave: str, precios: pd.DataFrame) -> None:
+def _bloque_cartera(clave: str, precios: pd.DataFrame, panel: dict) -> None:
     perfil = PERFILES[clave]
     tabla = composicion(clave)
     st.markdown(f"**{perfil['titulo']}**")
+    aviso_datos(panel)
     st.caption(perfil["detalle_fija"])
     try:
         stats = metricas_historicas(precios, pesos_variable(clave))
@@ -970,11 +1017,10 @@ def _bloque_cartera(clave: str, precios: pd.DataFrame) -> None:
         c2.metric("Volatilidad anualizada", _pct(stats["volatilidad"]))
         c3.metric("Caída máxima", _pct(stats["caida_maxima"]))
         c4.metric("VaR 95% diario", _pct(stats["var_95"]))
-        momento = ahora_art()
         st.caption(
             f"Período {stats['inicio']:%d/%m/%Y} – {stats['fin']:%d/%m/%Y} "
-            f"({stats['sesiones']} ruedas de USD). Calculado el {momento:%d/%m/%Y %H:%M} ART "
-            "con QuantStats, sobre el bloque de renta variable, pesos constantes y rebalanceo diario implícito. "
+            f"({stats['sesiones']} ruedas de USD). QuantStats, sobre el bloque de renta variable, "
+            "pesos constantes y rebalanceo diario implícito, con los precios de la descarga de arriba. "
             f"Sharpe {stats['sharpe']:.2f} · Sortino {stats['sortino']:.2f}. "
             "Es una descripción de lo que pasó, no un rendimiento esperado ni una promesa."
         )
@@ -1005,9 +1051,9 @@ def vista_carteras() -> None:
     )
     conservadora, agresiva = st.tabs(["Perfil conservador", "Perfil de crecimiento"])
     with conservadora:
-        _bloque_cartera("conservador", panel["precios_usd"])
+        _bloque_cartera("conservador", panel["precios_usd"], panel)
     with agresiva:
-        _bloque_cartera("agresivo", panel["precios_usd"])
+        _bloque_cartera("agresivo", panel["precios_usd"], panel)
 
 
 def vista_metodologia() -> None:
@@ -1062,9 +1108,12 @@ volatilidad anualizada, caída máxima, VaR 95% diario, Sharpe y Sortino) las ca
 sobre el bloque de renta variable, con los precios de Yahoo, en la moneda del subyacente.
 No incluyen las obligaciones negociables. No son un pronóstico.
 
-Los datos salen de Yahoo Finance en una descarga agrupada, con caché hasta el próximo cierre
-de las 18:00, hora de Argentina. El consenso de analistas y el calendario se piden solo
-cuando se abre un activo.
+Los datos salen de Yahoo Finance en una descarga agrupada. El sello
+«Datos actualizados» es la hora de Argentina en que esa descarga respondió, guardada con la caché:
+abrir otra sección no la cambia. **Actualizar datos** borra la caché y vuelve a pedir los precios.
+La rueda de CEDEARs figura abierta de lunes a viernes, de 11:00 a 17:00, hora de Argentina
+(horario habitual, sin feriados). Yahoo no es tiempo real: los precios traen una demora de unos 15 minutos.
+El consenso de analistas y el calendario se piden solo cuando se abre un activo, y llevan su propio sello.
         """
     )
     st.markdown("### Contacto")
