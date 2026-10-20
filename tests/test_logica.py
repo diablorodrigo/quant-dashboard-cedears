@@ -39,6 +39,7 @@ from zeta.rotacion import (
 )
 from zeta.paleta import TEMA_DEFAULT, TEMAS
 from zeta.rrg import rango_ejes
+from zeta.marca import MATRICULA_CNV, linea_identidad
 from zeta.tiempo import clave_cierre, linea_datos, mercado_cedears_abierto
 from zeta.universo import WATCHLIST
 
@@ -132,6 +133,13 @@ class AnalisisGlobal(unittest.TestCase):
         self.assertIn("Sin PER", textos)
         self.assertIn("Sin precio objetivo", textos)
         self.assertIn("Sin margen neto", textos)
+
+
+class Identidad(unittest.TestCase):
+    def test_la_matricula_es_la_de_cristian(self):
+        self.assertEqual(MATRICULA_CNV, "2103")
+        self.assertIn("Matrícula CNV N° 2103", linea_identidad())
+        self.assertNotIn("___", linea_identidad())
 
 
 class Radar(unittest.TestCase):

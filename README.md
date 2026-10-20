@@ -20,11 +20,11 @@ Entrá con el usuario y la contraseña que hayas puesto en `secrets.toml`.
 [passwords]
 cliente = "cambiar-esta-clave"
 
-# Opcional. Si falta, el aviso muestra Matrícula N° ___.
-matricula = "___"
+# Opcional. Si falta, el aviso muestra Matrícula CNV N° 2103.
+matricula = "2103"
 ```
 
-`passwords` es una tabla de usuario → contraseña. La matrícula CNV se edita en `matricula` o, si preferís dejarla en el código, en `MATRICULA_CNV` dentro de `zeta/marca.py`.
+`passwords` es una tabla de usuario → contraseña. La matrícula que se muestra es **Matrícula CNV N° 2103**. Si hiciera falta otro número, se edita en `matricula` o en `MATRICULA_CNV` dentro de `zeta/marca.py`.
 
 ## Qué muestra
 

@@ -1,4 +1,4 @@
-"""Marca, aviso CNV y estilos. La matrícula no se inventa."""
+"""Marca, aviso CNV y estilos."""
 
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ FAVICON = RAIZ / "assets" / "favicon.png"
 SITIO = "https://www.zetafinance.com.ar"
 WHATSAPP = "https://wa.me/5493496462977"
 
-# Reemplazá los guiones por la matrícula, o definí el secreto `matricula`.
-MATRICULA_CNV = "___"
+# Número público de la matrícula. Un secreto `matricula` lo puede reemplazar.
+MATRICULA_CNV = "2103"
 
 AVISO = (
     "El contenido es informativo: son ideas de análisis, no constituyen recomendación de inversión."
@@ -28,7 +28,7 @@ def matricula() -> str:
     try:
         if "matricula" in st.secrets:
             valor = str(st.secrets["matricula"]).strip()
-            if valor:
+            if valor and valor != "___":
                 return valor
     except Exception:
         pass
@@ -36,7 +36,7 @@ def matricula() -> str:
 
 
 def linea_identidad() -> str:
-    return f"Cristian Bernaldez — Asesor registrado CNV, Matrícula N° {matricula()}"
+    return f"Cristian Bernaldez — Asesor registrado CNV, Matrícula CNV N° {matricula()}"
 
 
 def _css() -> str:
