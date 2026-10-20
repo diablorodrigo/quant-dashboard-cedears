@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from plotly.subplots import make_subplots
 
+from zeta.analisis_global import armar_analisis_global
 from zeta.carteras import PERFILES, composicion, metricas_historicas, pesos_variable
 from zeta.datos import cargar_panel, ficha_activo
 from zeta.indicadores import bollinger, ema, macd, rsi, sma
@@ -482,6 +483,128 @@ def _grafico(fila: pd.Series, hist: pd.DataFrame) -> go.Figure:
     return fig
 
 
+def _hechos_tecnicos(hist: pd.DataFrame, historia_corta: bool) -> dict:
+    """Estado de tendencia, medias y MACD para explicar la lectura, sin volver a puntuarla."""
+    vacio = {"precio_sobre_ema": None, "medias_ordenadas": None, "precio_sobre_medias": None, "macd_estado": None}
+    if historia_corta or hist is None or len(hist) < 30 or "Close" not in hist.columns:
+        return vacio
+    close = hist["Close"].astype(float)
+    precio = float(close.iloc[-1])
+    if not np.isfinite(precio) or precio <= 0:
+        return vacio
+    sma10, sma20 = sma(close, 10), sma(close, 20)
+    ema200 = ema(close, 200)
+    macd_line, macd_signal, _ = macd(close)
+    ema_hoy = ema200.iloc[-1]
+    media10, media20 = sma10.iloc[-1], sma20.iloc[-1]
+    linea, senal = float(macd_line.iloc[-1]), float(macd_signal.iloc[-1])
+    previa = float(macd_line.iloc[-2])
+    if linea > senal:
+        estado = "arriba"
+    elif linea < senal and linea > previa:
+        estado = "girando"
+    else:
+        estado = "abajo"
+    return {
+        "precio_sobre_ema": bool(pd.notna(ema_hoy) and precio > float(ema_hoy)),
+        "medias_ordenadas": bool(pd.notna(media10) and pd.notna(media20) and float(media10) > float(media20)),
+        "precio_sobre_medias": bool(
+            pd.notna(media10) and pd.notna(media20) and precio > float(media10) and precio > float(media20)
+        ),
+        "macd_estado": estado,
+    }
+
+
+def _bloque_analisis_global(fila: pd.Series, ficha: dict, hist: pd.DataFrame) -> None:
+    import html
+
+    hechos = _hechos_tecnicos(hist, bool(fila.get("historia_corta")))
+    nombre = None
+    clave = str(ficha.get("recomendacion") or "").lower()
+    if clave:
+        nombre = TRADUCCION_CONSENSO.get(clave, clave.replace("_", " "))
+    analisis = armar_analisis_global(
+        lectura=str(fila["lectura"]),
+        rsi=fila.get("rsi14"),
+        stage2=bool(fila.get("stage2")),
+        precio_sobre_ema=hechos["precio_sobre_ema"],
+        medias_ordenadas=hechos["medias_ordenadas"],
+        precio_sobre_medias=hechos["precio_sobre_medias"],
+        macd_estado=hechos["macd_estado"],
+        per=ficha.get("per"),
+        precio=fila.get("precio_usd"),
+        objetivo=ficha.get("objetivo"),
+        consenso_media=ficha.get("puntaje"),
+        consenso_nombre=nombre,
+        margen=ficha.get("margen"),
+        roe=ficha.get("roe"),
+        historia_corta=bool(fila.get("historia_corta")),
+    )
+    p = paleta()
+    if analisis["sesgo"] == "Alcista":
+        fondo = p["lectura_alcista_fuerte_bg"]
+    elif analisis["sesgo"] == "Bajista":
+        fondo = p["lectura_bajista_fuerte_bg"]
+    else:
+        fondo = p["lectura_observacion_bg"]
+    filas = []
+    for item in analisis["tecnicos"]:
+        filas.append(
+            "<div class='zeta-comp'>"
+            f"<span class='zeta-comp-titulo'>{html.escape(item['titulo'])}</span>"
+            f"<span>{html.escape(item['texto'])}</span>"
+            "</div>"
+        )
+    for item in analisis["fundamentales"]:
+        puntos = item["puntos"]
+        color = p["variacion_pos"] if puntos > 0 else p["variacion_neg"] if puntos < 0 else p["mute"]
+        signo = f"+{puntos}" if puntos > 0 else f"−{abs(puntos)}" if puntos < 0 else "0"
+        filas.append(
+            "<div class='zeta-comp'>"
+            f"<span class='zeta-comp-titulo'>{html.escape(item['titulo'])}</span>"
+            f"<span class='zeta-comp-puntos' style='color:{color}'>{signo}</span>"
+            f"<span>{html.escape(item['texto'])}</span>"
+            "</div>"
+        )
+    tecnico = analisis["tecnico"]
+    fundamental = analisis["fundamental"]
+    combinado = analisis["combinado"]
+    nota_tope = ""
+    if analisis["recortado"]:
+        bruto = analisis["fundamental_bruto"]
+        signo_bruto = f"+{bruto}" if bruto > 0 else f"−{abs(bruto)}"
+        signo_tope = f"+{fundamental}" if fundamental > 0 else f"−{abs(fundamental)}" if fundamental < 0 else "0"
+        nota_tope = (
+            f"<p class='zeta-intro'>La suma de valuación, consenso y márgenes era {signo_bruto}. "
+            f"El tope la deja en {signo_tope}.</p>"
+        )
+    st.markdown(
+        f"""
+        <div class="zeta-global">
+          <div class="zeta-global-top">
+            <div>
+              <div class="zeta-kicker">Análisis global</div>
+              <span class="zeta-sesgo" style="background:{fondo};color:{p["texto"]}">{html.escape(analisis["sesgo"])}</span>
+            </div>
+            <div class="zeta-score">
+              <div class="zeta-score-num">{'+' if combinado > 0 else '−' if combinado < 0 else ''}{abs(combinado)}</div>
+              <div class="zeta-score-label">Puntaje combinado · técnico {'+' if tecnico > 0 else '−' if tecnico < 0 else ''}{abs(tecnico)} · fundamental {'+' if fundamental > 0 else '−' if fundamental < 0 else ''}{abs(fundamental)}</div>
+            </div>
+          </div>
+          <p class="zeta-intro">{html.escape(analisis["intro"])}</p>
+          <p class="zeta-frase"><strong>{html.escape(analisis["frase"])}</strong></p>
+          <div class="zeta-grupo">Técnico</div>
+          {''.join(filas[:4])}
+          <div class="zeta-grupo">Fundamental</div>
+          {nota_tope}
+          {''.join(filas[4:])}
+          <p class="zeta-legal">{html.escape(analisis["aviso"])}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def _consenso(ficha: dict, precio: float, lectura: str) -> None:
     col_lectura, col_gauge = st.columns([1, 1.15])
     with col_lectura:
@@ -587,6 +710,7 @@ def vista_activo() -> None:
     elif dias is not None:
         st.caption(f"Próximo balance informado en {dias} días.")
 
+    _bloque_analisis_global(fila, ficha, hist)
     _consenso(ficha, float(fila["precio_usd"]), fila["lectura"])
 
     a, b, c, d = st.columns(4)
@@ -1079,6 +1203,13 @@ Después entra el volumen relativo a 20 ruedas. Arriba de 120% y con vela verde,
 
 Una caída intradía mayor a dos veces el ATR, o un balance dentro de los 5 días (esto último solo
 en la ficha del activo), deja una lectura alcista **en observación (riesgo)**.
+
+**Análisis global.** En la ficha de cada activo, la lectura técnica cerrada aporta +3 si es alcista,
+0 si quedó neutral o en observación, y −3 si es bajista. El fundamental suma la valuación (resta 1 si el PER
+pasa de 30), el consenso (el precio objetivo suma 1 si está más de 15% arriba y resta 1 si está abajo; si no
+hay objetivo, se mira el promedio de las firmas) y el margen neto (suma 1 por encima de 15% y resta 1 si es
+negativo). Esa suma fundamental se corta en ±2. El puntaje combinado es alcista desde +3 y bajista desde −3.
+En el medio el sesgo global es neutral. Son ideas de análisis, no una recomendación de inversión.
 
 **Stage 2** significa precio sobre la EMA 200 y esa media subiendo contra 20 ruedas atrás.
 Si el subyacente tiene menos de 210 ruedas (hoy, SpaceX), entra igual al monitor como **Historia corta**,

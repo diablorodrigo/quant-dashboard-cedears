@@ -5,6 +5,7 @@ from datetime import date
 
 import pandas as pd
 
+from zeta.analisis_global import armar_analisis_global, puntaje_tecnico
 from zeta.carteras import composicion, metricas_historicas, pesos_variable
 from zeta.senales import (
     ALCISTA_CON_VOLUMEN,
@@ -70,6 +71,66 @@ class Senales(unittest.TestCase):
         self.assertTrue(balance_en_ventana(3))
         self.assertEqual(dias_hasta_balance({}, date(2026, 10, 19)), None)
         self.assertEqual(dias_hasta_balance(pd.DataFrame(), date(2026, 10, 19)), None)
+
+
+class AnalisisGlobal(unittest.TestCase):
+    def test_el_tecnico_aporta_tres_cero_o_menos_tres(self):
+        self.assertEqual(puntaje_tecnico(SESGO_ALCISTA), 3)
+        self.assertEqual(puntaje_tecnico(SESGO_ALCISTA_MARCADO), 3)
+        self.assertEqual(puntaje_tecnico(ALCISTA_CON_VOLUMEN), 3)
+        self.assertEqual(puntaje_tecnico(ALCISTA_SIN_VOLUMEN), 3)
+        self.assertEqual(puntaje_tecnico(SESGO_BAJISTA), -3)
+        self.assertEqual(puntaje_tecnico(SESGO_BAJISTA_MARCADO), -3)
+        self.assertEqual(puntaje_tecnico(NEUTRAL), 0)
+        self.assertEqual(puntaje_tecnico(EN_OBSERVACION_RIESGO), 0)
+        self.assertEqual(puntaje_tecnico(DISTRIBUCION), 0)
+
+    def test_alcista_cuando_el_tecnico_no_queda_anulado(self):
+        analisis = armar_analisis_global(
+            lectura=SESGO_ALCISTA,
+            rsi=48,
+            stage2=True,
+            precio_sobre_ema=True,
+            medias_ordenadas=True,
+            precio_sobre_medias=True,
+            macd_estado="arriba",
+            per=22,
+            precio=100,
+            objetivo=130,
+            margen=0.24,
+        )
+        self.assertEqual(analisis["tecnico"], 3)
+        self.assertEqual(analisis["fundamental"], 2)
+        self.assertEqual(analisis["combinado"], 5)
+        self.assertEqual(analisis["sesgo"], "Alcista")
+        self.assertIn("Tendencia", [item["titulo"] for item in analisis["tecnicos"]])
+        self.assertIn("no constituyen recomendación de inversión", analisis["aviso"])
+
+    def test_un_fundamental_negativo_deja_el_global_en_neutral(self):
+        analisis = armar_analisis_global(
+            lectura=SESGO_ALCISTA_MARCADO,
+            per=40,
+            precio=100,
+            objetivo=90,
+            margen=-0.02,
+        )
+        self.assertEqual(analisis["fundamental_bruto"], -3)
+        self.assertTrue(analisis["recortado"])
+        self.assertEqual(analisis["fundamental"], -2)
+        self.assertEqual(analisis["combinado"], 1)
+        self.assertEqual(analisis["sesgo"], "Neutral")
+
+    def test_bajista_y_componentes_sin_datos(self):
+        analisis = armar_analisis_global(lectura=SESGO_BAJISTA, rsi=74, precio_sobre_ema=False, macd_estado="abajo")
+        self.assertEqual(analisis["combinado"], -3)
+        self.assertEqual(analisis["sesgo"], "Bajista")
+        self.assertEqual(analisis["fundamental"], 0)
+        textos = " ".join(item["texto"] for item in analisis["tecnicos"] + analisis["fundamentales"])
+        self.assertIn("debajo de la EMA de 200", textos)
+        self.assertIn("extremo alto", textos)
+        self.assertIn("Sin PER", textos)
+        self.assertIn("Sin precio objetivo", textos)
+        self.assertIn("Sin margen neto", textos)
 
 
 class Tiempo(unittest.TestCase):

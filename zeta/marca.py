@@ -119,6 +119,82 @@ def _css() -> str:
         font-weight: 650;
         line-height: 1.45;
       }}
+      .zeta-global {{
+        background: {tarjeta};
+        border: 1px solid {borde};
+        border-radius: 14px;
+        padding: 0.95rem 1.05rem 0.8rem;
+        margin: 0.35rem 0 0.85rem;
+        color: {texto};
+      }}
+      .zeta-global-top {{
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }}
+      .zeta-kicker {{
+        color: {mute};
+        font-family: {p["fuente_mono"]};
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+      }}
+      .zeta-sesgo {{
+        display: inline-block;
+        border-radius: 999px;
+        padding: 0.28rem 0.85rem;
+        font-weight: 700;
+        font-size: 1.15rem;
+        line-height: 1.3;
+      }}
+      .zeta-score {{
+        text-align: right;
+      }}
+      .zeta-score-num {{
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        color: {texto};
+      }}
+      .zeta-score-label {{
+        color: {mute};
+        font-size: 0.82rem;
+        margin-top: 0.15rem;
+      }}
+      .zeta-frase, .zeta-intro {{
+        margin: 0.7rem 0 0.2rem;
+        line-height: 1.45;
+      }}
+      .zeta-grupo {{
+        margin: 0.85rem 0 0.15rem;
+        font-weight: 700;
+      }}
+      .zeta-comp {{
+        display: flex;
+        gap: 0.75rem;
+        align-items: baseline;
+        border-top: 1px solid {borde};
+        padding: 0.48rem 0;
+        line-height: 1.4;
+      }}
+      .zeta-comp-titulo {{
+        min-width: 7.2rem;
+        font-weight: 700;
+      }}
+      .zeta-comp-puntos {{
+        min-width: 1.8rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }}
+      .zeta-legal {{
+        color: {mute};
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 0.75rem 0 0.1rem;
+      }}
       .zeta-sub {{
         color: {mute};
         font-size: 0.92rem;
