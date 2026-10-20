@@ -14,7 +14,8 @@ from plotly.subplots import make_subplots
 from zeta.carteras import PERFILES, composicion, metricas_historicas, pesos_variable
 from zeta.datos import cargar_panel, ficha_activo
 from zeta.indicadores import bollinger, ema, macd, rsi, sma
-from zeta.marca import LOGO, LOGO_HEADER, SITIO, WHATSAPP, aviso, linea_identidad
+from zeta.marca import LOGO, LOGO_HEADER, SITIO, WHATSAPP, aviso, linea_identidad, selector_tema
+from zeta.paleta import paleta, tema_activo
 from zeta.rotacion import (
     INDICES,
     SECTORES,
@@ -35,21 +36,6 @@ from zeta.senales import (
 from zeta.tiempo import ahora_art, clave_cierre, texto_actualizacion
 from zeta.universo import WATCHLIST
 
-COLORES_CUADRANTE = {
-    "Líderes": "#5dbe8a",
-    "Mejorando": "#6aaed4",
-    "Debilitándose": "#d4a15a",
-    "Rezagados": "#e07a72",
-}
-COLORES_TORTA = ["#5dbe8a", "#6aaed4", "#d4a15a", "#8fbfa8", "#e07a72", "#c4b48a", "#9eb0c4", "#7d9a8a"]
-COLOR_COLA = {
-    "Líder": "#5dbe8a",
-    "Mejorando": "#6aaed4",
-    "Debilitándose": "#d4a15a",
-    "Rezagado": "#e07a72",
-}
-FONDO_GRAFICO = "#0c1210"
-MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
 TRADUCCION_CONSENSO = {
     "strong_buy": "Muy positivo",
     "buy": "Positivo",
@@ -60,29 +46,44 @@ TRADUCCION_CONSENSO = {
 }
 
 
-def _plantilla() -> str:
-    return "plotly_dark"
+def _colores_cuadrante() -> dict[str, str]:
+    p = paleta()
+    return {
+        "Líderes": p["lider"],
+        "Mejorando": p["mejorando"],
+        "Debilitándose": p["debilitando"],
+        "Rezagados": p["rezagado"],
+    }
+
+
+def _color_cola(nombre: str) -> str:
+    p = paleta()
+    return {
+        "Líder": p["lider"],
+        "Mejorando": p["mejorando"],
+        "Debilitándose": p["debilitando"],
+        "Rezagado": p["rezagado"],
+    }[nombre]
 
 
 def _cerrar_grafico(fig: go.Figure) -> go.Figure:
+    p = paleta()
     fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor=FONDO_GRAFICO,
-        plot_bgcolor=FONDO_GRAFICO,
-        font=dict(color="#e7eeea"),
+        template=p["plantilla"],
+        paper_bgcolor=p["fondo_grafico"],
+        plot_bgcolor=p["fondo_grafico"],
+        font=dict(color=p["texto_grafico"], family=p["fuente"]),
+        legend=dict(font=dict(color=p["texto_grafico"])),
     )
-    fig.update_xaxes(
-        gridcolor="rgba(158,176,166,0.08)",
+    eje = dict(
+        gridcolor=p["grilla"],
         zeroline=False,
-        tickfont=dict(color="#8ea39a"),
-        title_font=dict(color="#c5d4cc"),
+        linecolor=p["borde"],
+        tickfont=dict(color=p["mute_grafico"], family=p["fuente"]),
+        title_font=dict(color=p["titulo_eje"], family=p["fuente"]),
     )
-    fig.update_yaxes(
-        gridcolor="rgba(158,176,166,0.08)",
-        zeroline=False,
-        tickfont=dict(color="#8ea39a"),
-        title_font=dict(color="#c5d4cc"),
-    )
+    fig.update_xaxes(**eje)
+    fig.update_yaxes(**eje)
     return fig
 
 
@@ -120,6 +121,7 @@ def barra_lateral() -> None:
         st.sidebar.image(str(LOGO), width=78)
     st.sidebar.markdown("**Zeta Finance**")
     st.sidebar.caption(linea_identidad())
+    selector_tema()
     st.sidebar.link_button("zetafinance.com.ar", SITIO, width="stretch")
     st.sidebar.link_button("WhatsApp", WHATSAPP, width="stretch")
 
@@ -165,17 +167,18 @@ def pie() -> None:
 def _estilo_lectura(valor: str) -> str:
     if not isinstance(valor, str):
         return ""
+    p = paleta()
     texto = valor.lower()
     if "observación" in texto or "distribución" in texto or "sin volumen" in texto:
-        return "background-color: rgba(176,122,48,0.22); font-weight: 650;"
+        return p["lectura_observacion"]
     if "marcado" in texto and "alcista" in texto or "con volumen" in texto:
-        return "background-color: rgba(31,122,77,0.30); font-weight: 700;"
+        return p["lectura_alcista_fuerte"]
     if "alcista" in texto:
-        return "background-color: rgba(31,122,77,0.16); font-weight: 650;"
+        return p["lectura_alcista"]
     if "marcado" in texto and "bajista" in texto:
-        return "background-color: rgba(163,59,50,0.28); font-weight: 700;"
+        return p["lectura_bajista_fuerte"]
     if "bajista" in texto:
-        return "background-color: rgba(163,59,50,0.14); font-weight: 650;"
+        return p["lectura_bajista"]
     return ""
 
 
@@ -186,10 +189,11 @@ def _estilo_variacion(valor: str) -> str:
         numero = float(valor.replace("%", "").replace("+", ""))
     except ValueError:
         return ""
+    p = paleta()
     if numero > 0:
-        return "color: #1f7a4d; font-weight: 650;"
+        return f"color: {p['variacion_pos']}; font-weight: 650;"
     if numero < 0:
-        return "color: #a33b32; font-weight: 650;"
+        return f"color: {p['variacion_neg']}; font-weight: 650;"
     return ""
 
 
@@ -200,11 +204,42 @@ def _estilo_volumen(valor: str) -> str:
         numero = float(valor.replace("%", ""))
     except ValueError:
         return ""
+    p = paleta()
     if numero > 120:
-        return "color: #1d6a8a; font-weight: 700;"
+        return f"color: {p['volumen_alto']}; font-weight: 700;"
     if numero < 80:
-        return "color: #7b8782;"
+        return f"color: {p['volumen_bajo']};"
     return ""
+
+
+def mostrar_tabla(vista: pd.DataFrame, estilos: dict | None = None, alto: int = 420) -> None:
+    """Tabla HTML pintada con la paleta activa. No depende del tema nativo de Streamlit."""
+    import html
+
+    p = paleta()
+    estilos = estilos or {}
+    encabezados = "".join(f"<th>{html.escape(str(columna))}</th>" for columna in vista.columns)
+    cuerpo = []
+    for fila in vista.itertuples(index=False):
+        celdas = []
+        for columna, valor in zip(vista.columns, fila):
+            texto = "" if valor is None or (isinstance(valor, float) and not np.isfinite(valor)) else str(valor)
+            if texto == "nan":
+                texto = ""
+            extra = estilos[columna](texto) if columna in estilos else ""
+            celdas.append(f'<td style="{extra}">{html.escape(texto)}</td>')
+        cuerpo.append("<tr>" + "".join(celdas) + "</tr>")
+    st.markdown(
+        f"""
+        <div class="zeta-tabla-marco" style="max-height:{alto}px;">
+          <table class="zeta-tabla">
+            <thead><tr>{encabezados}</tr></thead>
+            <tbody>{"".join(cuerpo)}</tbody>
+          </table>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def _tabla(df: pd.DataFrame) -> pd.DataFrame:
@@ -240,12 +275,16 @@ def _tabla(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _mostrar_tabla(vista: pd.DataFrame) -> None:
-    estilizada = (
-        vista.style.map(_estilo_lectura, subset=["Lectura"])
-        .map(_estilo_variacion, subset=["Var. 1D", "Gap vs CCL"])
-        .map(_estilo_volumen, subset=["Vol. relativo"])
+    mostrar_tabla(
+        vista,
+        estilos={
+            "Lectura": _estilo_lectura,
+            "Var. 1D": _estilo_variacion,
+            "Gap vs CCL": _estilo_variacion,
+            "Vol. relativo": _estilo_volumen,
+        },
+        alto=520,
     )
-    st.dataframe(estilizada, width="stretch", hide_index=True, height=520)
 
 
 def vista_resumen() -> None:
@@ -280,7 +319,7 @@ def vista_resumen() -> None:
             mini = bloque[["ticker", campo]].copy()
             mini.columns = ["Ticker", titulo]
             mini[titulo] = bloque[campo].map(fmt).values
-            st.dataframe(mini, hide_index=True, width="stretch", height=230)
+            mostrar_tabla(mini, estilos={titulo: _estilo_variacion} if campo == "variacion" else None, alto=230)
 
     cambios = df[df["giro"].notna()]
     st.markdown("### Cambios de lectura")
@@ -369,38 +408,41 @@ def _grafico(fila: pd.Series, hist: pd.DataFrame) -> go.Figure:
             low=vista["Low"],
             close=vista["Close"],
             name="Precio",
-            increasing_line_color="#5dbe8a",
-            decreasing_line_color="#e07a72",
+            increasing_line_color=paleta()["vela_alta"],
+            decreasing_line_color=paleta()["vela_baja"],
         ),
         row=1,
         col=1,
     )
+    p = paleta()
     for serie, nombre, color in (
-        (sma10, "SMA 10", "#6aaed4"),
-        (sma20, "SMA 20", "#d4a15a"),
-        (sma50, "SMA 50", "#c4b48a"),
-        (ema200, "EMA 200", "#8fbfa8"),
+        (sma10, "SMA 10", p["sma10"]),
+        (sma20, "SMA 20", p["sma20"]),
+        (sma50, "SMA 50", p["sma50"]),
+        (ema200, "EMA 200", p["ema200"]),
     ):
         fig.add_trace(go.Scatter(x=idx, y=serie.loc[idx], name=nombre, line=dict(width=1.4, color=color)), row=1, col=1)
-    fig.add_trace(go.Scatter(x=idx, y=boll_up.loc[idx], name="Bollinger sup.", line=dict(width=1, dash="dot", color="#8ea39a")), row=1, col=1)
-    fig.add_trace(go.Scatter(x=idx, y=boll_low.loc[idx], name="Bollinger inf.", line=dict(width=1, dash="dot", color="#8ea39a")), row=1, col=1)
+    fig.add_trace(go.Scatter(x=idx, y=boll_up.loc[idx], name="Bollinger sup.", line=dict(width=1, dash="dot", color=p["bollinger"])), row=1, col=1)
+    fig.add_trace(go.Scatter(x=idx, y=boll_low.loc[idx], name="Bollinger inf.", line=dict(width=1, dash="dot", color=p["bollinger"])), row=1, col=1)
 
-    colores = ["#5dbe8a" if c >= o else "#e07a72" for o, c in zip(vista["Open"], vista["Close"])]
+    colores = [p["vela_alta"] if c >= o else p["vela_baja"] for o, c in zip(vista["Open"], vista["Close"])]
     fig.add_trace(go.Bar(x=idx, y=vista["Volume"], name="Volumen", marker_color=colores), row=2, col=1)
-    fig.add_trace(go.Scatter(x=idx, y=vol_media.loc[idx], name="Volumen 20d", line=dict(width=1.2, color="#d4a15a")), row=2, col=1)
-    fig.add_trace(go.Scatter(x=idx, y=rsi14.loc[idx], name="RSI", line=dict(width=1.4, color="#9eb0c4")), row=3, col=1)
-    fig.add_hline(y=70, line_dash="dot", line_color="#e07a72", row=3, col=1)
-    fig.add_hline(y=30, line_dash="dot", line_color="#5dbe8a", row=3, col=1)
-    fig.add_trace(go.Scatter(x=idx, y=macd_line.loc[idx], name="MACD", line=dict(width=1.4, color="#6aaed4")), row=4, col=1)
-    fig.add_trace(go.Scatter(x=idx, y=macd_signal.loc[idx], name="Señal", line=dict(width=1.4, color="#d4a15a")), row=4, col=1)
+    fig.add_trace(go.Scatter(x=idx, y=vol_media.loc[idx], name="Volumen 20d", line=dict(width=1.2, color=p["sma20"])), row=2, col=1)
+    fig.add_trace(go.Scatter(x=idx, y=rsi14.loc[idx], name="RSI", line=dict(width=1.4, color=p["rsi"])), row=3, col=1)
+    fig.add_hline(y=70, line_dash="dot", line_color=p["vela_baja"], row=3, col=1)
+    fig.add_hline(y=30, line_dash="dot", line_color=p["vela_alta"], row=3, col=1)
+    fig.add_trace(go.Scatter(x=idx, y=macd_line.loc[idx], name="MACD", line=dict(width=1.4, color=p["macd"])), row=4, col=1)
+    fig.add_trace(go.Scatter(x=idx, y=macd_signal.loc[idx], name="Señal", line=dict(width=1.4, color=p["macd_senal"])), row=4, col=1)
     fig.update_layout(
         height=820,
-        template=_plantilla(),
         xaxis_rangeslider_visible=False,
         margin=dict(t=40, b=16, l=8, r=8),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
     )
-    return _cerrar_grafico(fig)
+    fig = _cerrar_grafico(fig)
+    for nota in fig.layout.annotations:
+        nota.font.color = p["texto_grafico"]
+    return fig
 
 
 def _consenso(ficha: dict, precio: float, lectura: str) -> None:
@@ -457,20 +499,20 @@ def _consenso(ficha: dict, precio: float, lectura: str) -> None:
                         "tickvals": [1, 2, 3, 4, 5],
                         "ticktext": ["Muy cauto", "Cauto", "Neutro", "Positivo", "Muy positivo"],
                     },
-                    "bar": {"color": "#5dbe8a", "thickness": 0.28},
+                    "bar": {"color": paleta()["barra_gauge"], "thickness": 0.28},
                     "steps": [
-                        {"range": [1, 1.8], "color": "#4a2c2a"},
-                        {"range": [1.8, 2.6], "color": "#4a3a24"},
-                        {"range": [2.6, 3.4], "color": "#3a3a24"},
-                        {"range": [3.4, 4.2], "color": "#1c3a30"},
-                        {"range": [4.2, 5], "color": "#145238"},
+                        {"range": [1, 1.8], "color": paleta()["pasos_gauge"][0]},
+                        {"range": [1.8, 2.6], "color": paleta()["pasos_gauge"][1]},
+                        {"range": [2.6, 3.4], "color": paleta()["pasos_gauge"][2]},
+                        {"range": [3.4, 4.2], "color": paleta()["pasos_gauge"][3]},
+                        {"range": [4.2, 5], "color": paleta()["pasos_gauge"][4]},
                     ],
                 },
             )
         )
-        fig.update_layout(height=280, margin=dict(t=50, b=8, l=24, r=24), template=_plantilla())
+        fig.update_layout(height=280, margin=dict(t=50, b=8, l=24, r=24))
         _cerrar_grafico(fig)
-        st.plotly_chart(fig, width="stretch", theme=None, key="gauge_consenso")
+        st.plotly_chart(fig, width="stretch", theme=None, key=f"gauge_consenso_{tema_activo()}")
 
 
 def vista_activo() -> None:
@@ -509,7 +551,7 @@ def vista_activo() -> None:
     c.metric("Stage 2", "Alineada" if fila["stage2"] else "No alineada")
     d.metric("Gap vs CCL", "N/D" if fila["gap_ccl"] is None or pd.isna(fila["gap_ccl"]) else f"{fila['gap_ccl']:+.2f}%")
 
-    st.plotly_chart(_grafico(fila, hist), width="stretch", theme=None, key=f"grafico_{ticker}")
+    st.plotly_chart(_grafico(fila, hist), width="stretch", theme=None, key=f"grafico_{ticker}_{tema_activo()}")
 
     st.markdown("### Datos del negocio")
     st.caption("Cifras del subyacente en Yahoo Finance. Describen la empresa: no arman una recomendación.")
@@ -558,6 +600,7 @@ def vista_radar() -> None:
         for _, bloque in df.groupby("Cuadrante"):
             distancia = bloque["Fuerza_X"].abs() + bloque["Momentum_Y"].abs()
             etiquetar.update(bloque.loc[distancia.nlargest(5).index, "Ticker"])
+        p = paleta()
         plot = df.copy()
         plot["Etiqueta"] = plot["Ticker"].where(plot["Ticker"].isin(etiquetar), "")
         fig = px.scatter(
@@ -567,7 +610,7 @@ def vista_radar() -> None:
             text="Etiqueta",
             color="Cuadrante",
             hover_name="Ticker",
-            color_discrete_map=COLORES_CUADRANTE,
+            color_discrete_map=_colores_cuadrante(),
             labels={"Fuerza_X": "Fuerza relativa", "Momentum_Y": "Momentum"},
         )
         pad_x = max(0.35, float(df["Fuerza_X"].abs().max()) * 0.18)
@@ -575,19 +618,19 @@ def vista_radar() -> None:
         x0, x1 = float(df["Fuerza_X"].min()) - pad_x, float(df["Fuerza_X"].max()) + pad_x
         y0, y1 = float(df["Momentum_Y"].min()) - pad_y, float(df["Momentum_Y"].max()) + pad_y
         for xa, xb, ya, yb, color in (
-            (0, x1, 0, y1, "rgba(93,190,138,0.10)"),
-            (x0, 0, 0, y1, "rgba(106,174,212,0.10)"),
-            (0, x1, y0, 0, "rgba(212,161,90,0.10)"),
-            (x0, 0, y0, 0, "rgba(224,122,114,0.10)"),
+            (0, x1, 0, y1, p["tint_lider"]),
+            (x0, 0, 0, y1, p["tint_mejorando"]),
+            (0, x1, y0, 0, p["tint_debilitando"]),
+            (x0, 0, y0, 0, p["tint_rezagado"]),
         ):
             fig.add_shape(type="rect", x0=xa, x1=xb, y0=ya, y1=yb, fillcolor=color, line_width=0, layer="below")
-        fig.add_hline(y=0, line_dash="dash", line_width=1, line_color="rgba(197,212,204,0.40)")
-        fig.add_vline(x=0, line_dash="dash", line_width=1, line_color="rgba(197,212,204,0.40)")
+        fig.add_hline(y=0, line_dash="dash", line_width=1, line_color=p["cruce"])
+        fig.add_vline(x=0, line_dash="dash", line_width=1, line_color=p["cruce"])
         for x, y, texto, ancla_x, ancla_y, color in (
-            (x1, y1, "LÍDERES", "right", "top", "#5dbe8a"),
-            (x0, y1, "MEJORANDO", "left", "top", "#6aaed4"),
-            (x1, y0, "DEBILITÁNDOSE", "right", "bottom", "#d4a15a"),
-            (x0, y0, "REZAGADOS", "left", "bottom", "#e07a72"),
+            (x1, y1, "LÍDERES", "right", "top", p["esquina_lider"]),
+            (x0, y1, "MEJORANDO", "left", "top", p["esquina_mejorando"]),
+            (x1, y0, "DEBILITÁNDOSE", "right", "bottom", p["esquina_debilitando"]),
+            (x0, y0, "REZAGADOS", "left", "bottom", p["esquina_rezagado"]),
         ):
             fig.add_annotation(
                 x=x,
@@ -596,22 +639,21 @@ def vista_radar() -> None:
                 showarrow=False,
                 xanchor=ancla_x,
                 yanchor=ancla_y,
-                font=dict(color=color, size=11, family=MONO),
+                font=dict(color=color, size=11, family=p["fuente_mono"]),
             )
         fig.update_traces(
             textposition="top center",
-            textfont=dict(color="#f2f7f4", family=MONO, size=11),
-            marker=dict(size=11, line=dict(width=1.4, color="#f4f7f5")),
+            textfont=dict(color=p["etiqueta"], family=p["fuente_mono"], size=11),
+            marker=dict(size=11, line=dict(width=1.4, color=p["aro"])),
         )
         fig.update_layout(
             height=640,
-            template=_plantilla(),
             margin=dict(t=24, b=16, l=8, r=8),
             legend_title_text="",
             xaxis=dict(range=[x0, x1], showgrid=False),
             yaxis=dict(range=[y0, y1], showgrid=False),
         )
-        st.plotly_chart(_cerrar_grafico(fig), width="stretch", theme=None, key="radar_rrg")
+        st.plotly_chart(_cerrar_grafico(fig), width="stretch", theme=None, key=f"radar_rrg_{tema_activo()}")
 
     with lista:
         st.markdown("**Activos con fuerza relativa**")
@@ -623,13 +665,11 @@ def vista_radar() -> None:
             for fila in destacados.itertuples(index=False):
                 st.markdown(f"**{fila.Ticker}** · {fila.Cuadrante}")
 
-    cuadrante = st.selectbox("Ver cuadrante", ["Todos", *COLORES_CUADRANTE.keys()])
+    cuadrante = st.selectbox("Ver cuadrante", ["Todos", *_colores_cuadrante().keys()])
     tabla = df if cuadrante == "Todos" else df[df["Cuadrante"] == cuadrante]
-    st.dataframe(
+    mostrar_tabla(
         tabla.sort_values(["Cuadrante", "Momentum_Y"], ascending=[True, False]),
-        width="stretch",
-        hide_index=True,
-        height=360,
+        alto=360,
     )
 
 
@@ -670,7 +710,7 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
                 "fuerza": fuerza,
                 "momentum": momentum,
                 "cuadrante": nombre_cuad,
-                "color": COLOR_COLA[nombre_cuad],
+                "color": _color_cola(nombre_cuad),
             }
         )
 
@@ -681,15 +721,16 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
     x0, x1 = -alcance_x * 1.38, alcance_x * 1.38
     y0, y1 = -alcance_y * 1.42, alcance_y * 1.42
 
+    p = paleta()
     for xa, xb, ya, yb, color in (
-        (0, x1, 0, y1, "rgba(93,190,138,0.13)"),
-        (x0, 0, 0, y1, "rgba(106,174,212,0.12)"),
-        (0, x1, y0, 0, "rgba(212,161,90,0.12)"),
-        (x0, 0, y0, 0, "rgba(224,122,114,0.12)"),
+        (0, x1, 0, y1, p["tint_lider"]),
+        (x0, 0, 0, y1, p["tint_mejorando"]),
+        (0, x1, y0, 0, p["tint_debilitando"]),
+        (x0, 0, y0, 0, p["tint_rezagado"]),
     ):
         fig.add_shape(type="rect", x0=xa, x1=xb, y0=ya, y1=yb, fillcolor=color, line_width=0, layer="below")
-    fig.add_hline(y=0, line_dash="dash", line_width=1, line_color="rgba(197,212,204,0.38)")
-    fig.add_vline(x=0, line_dash="dash", line_width=1, line_color="rgba(197,212,204,0.38)")
+    fig.add_hline(y=0, line_dash="dash", line_width=1, line_color=p["cruce"])
+    fig.add_vline(x=0, line_dash="dash", line_width=1, line_color=p["cruce"])
 
     cabezas = []
     for serie in series:
@@ -722,7 +763,7 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
                 x=[hx],
                 y=[hy],
                 mode="markers",
-                marker=dict(size=12, color=color, line=dict(width=2, color="#f4f7f5")),
+                marker=dict(size=12, color=color, line=dict(width=2, color=p["aro"])),
                 name=serie["ticker"],
                 hovertemplate=(
                     f"{serie['ticker']} · {serie['nombre']}<br>"
@@ -742,14 +783,14 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
             showarrow=False,
             xanchor="center",
             yanchor="middle",
-            font=dict(family=MONO, size=13, color="#f4f7f5"),
+            font=dict(family=p["fuente_mono"], size=13, color=p["etiqueta"]),
         )
 
     for x, y, texto, ancla_x, ancla_y, color in (
-        (0.985, 0.975, "LÍDERES", "right", "top", "rgba(93,190,138,0.85)"),
-        (0.015, 0.975, "MEJORANDO", "left", "top", "rgba(106,174,212,0.85)"),
-        (0.985, 0.03, "DEBILITÁNDOSE", "right", "bottom", "rgba(212,161,90,0.85)"),
-        (0.015, 0.03, "REZAGADOS", "left", "bottom", "rgba(224,122,114,0.85)"),
+        (0.985, 0.975, "LÍDERES", "right", "top", p["esquina_lider"]),
+        (0.015, 0.975, "MEJORANDO", "left", "top", p["esquina_mejorando"]),
+        (0.985, 0.03, "DEBILITÁNDOSE", "right", "bottom", p["esquina_debilitando"]),
+        (0.015, 0.03, "REZAGADOS", "left", "bottom", p["esquina_rezagado"]),
     ):
         fig.add_annotation(
             xref="paper",
@@ -760,28 +801,22 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
             showarrow=False,
             xanchor=ancla_x,
             yanchor=ancla_y,
-            font=dict(family=MONO, size=11, color=color),
+            font=dict(family=p["fuente_mono"], size=11, color=color),
         )
-    fig.add_annotation(
-        xref="paper",
-        yref="paper",
-        x=0,
-        y=-0.14,
-        text="◂ MÁS DÉBIL QUE SPY",
-        showarrow=False,
-        xanchor="left",
-        font=dict(family=MONO, size=11, color="#8ea39a"),
-    )
-    fig.add_annotation(
-        xref="paper",
-        yref="paper",
-        x=1,
-        y=-0.14,
-        text="MÁS FUERTE QUE SPY ▸",
-        showarrow=False,
-        xanchor="right",
-        font=dict(family=MONO, size=11, color="#8ea39a"),
-    )
+    for x, ancla, texto in (
+        (0, "left", "◂ MÁS DÉBIL QUE SPY"),
+        (1, "right", "MÁS FUERTE QUE SPY ▸"),
+    ):
+        fig.add_annotation(
+            xref="paper",
+            yref="paper",
+            x=x,
+            y=-0.14,
+            text=texto,
+            showarrow=False,
+            xanchor=ancla,
+            font=dict(family=p["fuente_mono"], size=11, color=p["mute_grafico"]),
+        )
     fig.add_annotation(
         xref="paper",
         yref="paper",
@@ -790,7 +825,7 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
         text="ACELERA ▸",
         showarrow=False,
         xanchor="right",
-        font=dict(family=MONO, size=11, color="#8ea39a"),
+        font=dict(family=p["fuente_mono"], size=11, color=p["mute_grafico"]),
     )
     fig.add_annotation(
         xref="paper",
@@ -800,29 +835,29 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
         text="◂ FRENA",
         showarrow=False,
         xanchor="right",
-        font=dict(family=MONO, size=11, color="#8ea39a"),
+        font=dict(family=p["fuente_mono"], size=11, color=p["mute_grafico"]),
     )
+    _cerrar_grafico(fig)
     fig.update_layout(
         height=720,
-        template=_plantilla(),
         margin=dict(t=36, b=72, l=78, r=28),
         showlegend=False,
         xaxis=dict(
-            title=dict(text="FUERZA RELATIVA vs SPY", font=dict(family=MONO, size=12, color="#c5d4cc")),
+            title=dict(text="FUERZA RELATIVA vs SPY", font=dict(family=p["fuente_mono"], size=12, color=p["titulo_eje"])),
             range=[x0, x1],
             showgrid=False,
             zeroline=False,
-            tickfont=dict(family=MONO, size=11, color="#8ea39a"),
+            tickfont=dict(family=p["fuente_mono"], size=11, color=p["mute_grafico"]),
         ),
         yaxis=dict(
-            title=dict(text="MOMENTUM DE LA FUERZA RELATIVA", font=dict(family=MONO, size=12, color="#c5d4cc")),
+            title=dict(text="MOMENTUM DE LA FUERZA RELATIVA", font=dict(family=p["fuente_mono"], size=12, color=p["titulo_eje"])),
             range=[y0, y1],
             showgrid=False,
             zeroline=False,
-            tickfont=dict(family=MONO, size=11, color="#8ea39a"),
+            tickfont=dict(family=p["fuente_mono"], size=11, color=p["mute_grafico"]),
         ),
     )
-    return _cerrar_grafico(fig)
+    return fig
 
 
 def vista_rotacion() -> None:
@@ -841,7 +876,7 @@ def vista_rotacion() -> None:
     if colas.empty:
         st.error("No alcanzó la historia para armar el gráfico de rotación. Recargá en unos minutos.")
     else:
-        st.plotly_chart(_grafico_rotacion(colas), width="stretch", theme=None, key="rotacion_rrg")
+        st.plotly_chart(_grafico_rotacion(colas), width="stretch", theme=None, key=f"rotacion_rrg_{tema_activo()}")
         st.caption(
             "El centro es cero: a la derecha hay más fuerza contra SPY que el promedio de seis meses, y arriba esa fuerza se acelera. "
             "La cola son las últimas cinco semanas. Verde líderes, azul mejorando, ámbar debilitándose, rojo rezagados."
@@ -859,10 +894,10 @@ def vista_rotacion() -> None:
         sectores = ranking[ranking["Grupo"] == "Sector"]
         indices = ranking[ranking["Grupo"] == "Índice"]
         st.markdown("Sectores")
-        st.dataframe(_tabla_ranking(sectores), width="stretch", hide_index=True)
+        mostrar_tabla(_tabla_ranking(sectores), alto=460)
         if not indices.empty:
             st.markdown("Índices")
-            st.dataframe(_tabla_ranking(indices), width="stretch", hide_index=True)
+            mostrar_tabla(_tabla_ranking(indices), alto=280)
 
     if rotacion["sin_datos"]:
         st.caption("Sin serie suficiente en Yahoo: " + ", ".join(rotacion["sin_datos"]) + ".")
@@ -881,7 +916,7 @@ def vista_rotacion() -> None:
             }
         )
     st.markdown("**CEDEARs del panel en cada sector**")
-    st.dataframe(pd.DataFrame(mapa), width="stretch", hide_index=True)
+    mostrar_tabla(pd.DataFrame(mapa), alto=480)
     indices_cedear = []
     for ticker, nombre in INDICES.items():
         cfg = WATCHLIST.get(ticker)
@@ -901,12 +936,11 @@ def _torta(tabla: pd.DataFrame) -> go.Figure:
         values="Porcentaje",
         names="Activo",
         hole=0.46,
-        color_discrete_sequence=COLORES_TORTA,
+        color_discrete_sequence=list(paleta()["torta"]),
     )
-    fig.update_traces(textinfo="percent", textposition="inside", sort=False)
+    fig.update_traces(textinfo="percent", textposition="inside", sort=False, textfont_color=paleta()["texto_sobre_serie"])
     fig.update_layout(
         showlegend=True,
-        template=_plantilla(),
         margin=dict(t=8, b=8, l=8, r=8),
         height=420,
         legend=dict(font=dict(size=12)),
@@ -949,11 +983,11 @@ def _bloque_cartera(clave: str, precios: pd.DataFrame) -> None:
 
     grafico, detalle = st.columns([1.15, 1])
     with grafico:
-        st.plotly_chart(_torta(tabla), width="stretch", theme=None, key=f"torta_{clave}")
+        st.plotly_chart(_torta(tabla), width="stretch", theme=None, key=f"torta_{clave}_{tema_activo()}")
     with detalle:
         vista = tabla.copy()
         vista["Porcentaje"] = vista["Porcentaje"].map(lambda v: f"{v:.1f}%")
-        st.dataframe(vista, hide_index=True, width="stretch")
+        mostrar_tabla(vista, alto=480)
         variable = tabla[tabla["Bloque"] == "Renta variable"]["Porcentaje"].sum()
         fija = tabla[tabla["Bloque"] == "Renta fija"]["Porcentaje"].sum()
         st.caption(f"Renta fija {fija:.1f}% · renta variable {variable:.1f}%.")

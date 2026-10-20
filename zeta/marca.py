@@ -6,6 +6,8 @@ from pathlib import Path
 
 import streamlit as st
 
+from zeta.paleta import TEMAS, paleta
+
 RAIZ = Path(__file__).resolve().parent.parent
 LOGO = RAIZ / "assets" / "logo-zeta-finance.png"
 LOGO_HEADER = RAIZ / "assets" / "logo-header.png"
@@ -38,19 +40,36 @@ def linea_identidad() -> str:
 
 
 def _css() -> str:
-    fondo, tarjeta, texto, mute, borde = "#0e1412", "#16201c", "#e7eeea", "#9eb0a6", "#24312b"
-    sidebar = "#121a17"
+    p = paleta()
+    fondo, tarjeta, texto, mute, borde = p["fondo"], p["tarjeta"], p["texto"], p["mute"], p["borde"]
     return f"""
     <style>
-      .stApp {{
-        background: {fondo};
-        color: {texto};
+      .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"],
+      [data-testid="stBottom"], [data-testid="stBottomBlockContainer"] {{
+        background: {fondo} !important;
+        color: {texto} !important;
       }}
-      [data-testid="stSidebar"] {{
-        background: {sidebar};
+      [data-testid="stSidebar"], [data-testid="stSidebarContent"],
+      [data-testid="stSidebarHeader"] {{
+        background: {p["sidebar"]} !important;
+        color: {texto} !important;
       }}
-      [data-testid="stHeader"] {{
-        background: transparent;
+      [data-testid="stSidebar"] p,
+      [data-testid="stSidebar"] span,
+      [data-testid="stSidebar"] label,
+      [data-testid="stMarkdownContainer"] p,
+      [data-testid="stMarkdownContainer"] li,
+      [data-testid="stMarkdownContainer"] h1,
+      [data-testid="stMarkdownContainer"] h2,
+      [data-testid="stMarkdownContainer"] h3,
+      [data-testid="stWidgetLabel"] p,
+      [data-testid="stRadio"] label,
+      label[data-testid="stWidgetLabel"] {{
+        color: {texto} !important;
+      }}
+      [data-testid="stCaptionContainer"] p,
+      [data-testid="stCaptionContainer"] span {{
+        color: {mute} !important;
       }}
       .block-container {{
         padding-top: 1.2rem;
@@ -59,21 +78,25 @@ def _css() -> str:
       }}
       h1, h2, h3 {{
         letter-spacing: -0.02em;
-        color: {texto};
+        color: {texto} !important;
       }}
       div[data-testid="stMetric"] {{
-        background: {tarjeta};
+        background: {tarjeta} !important;
         border: 1px solid {borde};
         border-radius: 14px;
         padding: 0.75rem 0.9rem 0.55rem;
       }}
+      div[data-testid="stMetricLabel"] p,
+      div[data-testid="stMetricValue"] {{
+        color: {texto} !important;
+      }}
       div[data-testid="stMetricLabel"] p {{
-        color: {mute};
+        color: {mute} !important;
       }}
       .zeta-aviso {{
         background: {tarjeta};
         border: 1px solid {borde};
-        border-left: 4px solid #5dbe8a;
+        border-left: 4px solid {p["aviso_borde"]};
         border-radius: 12px;
         padding: 0.75rem 0.95rem;
         margin: 0.2rem 0 0.8rem;
@@ -95,18 +118,99 @@ def _css() -> str:
         right: 16px;
         bottom: 16px;
         z-index: 1000;
-        background: #25D366;
-        color: #10301c !important;
+        background: {p["whatsapp"]};
+        color: {p["whatsapp_texto"]} !important;
         padding: 0.65rem 0.95rem;
         border-radius: 999px;
         text-decoration: none;
         font-weight: 700;
-        box-shadow: 0 8px 20px rgba(18, 24, 22, 0.18);
+        box-shadow: 0 8px 20px {p["sombra"]};
       }}
-      div[data-testid="stDataFrame"] {{
+      .zeta-tabla-marco {{
+        max-height: 520px;
+        overflow: auto;
         border: 1px solid {borde};
         border-radius: 12px;
-        overflow: hidden;
+        background: {p["tabla_fondo"]};
+      }}
+      table.zeta-tabla {{
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        background: {p["tabla_fondo"]};
+        color: {p["tabla_texto"]};
+      }}
+      table.zeta-tabla th {{
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: {p["tabla_encabezado"]};
+        color: {p["tabla_texto"]};
+        text-align: left;
+        padding: 0.45rem 0.6rem;
+        border-bottom: 1px solid {p["tabla_linea"]};
+        font-weight: 650;
+      }}
+      table.zeta-tabla td {{
+        padding: 0.38rem 0.6rem;
+        border-bottom: 1px solid {p["tabla_linea"]};
+        background: {p["tabla_fondo"]};
+        color: {p["tabla_texto"]};
+        vertical-align: top;
+      }}
+      hr, [data-testid="stDivider"] {{
+        border-color: {borde} !important;
+      }}
+      [data-testid="stExpander"] details {{
+        background: {tarjeta} !important;
+        border: 1px solid {borde} !important;
+        color: {texto} !important;
+      }}
+      [data-testid="stAlert"] {{
+        background: {tarjeta} !important;
+        color: {texto} !important;
+        border: 1px solid {borde} !important;
+      }}
+      [data-baseweb="tab-list"] {{
+        background: transparent !important;
+      }}
+      [data-baseweb="tab"] {{
+        color: {mute} !important;
+      }}
+      [data-baseweb="tab"][aria-selected="true"] {{
+        color: {texto} !important;
+      }}
+      [data-baseweb="tab-highlight"] {{
+        background-color: {p["acento"]} !important;
+      }}
+      div[data-baseweb="select"] > div,
+      [data-testid="stTextInput"] input,
+      [data-testid="stNumberInput"] input {{
+        background: {tarjeta} !important;
+        color: {texto} !important;
+        border-color: {borde} !important;
+      }}
+      div[data-baseweb="popover"] ul,
+      div[data-baseweb="menu"] {{
+        background: {tarjeta} !important;
+      }}
+      div[data-baseweb="popover"] li,
+      div[data-baseweb="menu"] li {{
+        color: {texto} !important;
+      }}
+      button[data-testid="stBaseButton-secondary"],
+      button[data-testid="stBaseButton-tertiary"] {{
+        background: {tarjeta} !important;
+        color: {texto} !important;
+        border: 1px solid {borde} !important;
+      }}
+      button[data-testid="stBaseButton-primary"] {{
+        background: {p["acento"]} !important;
+        color: {p["acento_texto"]} !important;
+        border: 1px solid {p["acento"]} !important;
+      }}
+      a {{
+        color: {p["acento"]};
       }}
       @media (max-width: 800px) {{
         .block-container {{
@@ -125,6 +229,11 @@ def _css() -> str:
     </style>
     <a class="zeta-wa" href="{WHATSAPP}" target="_blank" rel="noopener">WhatsApp</a>
     """
+
+
+def selector_tema() -> None:
+    """El cliente cambia Oscuro / Claro. La clave queda en la sesión."""
+    st.radio("Tema", list(TEMAS), horizontal=True, key="tema")
 
 
 def aplicar_estilos() -> None:
@@ -166,6 +275,7 @@ def vista_login() -> None:
             unsafe_allow_html=True,
         )
         aviso()
+        selector_tema()
         with st.form("login"):
             usuario = st.text_input("Usuario")
             contrasena = st.text_input("Contraseña", type="password")

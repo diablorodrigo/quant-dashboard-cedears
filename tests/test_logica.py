@@ -36,6 +36,7 @@ from zeta.rotacion import (
     simbolos_extra,
     ubicar_etiquetas,
 )
+from zeta.paleta import TEMA_DEFAULT, TEMAS
 from zeta.tiempo import clave_cierre
 from zeta.universo import WATCHLIST
 
@@ -120,6 +121,18 @@ class Carteras(unittest.TestCase):
         self.assertLess(stats["inicio"], stats["fin"])
         self.assertTrue(pd.notna(stats["rendimiento"]))
         self.assertLess(stats["caida_maxima"], 0.01)
+
+
+class Paleta(unittest.TestCase):
+    def test_los_dos_temas_cubren_lo_mismo(self):
+        self.assertEqual(TEMA_DEFAULT, "Oscuro")
+        self.assertEqual(set(TEMAS), {"Oscuro", "Claro"})
+        self.assertEqual(set(TEMAS["Oscuro"]), set(TEMAS["Claro"]))
+        for nombre, colores in TEMAS.items():
+            for clave, valor in colores.items():
+                self.assertTrue(valor, f"{nombre}.{clave}")
+            self.assertIn(colores["texto"], colores["lectura_alcista"])
+            self.assertNotEqual(colores["fondo_grafico"], TEMAS["Claro" if nombre == "Oscuro" else "Oscuro"]["fondo_grafico"])
 
 
 class Rotacion(unittest.TestCase):

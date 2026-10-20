@@ -28,4 +28,4 @@ matricula = "___"
 
 ## Qué muestra
 
-Resumen, monitor, análisis por activo, radar de fuerza relativa, rotación sectorial (ETF de sector e índices contra SPY), carteras modelo y metodología. La hora y el corte de las 18:00 usan `America/Argentina/Buenos_Aires`.
+Resumen, monitor, análisis por activo, radar de fuerza relativa, rotación sectorial (ETF de sector e índices contra SPY), carteras modelo y metodología. En la barra se elige el tema Oscuro (el de entrada) o Claro; queda en la sesión. La hora y el corte de las 18:00 usan `America/Argentina/Buenos_Aires`.

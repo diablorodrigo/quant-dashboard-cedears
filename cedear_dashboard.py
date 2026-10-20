@@ -8,6 +8,7 @@ Punto de entrada. En Streamlit Community Cloud hay que ejecutarlo con
 import streamlit as st
 
 from zeta.marca import FAVICON, aplicar_estilos, vista_login
+from zeta.paleta import TEMA_DEFAULT
 from zeta.vistas import (
     barra_lateral,
     encabezado,
@@ -30,7 +31,8 @@ st.set_page_config(
 
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
-st.session_state["tema"] = "Oscuro"
+if "tema" not in st.session_state:
+    st.session_state["tema"] = TEMA_DEFAULT
 
 aplicar_estilos()
 
