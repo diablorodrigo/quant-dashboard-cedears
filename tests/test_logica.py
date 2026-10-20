@@ -38,6 +38,7 @@ from zeta.rotacion import (
     ubicar_etiquetas,
 )
 from zeta.paleta import TEMA_DEFAULT, TEMAS
+from zeta.rrg import rango_ejes
 from zeta.tiempo import clave_cierre, linea_datos, mercado_cedears_abierto
 from zeta.universo import WATCHLIST
 
@@ -131,6 +132,25 @@ class AnalisisGlobal(unittest.TestCase):
         self.assertIn("Sin PER", textos)
         self.assertIn("Sin precio objetivo", textos)
         self.assertIn("Sin margen neto", textos)
+
+
+class Radar(unittest.TestCase):
+    def test_el_rango_abre_el_centro_y_no_sigue_al_extremo(self):
+        valores = pd.Series([0.1] * 40 + [-0.2] * 40 + [0.4] * 18 + [9.5, -8.0])
+        lo, hi = rango_ejes(valores)
+        self.assertLess(lo, 0)
+        self.assertGreater(hi, 0)
+        self.assertLess(hi, 3)
+        self.assertGreater(lo, -3)
+        self.assertLess(hi - lo, float(valores.max() - valores.min()))
+
+    def test_un_grupo_chico_sigue_incluyendo_el_cero(self):
+        lo, hi = rango_ejes(pd.Series([1.2, 1.4, 1.6]))
+        self.assertLessEqual(lo, 0)
+        self.assertGreaterEqual(hi, 1.6)
+
+    def test_serie_vacia(self):
+        self.assertEqual(rango_ejes(pd.Series(dtype=float)), (-1.0, 1.0))
 
 
 class Tiempo(unittest.TestCase):

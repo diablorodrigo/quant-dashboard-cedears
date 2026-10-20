@@ -26,7 +26,7 @@ from zeta.rotacion import (
     texto_periodo,
     ubicar_etiquetas,
 )
-from zeta.rrg import calcular_rrg
+from zeta.rrg import calcular_rrg, rango_ejes
 from zeta.senales import (
     ALCISTA_CON_VOLUMEN,
     ALCISTA_SIN_VOLUMEN,
@@ -747,6 +747,92 @@ def _rrg_de_panel(panel: dict) -> pd.DataFrame:
     return calcular_rrg(pd.DataFrame(columnas).sort_index())
 
 
+def _grafico_radar(df: pd.DataFrame) -> go.Figure:
+    """Dispersión ancha. La escala inicial usa los percentiles 2–98 para abrir el centro."""
+    p = paleta()
+    x0, x1 = rango_ejes(df["Fuerza_X"])
+    y0, y1 = rango_ejes(df["Momentum_Y"])
+    dentro = df[
+        df["Fuerza_X"].between(x0, x1) & df["Momentum_Y"].between(y0, y1)
+    ]
+    if dentro.empty:
+        dentro = df
+    etiquetar: list[tuple[str, float, float]] = []
+    for _, bloque in dentro.groupby("Cuadrante"):
+        distancia = bloque["Fuerza_X"].abs() + bloque["Momentum_Y"].abs()
+        for fila in bloque.loc[distancia.nlargest(2).index].itertuples(index=False):
+            etiquetar.append((str(fila.Ticker), float(fila.Fuerza_X), float(fila.Momentum_Y)))
+
+    fig = px.scatter(
+        df,
+        x="Fuerza_X",
+        y="Momentum_Y",
+        color="Cuadrante",
+        hover_name="Ticker",
+        custom_data=["Cuadrante"],
+        color_discrete_map=_colores_cuadrante(),
+        category_orders={"Cuadrante": list(_colores_cuadrante().keys())},
+        labels={"Fuerza_X": "Fuerza relativa", "Momentum_Y": "Momentum"},
+    )
+    for xa, xb, ya, yb, color in (
+        (0, x1, 0, y1, p["tint_lider"]),
+        (x0, 0, 0, y1, p["tint_mejorando"]),
+        (0, x1, y0, 0, p["tint_debilitando"]),
+        (x0, 0, y0, 0, p["tint_rezagado"]),
+    ):
+        fig.add_shape(type="rect", x0=xa, x1=xb, y0=ya, y1=yb, fillcolor=color, line_width=0, layer="below")
+    fig.add_hline(y=0, line_dash="dash", line_width=1, line_color=p["cruce"])
+    fig.add_vline(x=0, line_dash="dash", line_width=1, line_color=p["cruce"])
+    inset_x = (x1 - x0) * 0.015
+    inset_y = (y1 - y0) * 0.02
+    for x, y, texto, ancla_x, ancla_y, color in (
+        (x1 - inset_x, y1 - inset_y, "LÍDERES", "right", "top", p["esquina_lider"]),
+        (x0 + inset_x, y1 - inset_y, "MEJORANDO", "left", "top", p["esquina_mejorando"]),
+        (x1 - inset_x, y0 + inset_y, "DEBILITÁNDOSE", "right", "bottom", p["esquina_debilitando"]),
+        (x0 + inset_x, y0 + inset_y, "REZAGADOS", "left", "bottom", p["esquina_rezagado"]),
+    ):
+        fig.add_annotation(
+            x=x,
+            y=y,
+            text=texto,
+            showarrow=False,
+            xanchor=ancla_x,
+            yanchor=ancla_y,
+            font=dict(color=color, size=12, family=p["fuente_mono"]),
+        )
+    for ticker, (lx, ly) in ubicar_etiquetas(etiquetar, x0, x1, y0, y1).items():
+        fig.add_annotation(
+            x=lx,
+            y=ly,
+            text=ticker,
+            showarrow=False,
+            font=dict(color=p["etiqueta"], size=12, family=p["fuente_mono"]),
+        )
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{hovertext}</b><br>%{customdata[0]}"
+            "<br>Fuerza %{x:.2f}<br>Momentum %{y:.2f}<extra></extra>"
+        ),
+        marker=dict(size=8, opacity=0.92, line=dict(width=1.5, color=p["aro"])),
+        cliponaxis=True,
+    )
+    fig.update_layout(
+        height=840,
+        margin=dict(t=48, b=56, l=64, r=28),
+        legend_title_text="",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
+        hovermode="closest",
+        dragmode="pan",
+        xaxis=dict(range=[x0, x1], fixedrange=False, showgrid=False),
+        yaxis=dict(range=[y0, y1], fixedrange=False, showgrid=False),
+    )
+    fig = _cerrar_grafico(fig)
+    fig.update_layout(dragmode="pan")
+    fig.update_xaxes(range=[x0, x1], fixedrange=False)
+    fig.update_yaxes(range=[y0, y1], fixedrange=False)
+    return fig
+
+
 def vista_radar() -> None:
     panel = panel_o_aviso()
     if panel is None:
@@ -756,83 +842,34 @@ def vista_radar() -> None:
     st.caption(
         "Cada punto compara el subyacente contra SPY. "
         "La fuerza es el z-score de 50 ruedas del ratio de precios y el momentum es su cambio a 10 ruedas. "
-        "Los nombres se leen en la tabla: en el gráfico solo se etiquetan los más alejados del centro, para que no se pisen."
+        "La escala inicial usa los percentiles 2 y 98, con margen, para que el centro no quede apretado. "
+        "Arrastrá para mover y usá la rueda del mouse para acercar o alejar. "
+        "Solo se etiquetan las dos siglas más alejadas de cada cuadrante; el resto aparece al pasar el mouse."
     )
     df = _rrg_de_panel(panel)
     if df.empty:
         st.error("No alcanzó la historia para armar el radar. Recargá en unos minutos.")
         return
 
-    grafico, lista = st.columns([1.6, 1])
-    with grafico:
-        etiquetar = set()
-        for _, bloque in df.groupby("Cuadrante"):
-            distancia = bloque["Fuerza_X"].abs() + bloque["Momentum_Y"].abs()
-            etiquetar.update(bloque.loc[distancia.nlargest(5).index, "Ticker"])
-        p = paleta()
-        plot = df.copy()
-        plot["Etiqueta"] = plot["Ticker"].where(plot["Ticker"].isin(etiquetar), "")
-        fig = px.scatter(
-            plot,
-            x="Fuerza_X",
-            y="Momentum_Y",
-            text="Etiqueta",
-            color="Cuadrante",
-            hover_name="Ticker",
-            color_discrete_map=_colores_cuadrante(),
-            labels={"Fuerza_X": "Fuerza relativa", "Momentum_Y": "Momentum"},
-        )
-        pad_x = max(0.35, float(df["Fuerza_X"].abs().max()) * 0.18)
-        pad_y = max(0.35, float(df["Momentum_Y"].abs().max()) * 0.18)
-        x0, x1 = float(df["Fuerza_X"].min()) - pad_x, float(df["Fuerza_X"].max()) + pad_x
-        y0, y1 = float(df["Momentum_Y"].min()) - pad_y, float(df["Momentum_Y"].max()) + pad_y
-        for xa, xb, ya, yb, color in (
-            (0, x1, 0, y1, p["tint_lider"]),
-            (x0, 0, 0, y1, p["tint_mejorando"]),
-            (0, x1, y0, 0, p["tint_debilitando"]),
-            (x0, 0, y0, 0, p["tint_rezagado"]),
-        ):
-            fig.add_shape(type="rect", x0=xa, x1=xb, y0=ya, y1=yb, fillcolor=color, line_width=0, layer="below")
-        fig.add_hline(y=0, line_dash="dash", line_width=1, line_color=p["cruce"])
-        fig.add_vline(x=0, line_dash="dash", line_width=1, line_color=p["cruce"])
-        for x, y, texto, ancla_x, ancla_y, color in (
-            (x1, y1, "LÍDERES", "right", "top", p["esquina_lider"]),
-            (x0, y1, "MEJORANDO", "left", "top", p["esquina_mejorando"]),
-            (x1, y0, "DEBILITÁNDOSE", "right", "bottom", p["esquina_debilitando"]),
-            (x0, y0, "REZAGADOS", "left", "bottom", p["esquina_rezagado"]),
-        ):
-            fig.add_annotation(
-                x=x,
-                y=y,
-                text=texto,
-                showarrow=False,
-                xanchor=ancla_x,
-                yanchor=ancla_y,
-                font=dict(color=color, size=11, family=p["fuente_mono"]),
-            )
-        fig.update_traces(
-            textposition="top center",
-            textfont=dict(color=p["etiqueta"], family=p["fuente_mono"], size=11),
-            marker=dict(size=11, line=dict(width=1.4, color=p["aro"])),
-        )
-        fig.update_layout(
-            height=640,
-            margin=dict(t=24, b=16, l=8, r=8),
-            legend_title_text="",
-            xaxis=dict(range=[x0, x1], showgrid=False),
-            yaxis=dict(range=[y0, y1], showgrid=False),
-        )
-        st.plotly_chart(_cerrar_grafico(fig), width="stretch", theme=None, key=f"radar_rrg_{tema_activo()}")
-
-    with lista:
-        st.markdown("**Activos con fuerza relativa**")
-        st.caption("Líderes y mejorando, ordenados por momentum.")
-        destacados = df[df["Cuadrante"].isin(["Líderes", "Mejorando"])].sort_values("Momentum_Y", ascending=False).head(10)
-        if destacados.empty:
-            st.info("Ningún activo en líderes o mejorando.")
-        else:
-            for fila in destacados.itertuples(index=False):
-                st.markdown(f"**{fila.Ticker}** · {fila.Cuadrante}")
+    st.plotly_chart(
+        _grafico_radar(df),
+        width="stretch",
+        theme=None,
+        key=f"radar_rrg_{tema_activo()}",
+        config={
+            "scrollZoom": True,
+            "displayModeBar": True,
+            "modeBarButtonsToRemove": ["lasso2d", "select2d"],
+        },
+    )
+    st.markdown("**Activos con fuerza relativa**")
+    st.caption("Líderes y mejorando, ordenados por momentum.")
+    destacados = df[df["Cuadrante"].isin(["Líderes", "Mejorando"])].sort_values("Momentum_Y", ascending=False).head(10)
+    if destacados.empty:
+        st.info("Ningún activo en líderes o mejorando.")
+    else:
+        nombres = " · ".join(f"**{fila.Ticker}** ({fila.Cuadrante})" for fila in destacados.itertuples(index=False))
+        st.markdown(nombres)
 
     cuadrante = st.selectbox("Ver cuadrante", ["Todos", *_colores_cuadrante().keys()])
     tabla = df if cuadrante == "Todos" else df[df["Cuadrante"] == cuadrante]
@@ -1224,7 +1261,8 @@ Japón (`EWJ`) ratio 14 y el sector de comunicaciones (`XLC`) ratio 19.
 
 **Radar.** Fuerza relativa contra SPY, normalizada a 50 ruedas, y su cambio a 10 ruedas.
 Arriba a la derecha: líderes. Arriba a la izquierda: mejorando. Abajo a la derecha: debilitándose.
-Abajo a la izquierda: rezagados.
+Abajo a la izquierda: rezagados. La escala de entrada deja afuera el 2% de cada punta para que
+el centro se lea; la rueda acerca y aleja, y arrastrar mueve el gráfico.
 
 **Rotación sectorial.** Otra cuenta, sobre los ETF de sector (XLK, XLF, XLE, XLV, XLY, XLP, XLI, XLB, XLU, XLRE, XLC)
 y los índices QQQ, IWM, EEM, EWZ y ARGT, siempre contra SPY. La fuerza es el ratio de precios suavizado,

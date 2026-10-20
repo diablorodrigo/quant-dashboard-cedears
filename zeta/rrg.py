@@ -10,6 +10,30 @@ from __future__ import annotations
 import pandas as pd
 
 
+def rango_ejes(valores: pd.Series, bajo: float = 0.02, alto: float = 0.98, margen: float = 0.14) -> tuple[float, float]:
+    """Escala inicial que abre el centro: percentiles 2–98, con margen, y el cero adentro.
+
+    Un extremo suelto no estira el gráfico. Sigue estando en los datos: con el zoom
+    se lo vuelve a ver.
+    """
+    serie = pd.to_numeric(valores, errors="coerce").dropna().astype(float)
+    if serie.empty:
+        return -1.0, 1.0
+    if len(serie) < 8:
+        lo, hi = float(serie.min()), float(serie.max())
+    else:
+        lo, hi = float(serie.quantile(bajo)), float(serie.quantile(alto))
+    if hi < lo:
+        lo, hi = hi, lo
+    if not (lo < hi):
+        lo, hi = lo - 0.35, hi + 0.35
+    elif hi - lo < 0.4:
+        centro = (lo + hi) / 2
+        lo, hi = centro - 0.35, centro + 0.35
+    pad = max((hi - lo) * margen, 0.12)
+    return min(lo - pad, 0.0), max(hi + pad, 0.0)
+
+
 def calcular_rrg(cierres: pd.DataFrame) -> pd.DataFrame:
     if cierres is None or cierres.empty or "SPY" not in cierres.columns:
         return pd.DataFrame()
