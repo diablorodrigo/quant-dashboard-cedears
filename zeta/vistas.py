@@ -384,7 +384,7 @@ def vista_monitor() -> None:
     st.markdown("### Monitor")
     st.caption(
         "Gap vs CCL: positivo quiere decir que el CEDEAR implica un dólar más caro que el CCL de Apple. "
-        "El calendario de balances se consulta recién en Análisis por activo."
+        "El calendario completo de balances está en la página Balances."
     )
     f1, f2, f3 = st.columns([1.4, 1, 1])
     with f1:
@@ -394,6 +394,9 @@ def vista_monitor() -> None:
     with f3:
         lectura = st.selectbox("Lectura", ["Todas", *sorted(df["lectura"].unique())])
     solo_stage = st.checkbox("Solo Stage 2")
+    from zeta.extras import filtros_rapidos
+
+    df = filtros_rapidos(panel, df)
 
     if busqueda.strip():
         texto = busqueda.strip().lower()
