@@ -1,0 +1,95 @@
+{
+ "version": "v3",
+ "advertencia": "La muestra de ETFs es muy chica: 48 compras y solo 20 confirmaciones en dos años. Con tan pocas operaciones, la diferencia puede ser azar. La confirmación 10/50 en ETFs no supera a comprar un día al azar (+2,25% neto contra +3,36% bruto del día al azar). La compra 10/20 quedó en +4,87% neto, con 48 operaciones y acierto 75%. Los costos son un supuesto de ida y vuelta y no incluyen impuestos.",
+ "estudios": [
+  {
+   "id": "etfs",
+   "titulo": "ETFs (27), stop 7% y salida a las 20 ruedas",
+   "nota": "Cifras de la v3 al cierre del 27/10/2026. Por operación, en porcentaje. El día al azar en ETFs, 20 ruedas y bruto, fue +3,36% con acierto 65,5%. Comprar y mantener 2 años: +88% promedio (mediana +84%).",
+   "filas": [
+    {
+     "universo": "ETF (27)",
+     "entrada": "Compra 10/20",
+     "costo": "bruto",
+     "n": 48,
+     "media": 5.47,
+     "media_06": 4.87,
+     "media_12": 4.27,
+     "mediana": 3.88,
+     "acierto": 75.0,
+     "peor": -24.0,
+     "dd_max": -34,
+     "media_a1": 6.54,
+     "media_a2": 4.03
+    },
+    {
+     "universo": "ETF (27)",
+     "entrada": "Confirmación 10/50",
+     "costo": "bruto",
+     "n": 20,
+     "media": 2.85,
+     "media_06": 2.25,
+     "media_12": 1.65,
+     "mediana": 1.67,
+     "acierto": 60.0,
+     "peor": -7.6,
+     "dd_max": -15,
+     "media_a1": 0.23,
+     "media_a2": 3.34
+    },
+    {
+     "universo": "40",
+     "entrada": "Compra 10/20",
+     "costo": "0,6%",
+     "n": 133,
+     "media": 1.79,
+     "mediana": -1.45,
+     "acierto": 45.9,
+     "peor": -9.4,
+     "dd_max": -75,
+     "media_a1": 1.54,
+     "media_a2": 2.04
+    },
+    {
+     "universo": "40",
+     "entrada": "Confirmación 10/50",
+     "costo": "0,6%",
+     "n": 60,
+     "media": 4.19,
+     "mediana": 1.27,
+     "acierto": 53.3,
+     "peor": -8.5,
+     "dd_max": -33,
+     "media_a1": 1.59,
+     "media_a2": 6.47
+    },
+    {
+     "universo": "100",
+     "entrada": "Compra 10/20",
+     "costo": "0,6%",
+     "n": 318,
+     "media": 2.41,
+     "mediana": -3.75,
+     "acierto": 43.1,
+     "peor": -38.5,
+     "dd_max": -133,
+     "media_a1": 2.31,
+     "media_a2": 2.48
+    },
+    {
+     "universo": "100",
+     "entrada": "Confirmación 10/50",
+     "costo": "0,6%",
+     "n": 164,
+     "media": 2.43,
+     "mediana": -6.02,
+     "acierto": 41.5,
+     "peor": -37.7,
+     "dd_max": -142,
+     "media_a1": 2.57,
+     "media_a2": 2.34
+    }
+   ]
+  }
+ ]
+}
