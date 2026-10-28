@@ -1004,7 +1004,11 @@ def _tabla_ranking(bloque: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(filas)
 
 
-def _grafico_rotacion(colas: pd.DataFrame, benchmark: str = "SPY") -> go.Figure:
+def _grafico_rotacion(
+    colas: pd.DataFrame,
+    benchmark: str = "SPY",
+    marcas: list[dict] | None = None,
+) -> go.Figure:
     """RRG oscuro, centrado en 0. El 0 es la fuerza 100 y el momentum 100."""
     fig = go.Figure()
     series = []
@@ -1086,6 +1090,35 @@ def _grafico_rotacion(colas: pd.DataFrame, benchmark: str = "SPY") -> go.Figure:
                 showlegend=False,
             )
         )
+
+    if marcas:
+        puestos = {ticker: (x, y) for ticker, x, y in cabezas}
+        for marca in marcas:
+            puesto = puestos.get(marca.get("ticker"))
+            if puesto is None:
+                continue
+            compra = "compra" in str(marca.get("senal") or "").lower()
+            coincide = marca.get("relacion") == "coincide"
+            fig.add_trace(
+                go.Scatter(
+                    x=[puesto[0]],
+                    y=[puesto[1]],
+                    mode="markers",
+                    name=str(marca.get("senal") or "Señal"),
+                    marker=dict(
+                        size=22,
+                        symbol="diamond" if compra else "x",
+                        color="#1e7f4f" if compra else "#a32020",
+                        line=dict(width=3, color="#1e7f4f" if coincide else "#a32020"),
+                    ),
+                    hovertemplate=(
+                        f"{marca.get('ticker')} · {marca.get('senal')}"
+                        f"<br>{marca.get('cuadrante') or 'Sin cuadrante'}"
+                        f"<br>{'Coincide' if coincide else 'Se contradice'}<extra></extra>"
+                    ),
+                    showlegend=False,
+                )
+            )
 
     for ticker, (lx, ly) in ubicar_etiquetas(cabezas, x0, x1, y0, y1).items():
         fig.add_annotation(

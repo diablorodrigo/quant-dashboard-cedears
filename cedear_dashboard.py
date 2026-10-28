@@ -11,6 +11,7 @@ from zeta.marca import FAVICON, aplicar_estilos, vista_login
 from zeta.acciones_ar import vista_acciones_argentinas
 from zeta.extras import vista_argentina, vista_balances, vista_mercado
 from zeta.paleta import TEMA_DEFAULT
+from zeta.vista_senales import vista_senales
 from zeta.vistas import (
     barra_lateral,
     encabezado,
@@ -49,6 +50,7 @@ st.navigation(
         st.Page(vista_resumen, title="Resumen", icon=":material/dashboard:", default=True),
         st.Page(vista_mercado, title="Termómetro y mapa", icon=":material/thermostat:"),
         st.Page(vista_monitor, title="Monitor", icon=":material/monitoring:"),
+        st.Page(vista_senales, title="Señales", icon=":material/candlestick_chart:"),
         st.Page(vista_argentina, title="Argentina", icon=":material/flag:"),
         st.Page(vista_acciones_argentinas, title="Acciones argentinas", icon=":material/monitoring:"),
         st.Page(vista_balances, title="Balances", icon=":material/event:"),
