@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from zeta.estrategia import (
+    AVISO_CONTEXTO,
     AVISO_ESTRATEGIA,
     LIMITACIONES,
     MOTIVOS_SALIDA,
@@ -283,13 +284,15 @@ def vista_senales() -> None:
 
     if not tickers:
         st.info(universo.get("nota") or "Este universo no tiene tickers en el archivo. Cuando se carguen, la pestaña los toma solos.")
-        _bloque_backtest(backtest, elegido)
+        with st.expander("Detalle del backtest y limitaciones", expanded=False):
+            _bloque_backtest(backtest, elegido)
         _pie()
         return
 
     if not historias:
         st.error("No llegó historia de Yahoo para armar las señales. No se inventan precios.")
-        _bloque_backtest(backtest, elegido)
+        with st.expander("Detalle del backtest y limitaciones", expanded=False):
+            _bloque_backtest(backtest, elegido)
         _pie()
         return
 
@@ -318,6 +321,8 @@ def vista_senales() -> None:
         "La señal se calculó con el cierre: antes de las 17 no entra la vela de hoy. "
         f"Parámetros en data/estrategia_senales.json."
     )
+
+    st.warning(AVISO_CONTEXTO)
 
     st.markdown("#### Posiciones teóricas")
     st.caption(
@@ -387,8 +392,8 @@ def vista_senales() -> None:
         if rotacion.get("frase"):
             st.caption(rotacion["frase"])
 
-    _bloque_backtest(backtest, elegido)
-    with st.expander("Parámetros y limitaciones"):
+    with st.expander("Detalle del backtest y limitaciones", expanded=False):
+        _bloque_backtest(backtest, elegido)
         st.markdown(
             f"Medias {cfg['fast']}/{cfg['mid']}/{cfg['slow']}. "
             f"Volumen ≥ {str(cfg['vol_mult']).replace('.', ',')}× el promedio de {cfg['vol_avg']} ruedas. "
@@ -427,17 +432,17 @@ def _bloque_backtest(backtest: dict, universo_id: str) -> None:
             "Finanzas AR las está recalculando. Cuando estén, se cargan sin cambiar la lógica."
         )
     if otros:
-        with st.expander("Otras muestras que ya están en el archivo"):
-            for estudio in otros:
-                st.markdown(f"**{estudio.get('titulo') or estudio.get('id')}**")
-                if estudio.get("nota"):
-                    st.caption(estudio["nota"])
-                if estudio.get("filas"):
-                    mostrar_tabla(
-                        _tabla_backtest(estudio["filas"]),
-                        estilos={"Media": _estilo_variacion, "Mediana": _estilo_variacion},
-                        alto=360,
-                    )
+        st.markdown("**Otras muestras que ya están en el archivo**")
+        for estudio in otros:
+            st.markdown(f"**{estudio.get('titulo') or estudio.get('id')}**")
+            if estudio.get("nota"):
+                st.caption(estudio["nota"])
+            if estudio.get("filas"):
+                mostrar_tabla(
+                    _tabla_backtest(estudio["filas"]),
+                    estilos={"Media": _estilo_variacion, "Mediana": _estilo_variacion},
+                    alto=360,
+                )
 
 
 def _pie() -> None:

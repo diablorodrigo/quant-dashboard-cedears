@@ -7,6 +7,7 @@ import pandas as pd
 
 from zeta.contraste import ROJO
 from zeta.estrategia import (
+    AVISO_CONTEXTO,
     AVISO_ESTRATEGIA,
     aplicar_semaforo,
     backtest,
@@ -198,7 +199,13 @@ class Semaforo(unittest.TestCase):
     def test_el_aviso_esta_en_una_constante(self):
         self.assertIn("no una recomendación de inversión", AVISO_ESTRATEGIA)
         self.assertIn("no garantizan resultados futuros", AVISO_ESTRATEGIA)
+        self.assertIn("propio análisis", AVISO_ESTRATEGIA)
         self.assertNotIn("COMPRA", AVISO_ESTRATEGIA)
+        self.assertEqual(
+            AVISO_CONTEXTO,
+            "Es una guía de contexto, no una promesa. Las señales se basan en análisis cuantitativo.",
+        )
+        self.assertNotIn("azar", AVISO_CONTEXTO.lower())
 
 
 class UniversoYRrg(unittest.TestCase):

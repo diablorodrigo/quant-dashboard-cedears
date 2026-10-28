@@ -25,7 +25,12 @@ RAIZ = Path(__file__).resolve().parent.parent
 RUTA_CONFIG = RAIZ / "data" / "estrategia_senales.json"
 RUTA_BACKTEST = RAIZ / "data" / "estrategia_backtest.json"
 
-# Cristian lo revisa. Es el único texto legal de esta pestaña.
+# Cristian lo revisa. Va justo arriba de la tabla de señales.
+AVISO_CONTEXTO = (
+    "Es una guía de contexto, no una promesa. Las señales se basan en análisis cuantitativo."
+)
+
+# Cristian lo revisa. Es el texto fijo al pie de esta pestaña.
 AVISO_ESTRATEGIA = (
     "Son criterios cuantitativos y no una recomendación de inversión ni una oferta "
     "de compra o venta. No son 100% efectivos y los resultados pasados no garantizan "
@@ -33,8 +38,8 @@ AVISO_ESTRATEGIA = (
 )
 
 LIMITACIONES = (
-    "En ETFs la muestra es muy chica y la confirmación no le gana a comprar un día al azar. "
-    "Siete sectoriales SPDR del gráfico de rotación no tienen historia en pesos, así que no entran al cálculo. "
+    "En ETFs la muestra es muy chica y la ventaja frente a un día al azar es mínima. "
+    "Diez ETFs se leen en dólares MEP (especie D), con unos 20 meses de historia y sin el efecto del CCL. "
     "Hay sesgo de supervivencia: el universo es el que hoy tiene serie. "
     "Los retornos en pesos incluyen la suba del CCL. No hay impuestos: "
     "el 0,6% y el 1,2% son un supuesto de ida y vuelta, no la tarifa de un broker. "
