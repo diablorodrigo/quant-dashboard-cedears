@@ -13,8 +13,10 @@ from zeta.estrategia import (
     backtest,
     cargar_backtest,
     cargar_config,
+    consolidar_filas,
     cruce_al_alza,
     detectar_senales,
+    estado_ticker,
     filas_de_estado,
     ratio_volumen,
     relacion_rrg,
@@ -283,6 +285,372 @@ class Referencia(unittest.TestCase):
         vista = Path("zeta/vista_senales.py").read_text(encoding="utf-8")
         self.assertNotIn("senales_etf_v3", vista)
         self.assertNotIn("signals.json", vista)
+
+
+class UnaFilaPorEtf(unittest.TestCase):
+    def test_la_debil_que_se_confirma_queda_en_una_fila_fuerte(self):
+        # El caso de XLP: la compra del 15/10 y la confirmación del 19/10
+        # son la misma posición. La entrada no se reinicia.
+        estado = {
+            "ticker": "XLP",
+            "fecha": "2026-10-27",
+            "ultimo_cierre": 5.80,
+            "etiqueta": "Compra",
+            "senal_reciente": [
+                {"tipo": "compra", "fecha": "2026-10-15", "idx": 100},
+                {"tipo": "confirmacion", "fecha": "2026-10-19", "idx": 104, "dias_desde_compra": 4},
+            ],
+            "posiciones_abiertas": [
+                {
+                    "origen": "compra",
+                    "fecha_senal": "2026-10-15",
+                    "precio_entrada": 5.72,
+                    "stop": 5.32,
+                    "ruedas": 8,
+                    "idx": 100,
+                },
+                {
+                    "origen": "confirmacion",
+                    "fecha_senal": "2026-10-19",
+                    "precio_entrada": 5.76,
+                    "stop": 5.36,
+                    "ruedas": 6,
+                    "idx": 104,
+                    "idx_compra": 100,
+                },
+            ],
+            "ventas_recientes": [],
+            "eventos": [],
+        }
+        filas = filas_de_estado(estado, 5.80)
+        self.assertEqual(len(filas), 1)
+        fila = filas[0]
+        self.assertEqual(fila["ticker"], "XLP")
+        self.assertEqual(fila["senal"], "Compra fuerte")
+        self.assertEqual(fila["fuerza"], "fuerte")
+        self.assertEqual(fila["fecha"], "2026-10-15")
+        self.assertEqual(fila["fecha_confirmacion"], "2026-10-19")
+        self.assertEqual(fila["precio_entrada"], 5.72)
+        self.assertEqual(fila["stop"], 5.32)
+        self.assertEqual(fila["ruedas"], 8)
+        self.assertEqual(fila["desde_senal"], 1.40)
+        self.assertIn("2026-10-15", fila["detalle"])
+        self.assertIn("2026-10-19", fila["detalle"])
+        self.assertIn("misma posición", fila["detalle"])
+        self.assertEqual(relacion_rrg(fila["senal"], "Líder"), "coincide")
+
+    def test_la_confirmacion_de_hoy_no_abre_otra_fila(self):
+        estado = {
+            "ticker": "XLP",
+            "fecha": "2026-10-27",
+            "ultimo_cierre": 5.80,
+            "etiqueta": "Compra",
+            "senal_reciente": [
+                {"tipo": "confirmacion", "fecha": "2026-10-27", "idx": 108, "dias_desde_compra": 8},
+            ],
+            "posiciones_abiertas": [
+                {
+                    "origen": "compra",
+                    "fecha_senal": "2026-10-15",
+                    "precio_entrada": 5.72,
+                    "stop": 5.32,
+                    "ruedas": 8,
+                    "idx": 100,
+                }
+            ],
+            "ventas_recientes": [],
+            "eventos": [],
+        }
+        filas = filas_de_estado(estado, 5.80)
+        self.assertEqual(len(filas), 1)
+        self.assertEqual(filas[0]["senal"], "Compra fuerte")
+        self.assertEqual(filas[0]["fecha"], "2026-10-15")
+        self.assertEqual(filas[0]["fecha_confirmacion"], "2026-10-27")
+        self.assertEqual(filas[0]["precio_entrada"], 5.72)
+        self.assertEqual(filas[0]["ruedas"], 8)
+        self.assertEqual(filas[0]["estado_posicion"], "abierta")
+
+    def test_etfs_sin_duplicar_siguen_con_una_fila_cada_uno(self):
+        debil = {
+            "ticker": "IJH",
+            "fecha": "2026-10-27",
+            "ultimo_cierre": 10120.0,
+            "etiqueta": "Compra",
+            "senal_reciente": [],
+            "posiciones_abiertas": [
+                {
+                    "origen": "compra",
+                    "fecha_senal": "2026-10-06",
+                    "precio_entrada": 9835.0,
+                    "stop": 9146.55,
+                    "ruedas": 13,
+                }
+            ],
+            "ventas_recientes": [],
+            "eventos": [],
+        }
+        venta = {
+            "ticker": "EWZ",
+            "fecha": "2026-10-27",
+            "ultimo_cierre": 28520.0,
+            "etiqueta": "Venta",
+            "senal_reciente": [],
+            "posiciones_abiertas": [],
+            "ventas_recientes": [
+                {
+                    "ticker": "EWZ",
+                    "fecha": "2026-10-26",
+                    "fecha_senal": "2026-10-05",
+                    "origen": "compra",
+                    "motivo": "stop",
+                    "precio_salida": 26600.0,
+                    "precio_entrada": 34720.0,
+                    "stop": 32289.6,
+                    "ret_pct": -23.39,
+                    "ruedas": 15,
+                    "idx": 40,
+                }
+            ],
+            "eventos": [],
+        }
+        filas = filas_de_estado(debil, 10120.0) + filas_de_estado(venta, 28520.0)
+        self.assertEqual([f["ticker"] for f in filas], ["IJH", "EWZ"])
+        self.assertEqual(filas[0]["senal"], "Compra débil")
+        self.assertIsNone(filas[0]["fecha_confirmacion"])
+        self.assertEqual(filas[0]["fecha"], "2026-10-06")
+        self.assertEqual(filas[0]["precio_entrada"], 9835.0)
+        self.assertEqual(filas[0]["ruedas"], 13)
+        self.assertEqual(filas[1]["senal"], "Venta")
+        self.assertEqual(filas[1]["fecha"], "2026-10-26")
+        self.assertIsNone(filas[1]["fecha_confirmacion"])
+        self.assertEqual(len({f["ticker"] for f in filas}), len(filas))
+        fuertes = sum(1 for f in filas if f["fuerza"] == "fuerte")
+        debiles = sum(1 for f in filas if f["fuerza"] == "debil")
+        self.assertEqual((fuertes, debiles), (0, 1))
+
+    def test_dos_ventas_de_la_misma_cadena_son_una_sola(self):
+        estado = {
+            "ticker": "QQQ",
+            "fecha": "2026-10-27",
+            "ultimo_cierre": 100.0,
+            "etiqueta": "Venta",
+            "senal_reciente": [],
+            "posiciones_abiertas": [],
+            "ventas_recientes": [
+                {
+                    "ticker": "QQQ",
+                    "fecha": "2026-10-20",
+                    "fecha_senal": "2026-09-21",
+                    "origen": "compra",
+                    "motivo": "tiempo",
+                    "precio_salida": 110.0,
+                    "precio_entrada": 100.0,
+                    "stop": 93.0,
+                    "ret_pct": 10.0,
+                    "ruedas": 20,
+                    "idx": 10,
+                },
+                {
+                    "ticker": "QQQ",
+                    "fecha": "2026-10-24",
+                    "fecha_senal": "2026-10-01",
+                    "origen": "confirmacion",
+                    "motivo": "tiempo",
+                    "precio_salida": 115.0,
+                    "precio_entrada": 105.0,
+                    "stop": 97.0,
+                    "ret_pct": 9.0,
+                    "ruedas": 16,
+                    "idx": 18,
+                    "idx_compra": 10,
+                },
+            ],
+            "eventos": [],
+        }
+        filas = filas_de_estado(estado, 100.0)
+        self.assertEqual(len(filas), 1)
+        self.assertEqual(filas[0]["senal"], "Venta")
+        self.assertEqual(filas[0]["fecha"], "2026-10-20")
+        self.assertEqual(filas[0]["precio_entrada"], 100.0)
+        self.assertEqual(filas[0]["precio_salida"], 110.0)
+        self.assertEqual(filas[0]["fecha_confirmacion"], "2026-10-01")
+        self.assertIn("2026-09-21", filas[0]["detalle"])
+        self.assertIn("2026-10-01", filas[0]["detalle"])
+
+    def test_dos_compras_sueltas_dejan_la_mas_reciente(self):
+        filas = consolidar_filas(
+            [
+                {
+                    "ticker": "DIA",
+                    "senal": "Compra débil",
+                    "fuerza": "debil",
+                    "origen": "compra",
+                    "fecha": "2026-10-01",
+                    "estado_posicion": "abierta",
+                    "precio_entrada": 100.0,
+                    "idx": 1,
+                },
+                {
+                    "ticker": "DIA",
+                    "senal": "Compra débil",
+                    "fuerza": "debil",
+                    "origen": "compra",
+                    "fecha": "2026-10-20",
+                    "estado_posicion": "abierta",
+                    "precio_entrada": 110.0,
+                    "idx": 2,
+                },
+            ]
+        )
+        self.assertEqual(len(filas), 1)
+        self.assertEqual(filas[0]["fecha"], "2026-10-20")
+        self.assertEqual(filas[0]["senal"], "Compra débil")
+
+    def test_etfs_distintos_no_se_pisan(self):
+        filas = consolidar_filas(
+            [
+                {
+                    "ticker": "IJH",
+                    "senal": "Compra débil",
+                    "fuerza": "debil",
+                    "origen": "compra",
+                    "fecha": "2026-10-06",
+                    "estado_posicion": "abierta",
+                    "precio_entrada": 9835.0,
+                },
+                {
+                    "ticker": "XLP",
+                    "senal": "Compra débil",
+                    "fuerza": "debil",
+                    "origen": "compra",
+                    "fecha": "2026-10-15",
+                    "estado_posicion": "abierta",
+                    "precio_entrada": 5.72,
+                },
+                {
+                    "ticker": "EWZ",
+                    "senal": "Venta",
+                    "fuerza": None,
+                    "origen": "compra",
+                    "fecha": "2026-10-26",
+                    "estado_posicion": "cerrada",
+                    "precio_entrada": 34720.0,
+                },
+            ]
+        )
+        self.assertEqual({f["ticker"]: f["senal"] for f in filas}, {
+            "IJH": "Compra débil",
+            "XLP": "Compra débil",
+            "EWZ": "Venta",
+        })
+
+    def test_el_conteo_y_el_rombo_usan_la_etiqueta_avanzada(self):
+        from zeta.vista_senales import _marcas_rrg
+
+        estado = {
+            "ticker": "XLP",
+            "fecha": "2026-10-27",
+            "ultimo_cierre": 5.80,
+            "etiqueta": "Compra",
+            "senal_reciente": [],
+            "posiciones_abiertas": [
+                {
+                    "origen": "compra",
+                    "fecha_senal": "2026-10-15",
+                    "precio_entrada": 5.72,
+                    "stop": 5.32,
+                    "ruedas": 8,
+                    "idx": 100,
+                },
+                {
+                    "origen": "confirmacion",
+                    "fecha_senal": "2026-10-19",
+                    "precio_entrada": 5.76,
+                    "stop": 5.36,
+                    "ruedas": 6,
+                    "idx": 104,
+                    "idx_compra": 100,
+                },
+            ],
+            "ventas_recientes": [],
+            "eventos": [],
+        }
+        xlp = filas_de_estado(estado, 5.80)
+        ijh = filas_de_estado(
+            {
+                "ticker": "IJH",
+                "fecha": "2026-10-27",
+                "ultimo_cierre": 10120.0,
+                "etiqueta": "Compra",
+                "senal_reciente": [],
+                "posiciones_abiertas": [
+                    {
+                        "origen": "compra",
+                        "fecha_senal": "2026-10-06",
+                        "precio_entrada": 9835.0,
+                        "stop": 9146.55,
+                        "ruedas": 13,
+                    }
+                ],
+                "ventas_recientes": [],
+                "eventos": [],
+            },
+            10120.0,
+        )
+        abiertas = xlp + ijh
+        self.assertEqual(sum(1 for f in abiertas if f["fuerza"] == "fuerte"), 1)
+        self.assertEqual(sum(1 for f in abiertas if f["fuerza"] == "debil"), 1)
+        self.assertEqual(len({f["ticker"] for f in abiertas}), 2)
+        for fila in abiertas:
+            fila["cuadrante"] = "Líderes"
+            fila["rrg"] = relacion_rrg(fila["senal"], "Líder")
+        marcas = _marcas_rrg(abiertas, {"XLP": "Líder", "IJH": "Líder"})
+        por_ticker = {m["ticker"]: m for m in marcas}
+        self.assertEqual(set(por_ticker), {"XLP", "IJH"})
+        self.assertEqual(por_ticker["XLP"]["senal"], "Compra fuerte")
+        self.assertEqual(por_ticker["IJH"]["senal"], "Compra débil")
+        self.assertEqual(por_ticker["XLP"]["relacion"], "coincide")
+
+    def test_la_serie_no_duplica_ni_inventa_una_confirmacion(self):
+        precios = np.r_[np.linspace(100, 80, 150), np.linspace(80, 130, 150)]
+        volumen = np.full(300, 1000.0)
+        volumen[155:160] = 5000
+        df = _serie(precios, volumen)
+        eventos = detectar_senales(df, CFG, "XLP")
+        confirmacion = next(e for e in eventos if e["tipo"] == "confirmacion")
+        compra = next(e for e in eventos if e["idx"] == confirmacion["idx"] - confirmacion["dias_desde_compra"])
+        self.assertGreater(confirmacion["idx"], compra["idx"])
+
+        # El motor del backtest sigue contando las dos entradas. La tabla, no.
+        trades = backtest(df, [compra, confirmacion], CFG["stop"], CFG["max_hold"], cfg=CFG)
+        self.assertEqual(sorted(t["tipo"] for t in trades), ["compra", "confirmacion"])
+
+        if confirmacion["idx"] > compra["idx"] + 1:
+            solo_debil = df.iloc[: compra["idx"] + 2]
+            estado = estado_ticker("XLP", solo_debil, CFG)
+            filas = [f for f in filas_de_estado(estado) if f["estado_posicion"] != "cerrada"]
+            self.assertEqual([f["senal"] for f in filas], ["Compra débil"])
+            self.assertEqual(filas[0]["fecha"], compra["fecha"])
+            self.assertIsNone(filas[0]["fecha_confirmacion"])
+
+        # Mientras la compra original sigue abierta, la confirmación no suma otra fila.
+        # len <= compra_idx + max_hold deja esa entrada abierta (ver backtest).
+        ultimo_abierto = compra["idx"] + int(CFG["max_hold"])
+        if confirmacion["idx"] + 2 <= ultimo_abierto:
+            con_fuerte = df.iloc[: min(confirmacion["idx"] + 4, ultimo_abierto)]
+            estado = estado_ticker("XLP", con_fuerte, CFG)
+            filas = [f for f in filas_de_estado(estado) if f["estado_posicion"] != "cerrada"]
+            self.assertEqual(len(filas), 1)
+            self.assertEqual(filas[0]["senal"], "Compra fuerte")
+            self.assertEqual(filas[0]["fecha"], compra["fecha"])
+            self.assertEqual(filas[0]["fecha_confirmacion"], confirmacion["fecha"])
+            self.assertEqual(filas[0]["ticker"], "XLP")
+        else:
+            con_fuerte = df.iloc[: confirmacion["idx"] + 4]
+            estado = estado_ticker("XLP", con_fuerte, CFG)
+            filas = filas_de_estado(estado)
+            self.assertEqual(len(filas), 1)
+            self.assertEqual(filas[0]["ticker"], "XLP")
 
 
 class Volumen(unittest.TestCase):
