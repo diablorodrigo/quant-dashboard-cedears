@@ -1,0 +1,412 @@
+ticker,nombre,cedear,underlying,ratio,rubro,estado,sector_estado,byma,origen,motivo
+AAPL,Apple,AAPL.BA,AAPL,20,Tecnología,verificado,verificado,AAPL,manual,El ratio 20 implica un CCL a 0.14% de la referencia.
+MSFT,Microsoft,MSFT.BA,MSFT,30,Tecnología,verificado,verificado,MSFT,manual,El ratio 30 implica un CCL a 0.18% de la referencia.
+AMZN,Amazon,AMZN.BA,AMZN,144,Consumo,verificado,verificado,AMZN,manual,El ratio 144 implica un CCL a 0.01% de la referencia.
+NVDA,Nvidia,NVDA.BA,NVDA,24,Tecnología,verificado,verificado,NVDA,manual,El ratio 24 implica un CCL a 0.14% de la referencia.
+META,Meta,META.BA,META,24,Comunicaciones,verificado,verificado,META,manual,El ratio 24 implica un CCL a 0.46% de la referencia.
+TSLA,Tesla,TSLA.BA,TSLA,15,Consumo,verificado,verificado,TSLA,manual,El ratio 15 implica un CCL a 0.17% de la referencia.
+KO,Coca-Cola,KO.BA,KO,5,Consumo,verificado,verificado,KO,manual,El ratio 5 implica un CCL a 0.06% de la referencia.
+MELI,Mercado Libre,MELI.BA,MELI,120,Consumo,verificado,verificado,MELI,manual,El ratio 120 implica un CCL a 0.15% de la referencia.
+VIST,Vista Energy,VIST.BA,VIST,3,Energía,verificado,verificado,VIST,manual,El ratio 3 implica un CCL a 0.25% de la referencia.
+GOOGL,Google,GOOGL.BA,GOOGL,58,Comunicaciones,verificado,verificado,GOOGL,manual,El ratio 58 implica un CCL a 0.24% de la referencia.
+JPM,JP Morgan,JPM.BA,JPM,15,Finanzas,verificado,verificado,JPM,manual,El ratio 15 implica un CCL a 0.03% de la referencia.
+F,Ford,F.BA,F,1,Consumo,verificado,verificado,F,manual,El ratio 1 implica un CCL a 0.34% de la referencia.
+MCD,McDonald's,MCD.BA,MCD,24,Consumo,verificado,verificado,MCD,manual,El ratio 24 implica un CCL a 0.25% de la referencia.
+PEP,Pepsi,PEP.BA,PEP,18,Consumo,verificado,verificado,PEP,manual,El ratio 18 implica un CCL a 0.42% de la referencia.
+V,Visa,V.BA,V,18,Finanzas,verificado,verificado,V,manual,El ratio 18 implica un CCL a 0.10% de la referencia.
+MA,Mastercard,MA.BA,MA,33,Finanzas,verificado,verificado,MA,manual,El ratio 33 implica un CCL a 0.23% de la referencia.
+AXP,American Express,AXP.BA,AXP,15,Finanzas,verificado,verificado,AXP,manual,El ratio 15 implica un CCL a 0.09% de la referencia.
+XLF,Sector Financial,XLF.BA,XLF,2,ETFs,verificado,verificado,XLF,manual,El ratio 2 implica un CCL a 0.09% de la referencia.
+GLD,ETF GOLD,GLD.BA,GLD,50,ETFs,verificado,verificado,GLD,manual,El ratio 50 implica un CCL a 0.11% de la referencia.
+LLY,Eli Lilly,LLY.BA,LLY,56,Salud,verificado,verificado,LLY,manual,El ratio 56 implica un CCL a 0.03% de la referencia.
+WMT,Walmart,WMT.BA,WMT,18,Consumo,verificado,verificado,WMT,manual,El ratio 18 implica un CCL a 0.08% de la referencia.
+EEM,Emerging Market,EEM.BA,EEM,5,ETFs,verificado,verificado,EEM,manual,El ratio 5 implica un CCL a 0.01% de la referencia.
+IWM,Russell 2000,IWM.BA,IWM,10,ETFs,verificado,verificado,IWM,manual,El ratio 10 implica un CCL a 0.15% de la referencia.
+CAT,Caterpillar,CAT.BA,CAT,20,Industria,verificado,verificado,CAT,manual,El ratio 20 implica un CCL a 0.15% de la referencia.
+BNY,Bank of New York Mellon,BNY.BA,BNY,2,Finanzas,verificado,verificado,BNY,manual,El ratio 2 implica un CCL a 0.37% de la referencia.
+XLE,ETF Energy,XLE.BA,XLE,2,ETFs,verificado,verificado,XLE,manual,El ratio 2 implica un CCL a 0.09% de la referencia.
+XLP,ETF Consumo Básico,XLP.BA,XLP,16,ETFs,verificado,verificado,XLP,manual,El ratio 16 implica un CCL a 0.11% de la referencia.
+XLU,ETF Utilities,XLU.BA,XLU,15,ETFs,verificado,verificado,XLU,manual,El ratio 15 implica un CCL a 0.28% de la referencia.
+ARKK,ARK Innovation,ARKK.BA,ARKK,10,ETFs,verificado,verificado,ARKK,manual,El ratio 10 implica un CCL a 0.14% de la referencia.
+EWZ,ETF Brasil,EWZ.BA,EWZ,2,ETFs,verificado,verificado,EWZ,manual,El ratio 2 implica un CCL a 0.14% de la referencia.
+IBIT,ETF Bitcoin,IBIT.BA,IBIT,10,ETFs,verificado,verificado,IBIT,manual,El ratio 10 implica un CCL a 0.04% de la referencia.
+QQQ,NASDAQ,QQQ.BA,QQQ,20,ETFs,verificado,verificado,QQQ,manual,El ratio 20 implica un CCL a 0.02% de la referencia.
+DIA,Dow Jones,DIA.BA,DIA,20,ETFs,verificado,verificado,DIA,manual,El ratio 20 implica un CCL a 0.04% de la referencia.
+USO,United States Oil,USO.BA,USO,15,ETFs,verificado,verificado,USO,manual,El ratio 15 implica un CCL a 0.46% de la referencia.
+XLV,ETF Health Care,XLV.BA,XLV,29,ETFs,verificado,verificado,XLV,manual,El ratio 29 implica un CCL a 0.19% de la referencia.
+ABBV,ABBVIE Inc,ABBV.BA,ABBV,10,Salud,verificado,verificado,ABBV,manual,El ratio 10 implica un CCL a 0.12% de la referencia.
+UNH,UnitedHealth Group,UNH.BA,UNH,33,Salud,verificado,verificado,UNH,manual,El ratio 33 implica un CCL a 0.36% de la referencia.
+AMGN,Amgen Inc,AMGN.BA,AMGN,30,Salud,verificado,verificado,AMGN,manual,El ratio 30 implica un CCL a 0.80% de la referencia.
+PFE,Pfizer,PFE.BA,PFE,4,Salud,verificado,verificado,PFE,manual,El ratio 4 implica un CCL a 0.35% de la referencia.
+CVS,CVS Health,CVS.BA,CVS,15,Salud,verificado,verificado,CVS,manual,El ratio 15 implica un CCL a 0.36% de la referencia.
+MRNA,Moderna,MRNA.BA,MRNA,19,Salud,verificado,verificado,MRNA,manual,El ratio 19 implica un CCL a 0.12% de la referencia.
+AAL,American Airlines,AAL.BA,AAL,2,Industria,verificado,verificado,AAL,manual,El ratio 2 implica un CCL a 0.10% de la referencia.
+ACN,Accenture,ACN.BA,ACN,75,Tecnología,verificado,verificado,ACN,manual,El ratio 75 implica un CCL a 0.58% de la referencia.
+ADBE,Adobe Inc,ADBE.BA,ADBE,44,Tecnología,verificado,verificado,ADBE,manual,El ratio 44 implica un CCL a 0.08% de la referencia.
+ADI,Analog Devices,ADI.BA,ADI,15,Tecnología,verificado,verificado,ADI,manual,El ratio 15 implica un CCL a 0.40% de la referencia.
+AMD,AMD,AMD.BA,AMD,10,Tecnología,verificado,verificado,AMD,manual,El ratio 10 implica un CCL a 0.08% de la referencia.
+INTC,INTEL Corp,INTC.BA,INTC,5,Tecnología,verificado,verificado,INTC,manual,El ratio 5 implica un CCL a 0.21% de la referencia.
+ARCO,Arcos Dorados,ARCO.BA,ARCO,0.5,Consumo,verificado,verificado,ARCO,manual,El ratio 0.5 implica un CCL a 0.02% de la referencia.
+ARM,Arm Holdings,ARM.BA,ARM,27,Tecnología,verificado,verificado,ARM,manual,El ratio 27 implica un CCL a 0.21% de la referencia.
+AVGO,Broadcom,AVGO.BA,AVGO,39,Tecnología,verificado,verificado,AVGO,manual,El ratio 39 implica un CCL a 0.05% de la referencia.
+BBD,Banco Bradesco,BBD.BA,BBD,1,Finanzas,verificado,verificado,BBD,manual,El ratio 1 implica un CCL a 0.23% de la referencia.
+SPCX,SpaceX,SPCX.BA,SPCX,50,Tecnología,verificado,sin verificar,SPCX,manual,El ratio 50 implica un CCL a 0.38% de la referencia.
+MU,Micron Technology,MU.BA,MU,5,Tecnología,verificado,verificado,MU,manual,El ratio 5 implica un CCL a 0.24% de la referencia.
+NU,Nubank,NU.BA,NU,2,Finanzas,verificado,verificado,NU,manual,El ratio 2 implica un CCL a 0.21% de la referencia.
+LMT,Lockheed Martin,LMT.BA,LMT,20,Industria,verificado,verificado,LMT,manual,El ratio 20 implica un CCL a 0.07% de la referencia.
+LRCX,LAM Research,LRCX.BA,LRCX,56,Tecnología,verificado,verificado,LRCX,manual,El ratio 56 implica un CCL a 0.16% de la referencia.
+COPX,Global Miners,COPX.BA,COPX,14,ETFs,verificado,verificado,COPX,manual,El ratio 14 implica un CCL a 0.36% de la referencia.
+SLV,Silver ETF,SLV.BA,SLV,6,ETFs,verificado,verificado,SLV,manual,El ratio 6 implica un CCL a 0.19% de la referencia.
+ASML,ASML Holding,ASML.BA,ASML,146,Tecnología,verificado,verificado,ASML,manual,El ratio 146 implica un CCL a 0.17% de la referencia.
+BA,Boeing,BA.BA,BA,24,Industria,verificado,verificado,BA,manual,El ratio 24 implica un CCL a 0.14% de la referencia.
+BKR,Baker Hughes,BKR.BA,BKR,7,Energía,verificado,verificado,BKR,manual,El ratio 7 implica un CCL a 3.53% de la referencia.
+BMY,Bristol-Myers,BMY.BA,BMY,3,Salud,verificado,verificado,BMY,manual,El ratio 3 implica un CCL a 0.54% de la referencia.
+BG,Bunge,BNG.BA,BG,5,Consumo,verificado,verificado,BNG,manual,El ratio 5 implica un CCL a 0.52% de la referencia.
+BRK-B,Berkshire Hathaway,BRKB.BA,BRK-B,22,Finanzas,verificado,verificado,BRKB,manual,El ratio 22 implica un CCL a 0.13% de la referencia.
+BAC,Bank of America,BA-C.BA,BAC,4,Finanzas,verificado,verificado,BA.C,manual,El ratio 4 implica un CCL a 0.29% de la referencia.
+CEG,Constellation Energy,CEG.BA,CEG,45,Energía,verificado,sin verificar,CEG,manual,El ratio 45 implica un CCL a 0.05% de la referencia.
+CL,Colgate Palmolive,CL.BA,CL,3,Consumo,verificado,verificado,CL,manual,El ratio 3 implica un CCL a 0.12% de la referencia.
+COIN,Coinbase,COIN.BA,COIN,27,Finanzas,verificado,verificado,COIN,manual,El ratio 27 implica un CCL a 0.53% de la referencia.
+COST,Costco Wholesale,COST.BA,COST,48,Consumo,verificado,verificado,COST,manual,El ratio 48 implica un CCL a 0.10% de la referencia.
+CRM,SALESFORCE,CRM.BA,CRM,18,Tecnología,verificado,verificado,CRM,manual,El ratio 18 implica un CCL a 0.27% de la referencia.
+CRWD,CROWDSTRIKE,CRWD.BA,CRWD,79,Tecnología,verificado,verificado,CRWD,manual,El ratio 79 implica un CCL a 0.02% de la referencia.
+CSCO,Cisco Systems,CSCO.BA,CSCO,5,Tecnología,verificado,verificado,CSCO,manual,El ratio 5 implica un CCL a 0.33% de la referencia.
+CVX,Chevron Corp,CVX.BA,CVX,16,Energía,verificado,verificado,CVX,manual,El ratio 16 implica un CCL a 0.14% de la referencia.
+DE,Deere,DE.BA,DE,40,Industria,verificado,verificado,DE,manual,El ratio 40 implica un CCL a 0.35% de la referencia.
+DELL,DELL,DELL.BA,DELL,74,Tecnología,verificado,verificado,DELL,manual,El ratio 74 implica un CCL a 0.15% de la referencia.
+EMBJ,Embraer,EMBJ.BA,EMBJ,1,Industria,verificado,verificado,EMBJ,manual,El ratio 1 implica un CCL a 0.10% de la referencia.
+EBAY,EBAY,EBAY.BA,EBAY,2,Consumo,verificado,verificado,EBAY,manual,El ratio 2 implica un CCL a 0.03% de la referencia.
+EWJ,ETF Japan,EWJ.BA,EWJ,14,ETFs,verificado,verificado,EWJ,manual,El ratio 14 implica un CCL a 0.22% de la referencia.
+GEV,GE VERNOVA,GEV.BA,GEV,180,Energía,verificado,sin verificar,GEV,manual,El ratio 180 implica un CCL a 0.58% de la referencia.
+GM,General Motors,GM.BA,GM,6,Consumo,verificado,verificado,GM,manual,El ratio 6 implica un CCL a 0.04% de la referencia.
+GS,Goldman Sachs,GS.BA,GS,13,Finanzas,verificado,verificado,GS,manual,El ratio 13 implica un CCL a 0.19% de la referencia.
+GT,Goodyear Tire,GT.BA,GT,2,Consumo,verificado,verificado,GT,manual,El ratio 2 implica un CCL a 0.17% de la referencia.
+HAL,Halliburton,HAL.BA,HAL,2,Energía,verificado,verificado,HAL,manual,El ratio 2 implica un CCL a 0.28% de la referencia.
+HD,Home Depot,HD.BA,HD,32,Consumo,verificado,verificado,HD,manual,El ratio 32 implica un CCL a 0.11% de la referencia.
+HON,Honeywell,HON.BA,HON,8,Industria,verificado,verificado,HON,manual,El ratio 8 implica un CCL a 0.56% de la referencia.
+HPQ,HP Inc.,HPQ.BA,HPQ,1,Tecnología,verificado,verificado,HPQ,manual,El ratio 1 implica un CCL a 0.31% de la referencia.
+HSY,Hershey Company,HSY.BA,HSY,21,Consumo,verificado,verificado,HSY,manual,El ratio 21 implica un CCL a 0.24% de la referencia.
+HUT,Hut 8 Mining,HUT.BA,HUT,5,Tecnología,verificado,sin verificar,HUT,manual,El ratio 5 implica un CCL a 0.28% de la referencia.
+ITA,Aerospace & Defense,ITA.BA,ITA,50,ETFs,verificado,verificado,ITA,manual,El ratio 50 implica un CCL a 0.32% de la referencia.
+IREN,IREN,IREN.BA,IREN,12,Tecnología,verificado,sin verificar,IREN,manual,El ratio 12 implica un CCL a 0.00% de la referencia.
+ITUB,ITAU Unibanco,ITUB.BA,ITUB,1,Finanzas,verificado,verificado,ITUB,manual,El ratio 1 implica un CCL a 0.18% de la referencia.
+JNJ,Johnson & Johnson,JNJ.BA,JNJ,15,Salud,verificado,verificado,JNJ,manual,El ratio 15 implica un CCL a 0.41% de la referencia.
+MDLZ,Mondelez,MDLZ.BA,MDLZ,15,Consumo,verificado,verificado,MDLZ,manual,El ratio 15 implica un CCL a 0.39% de la referencia.
+MMM,3M,MMM.BA,MMM,10,Industria,verificado,verificado,MMM,manual,El ratio 10 implica un CCL a 0.43% de la referencia.
+MS,Morgan Stanley,MS.BA,MS,41,Finanzas,verificado,verificado,MS,manual,El ratio 41 implica un CCL a 0.13% de la referencia.
+MSTR,Microstrategy,MSTR.BA,MSTR,20,Tecnología,verificado,verificado,MSTR,manual,El ratio 20 implica un CCL a 0.50% de la referencia.
+NFLX,Netflix,NFLX.BA,NFLX,48,Comunicaciones,verificado,verificado,NFLX,manual,El ratio 48 implica un CCL a 0.16% de la referencia.
+O,Realty Income,O.BA,O,13,Finanzas,verificado,sin verificar,O,manual,El ratio 13 implica un CCL a 0.19% de la referencia.
+ORCL,Oracle Corp,ORCL.BA,ORCL,3,Tecnología,verificado,verificado,ORCL,manual,El ratio 3 implica un CCL a 0.05% de la referencia.
+OXY,Occidental Petroleum,OXY.BA,OXY,5,Energía,verificado,verificado,OXY,manual,El ratio 5 implica un CCL a 0.12% de la referencia.
+PAGS,Pagseguro,PAGS.BA,PAGS,3,Finanzas,verificado,sin verificar,PAGS,manual,El ratio 3 implica un CCL a 0.83% de la referencia.
+PBR,Petrobras,PBR.BA,PBR,1,Energía,verificado,verificado,PBR,manual,El ratio 1 implica un CCL a 0.25% de la referencia.
+PG,Procter & Gamble,PG.BA,PG,15,Consumo,verificado,verificado,PG,manual,El ratio 15 implica un CCL a 0.17% de la referencia.
+PLTR,Palantir Technologies,PLTR.BA,PLTR,3,Tecnología,verificado,verificado,PLTR,manual,El ratio 3 implica un CCL a 0.06% de la referencia.
+PYPL,Paypal,PYPL.BA,PYPL,8,Finanzas,verificado,verificado,PYPL,manual,El ratio 8 implica un CCL a 0.11% de la referencia.
+QCOM,Qualcomm,QCOM.BA,QCOM,11,Tecnología,verificado,verificado,QCOM,manual,El ratio 11 implica un CCL a 0.33% de la referencia.
+RACE,Ferrari,RACE.BA,RACE,83,Consumo,verificado,verificado,RACE,manual,El ratio 83 implica un CCL a 0.09% de la referencia.
+RGTI,Rigetti Computing,RGTI.BA,RGTI,2,Tecnología,verificado,verificado,RGTI,manual,El ratio 2 implica un CCL a 0.16% de la referencia.
+SBUX,Starbucks,SBUX.BA,SBUX,12,Consumo,verificado,verificado,SBUX,manual,El ratio 12 implica un CCL a 0.28% de la referencia.
+XOM,Exxon Mobil,XOM.BA,XOM,10,Energía,verificado,verificado,XOM,manual,El ratio 10 implica un CCL a 0.23% de la referencia.
+XLY,Consumo Discrecional ETF,XLY.BA,XLY,43,ETFs,verificado,verificado,XLY,manual,El ratio 43 implica un CCL a 0.35% de la referencia.
+XLB,Materials Select,XLB.BA,XLB,18,ETFs,verificado,verificado,XLB,manual,El ratio 18 implica un CCL a 0.53% de la referencia.
+XLC,Communication Services,XLC.BA,XLC,19,ETFs,verificado,verificado,XLC,manual,El ratio 19 implica un CCL a 0.01% de la referencia.
+XLI,Industrial Select,XLI.BA,XLI,28,ETFs,verificado,verificado,XLI,manual,El ratio 28 implica un CCL a 0.20% de la referencia.
+XLK,Technology Select,XLK.BA,XLK,46,ETFs,verificado,verificado,XLK,manual,El ratio 46 implica un CCL a 0.27% de la referencia.
+VALE,Vale Do Rio Doce,VALE.BA,VALE,2,Materiales,verificado,verificado,VALE,manual,El ratio 2 implica un CCL a 0.06% de la referencia.
+URA,Global X Uranium,URA.BA,URA,5,ETFs,verificado,verificado,URA,manual,El ratio 5 implica un CCL a 0.19% de la referencia.
+UL,Unilever NV NY,UL.BA,UL,3,Consumo,verificado,verificado,UL,manual,El ratio 3 implica un CCL a 0.14% de la referencia.
+UBER,UBER Technologies,UBER.BA,UBER,2,Consumo,verificado,sin verificar,UBER,manual,El ratio 2 implica un CCL a 0.44% de la referencia.
+TXN,Texas Instruments,TXN.BA,TXN,5,Tecnología,verificado,verificado,TXN,manual,El ratio 5 implica un CCL a 0.08% de la referencia.
+UAL,United Airlines,UAL.BA,UAL,5,Industria,verificado,verificado,UAL,manual,El ratio 5 implica un CCL a 0.32% de la referencia.
+TWLO,Twilio Inc,TWLO.BA,TWLO,36,Tecnología,verificado,verificado,TWLO,manual,El ratio 36 implica un CCL a 0.34% de la referencia.
+TSM,Taiwan Semic. Manuf.,TSM.BA,TSM,9,Tecnología,verificado,verificado,TSM,manual,El ratio 9 implica un CCL a 0.01% de la referencia.
+TM,Toyota Motors,TM.BA,TM,15,Consumo,verificado,verificado,TM,manual,El ratio 15 implica un CCL a 0.07% de la referencia.
+SYY,Sysco Corporation,SYY.BA,SYY,8,Consumo,verificado,verificado,SYY,manual,El ratio 8 implica un CCL a 0.17% de la referencia.
+STLA,Stellantis NV,STLA.BA,STLA,5,Consumo,verificado,verificado,STLA,manual,El ratio 5 implica un CCL a 0.32% de la referencia.
+SPOT,Spotify Tech,SPOT.BA,SPOT,28,Comunicaciones,verificado,verificado,SPOT,manual,El ratio 28 implica un CCL a 0.31% de la referencia.
+SNDK,Sandisk Corp,SNDK.BA,SNDK,170,Tecnología,verificado,verificado,SNDK,manual,El ratio 170 implica un CCL a 0.29% de la referencia.
+HIMS,Hims & Hers Health,HIMS.BA,HIMS,4,Salud,verificado,verificado,HIMS,manual,El ratio 4 implica un CCL a 0.21% de la referencia.
+SPY,SPDR S&P 500 ETF Trust,SPY.BA,SPY,60,ETFs,verificado,verificado,SPY,manual,El ratio 60 implica un CCL a 0.02% de la referencia.
+IBB,ETF Biotechnology,IBB.BA,IBB,27,ETFs,verificado,verificado,IBB,manual,El ratio 27 implica un CCL a 0.29% de la referencia.
+MRVL,Marvell Technology,MRVL.BA,MRVL,14,Tecnología,verificado,verificado,MRVL,manual,El ratio 14 implica un CCL a 0.33% de la referencia.
+PANW,Palo Alto Networks,PANW.BA,PANW,50,Tecnología,verificado,verificado,PANW,manual,El ratio 50 implica un CCL a 0.64% de la referencia.
+PSX,Phillips 66,PSX.BA,PSX,6,Energía,verificado,verificado,PSX,manual,El ratio 6 implica un CCL a 0.09% de la referencia.
+EQNR,Equinor ASA,EQNR.BA,EQNR,6,Energía,verificado,verificado,EQNR,manual,El ratio 6 implica un CCL a 1.12% de la referencia.
+SMH,VanEck Semiconductor ETF,SMH.BA,SMH,50,ETFs,verificado,verificado,SMH,manual,El ratio 50 implica un CCL a 0.28% de la referencia.
+GPRK,GeoPark,GPRK.BA,GPRK,1,Energía,verificado,verificado,GPRK,manual,El ratio 1 implica un CCL a 0.35% de la referencia.
+GGB,Gerdau,GGB.BA,GGB,0.25,Materiales,verificado,verificado,GGB,manual,El ratio 0.25 implica un CCL a 0.19% de la referencia.
+YPF,YPF,YPFD.BA,YPF,10,Energía,verificado,verificado,YPFD,manual,El ratio 10 implica un CCL a 0.19% de la referencia.
+AAP,Advance Auto Parts Inc.,AAP.BA,AAP,14,Consumo,verificado,verificado,AAP,consistencia,"Ratio 14 único, a 0.34% del precio, con volumen."
+ABEV,ABEV,ABEV.BA,ABEV,,Sin verificar,sin verificar,sin verificar,ABEV,feed,El precio no coincide con un único ratio de la grilla.
+ABEV3,ABEV3,ABEV3.BA,ABEV3,,Sin verificar,sin verificar,sin verificar,ABEV3,feed,Sin precio del subyacente para verificar el ratio.
+ABNB,"Airbnb, Inc.",ABNB.BA,ABNB,15,Consumo,verificado,verificado,ABNB,consistencia,"Ratio 15 único, a 0.08% del precio, con volumen."
+ABT,Abbott Laboratories,ABT.BA,ABT,4,Salud,verificado,verificado,ABT,consistencia,"Ratio 4 único, a 0.14% del precio, con volumen."
+ACWI,ACWI,ACWI.BA,ACWI,,Sin verificar,sin verificar,sin verificar,ACWI,feed,El precio no coincide con un único ratio de la grilla.
+ADGO,ADGO,ADGO.BA,ADGO,,Sin verificar,sin verificar,sin verificar,ADGO,feed,Sin precio del subyacente para verificar el ratio.
+ADP,"Automatic Data Processing, Inc.",ADP.BA,ADP,6,Tecnología,verificado,verificado,ADP,consistencia,"Ratio 6 único, a 0.09% del precio, con volumen."
+ADS,ADS,ADS.BA,ADS,,Sin verificar,sin verificar,sin verificar,ADS,feed,Sin precio del subyacente para verificar el ratio.
+AEG,AEG,AEG.BA,AEG,,Sin verificar,sin verificar,sin verificar,AEG,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+AEM,Agnico Eagle Mines Limited,AEM.BA,AEM,6,Materiales,verificado,verificado,AEM,consistencia,"Ratio 6 único, a 0.21% del precio, con volumen."
+AI,"C3.ai, Inc.",AI.BA,AI,5,Tecnología,verificado,verificado,AI,consistencia,"Ratio 5 único, a 0.10% del precio, con volumen."
+AIG,"American International Group, I",AIG.BA,AIG,5,Finanzas,verificado,verificado,AIG,consistencia,"Ratio 5 único, a 0.00% del precio, con volumen."
+AKO.B,AKO.B,AKO-B.BA,AKO-B,,Sin verificar,sin verificar,sin verificar,AKO.B,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+ALAB,ALAB,ALAB.BA,ALAB,,Sin verificar,sin verificar,sin verificar,ALAB,feed,El precio no coincide con un único ratio de la grilla.
+AMAT,"Applied Materials, Inc.",AMAT.BA,AMAT,5,Tecnología,verificado,verificado,AMAT,consistencia,"Ratio 5 único, a 0.04% del precio, con volumen."
+AMX,"America Movil, S.A.B. de C.V.",AMX.BA,AMX,1,Comunicaciones,verificado,verificado,AMX,consistencia,"Ratio 1 único, a 0.11% del precio, con volumen."
+ANET,ANET,ANET.BA,ANET,,Sin verificar,sin verificar,sin verificar,ANET,feed,El precio no coincide con un único ratio de la grilla.
+ANF,Abercrombie & Fitch Company,ANF.BA,ANF,1,Consumo,verificado,verificado,ANF,consistencia,"Ratio 1 único, a 0.51% del precio, con volumen."
+ASR,ASR,ASR.BA,ASR,,Sin verificar,sin verificar,sin verificar,ASR,feed,El precio no coincide con un único ratio de la grilla.
+ASTS,"AST SpaceMobile, Inc.",ASTS.BA,ASTS,,Tecnología,sin verificar,sin verificar,ASTS,feed,El precio no coincide con un único ratio de la grilla.
+AVY,AVY,AVY.BA,AVY,,Sin verificar,sin verificar,sin verificar,AVY,feed,El precio no coincide con un único ratio de la grilla.
+AZN,AstraZeneca PLC,AZN.BA,AZN,4,Salud,verificado,verificado,AZN,consistencia,"Ratio 4 único, a 0.29% del precio, con volumen."
+B,Barrick Mining Corporation,B.BA,B,2,Materiales,verificado,verificado,B,consistencia,"Ratio 2 único, a 0.29% del precio, con volumen."
+BABA,Alibaba Group Holding Limited,BABA.BA,BABA,9,Consumo,verificado,verificado,BABA,consistencia,"Ratio 9 único, a 0.59% del precio, con volumen."
+BAK,BAK,BAK.BA,BAK,,Sin verificar,sin verificar,sin verificar,BAK,feed,El precio no coincide con un único ratio de la grilla.
+BAYN,BAYN,BAYN.BA,BAYN,,Sin verificar,sin verificar,sin verificar,BAYN,feed,Sin precio del subyacente para verificar el ratio.
+BB,BlackBerry Limited,BB.BA,BB,3,Tecnología,verificado,verificado,BB,consistencia,"Ratio 3 único, a 1.00% del precio, con volumen."
+BBAS3,BBAS3,BBAS3.BA,BBAS3,,Sin verificar,sin verificar,sin verificar,BBAS3,feed,Sin precio del subyacente para verificar el ratio.
+BBAX,JPMorgan BetaBuilders Developed,BBAX.BA,BBAX,13,ETFs,verificado,verificado,BBAX,consistencia,"Ratio 13 único, a 0.06% del precio, con volumen."
+BBCA,BBCA,BBCA.BA,BBCA,,Sin verificar,sin verificar,sin verificar,BBCA,feed,El precio no coincide con un único ratio de la grilla.
+BBDC3,BBDC3,BBDC3.BA,BBDC3,,Sin verificar,sin verificar,sin verificar,BBDC3,feed,Sin precio del subyacente para verificar el ratio.
+BBDCD,BBDCD,BBDCD.BA,BBDCD,,Sin verificar,sin verificar,sin verificar,BBDCD,feed,Sin precio del subyacente para verificar el ratio.
+BBV,BBV,BBV.BA,BBV,,Sin verificar,sin verificar,sin verificar,BBV,feed,Sin precio del subyacente para verificar el ratio.
+BCS,BCS,BCS.BA,BCS,,Sin verificar,sin verificar,sin verificar,BCS,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+BHP,BHP Group Limited,BHP.BA,BHP,2,Materiales,verificado,verificado,BHP,consistencia,"Ratio 2 único, a 0.37% del precio, con volumen."
+BIDU,"Baidu, Inc.",BIDU.BA,BIDU,11,Comunicaciones,verificado,verificado,BIDU,consistencia,"Ratio 11 único, a 0.71% del precio, con volumen."
+BIIB,Biogen Inc.,BIIB.BA,BIIB,13,Salud,verificado,verificado,BIIB,consistencia,"Ratio 13 único, a 0.14% del precio, con volumen."
+BIOX,Bioceres Crop Solutions Corp.,BIOX.BA,BIOX,,Materiales,sin verificar,sin verificar,BIOX,feed,El precio no coincide con un único ratio de la grilla.
+BKNG,BKNG,BKNG.BA,BKNG,,Sin verificar,sin verificar,sin verificar,BKNG,feed,El precio no coincide con un único ratio de la grilla.
+BMNR,"BitMine Immersion Technologies,",BMNR.BA,BMNR,8,Finanzas,verificado,verificado,BMNR,consistencia,"Ratio 8 único, a 0.12% del precio, con volumen."
+BMYC,BMYC,BMYC.BA,BMYC,,Sin verificar,sin verificar,sin verificar,BMYC,feed,Sin precio del subyacente para verificar el ratio.
+BP,BP,BP.BA,BP,,Sin verificar,sin verificar,sin verificar,BP,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+BPA11,BPA11,BPA11.BA,BPA11,,Sin verificar,sin verificar,sin verificar,BPA11,feed,Sin precio del subyacente para verificar el ratio.
+BSBR,Banco Santander Brasil SA,BSBR.BA,BSBR,1,Finanzas,verificado,verificado,BSBR,consistencia,"Ratio 1 único, a 0.52% del precio, con volumen."
+BX,BX,BX.BA,BX,,Sin verificar,sin verificar,sin verificar,BX,feed,El precio no coincide con un único ratio de la grilla.
+C,"Citigroup, Inc.",C.BA,C,3,Finanzas,verificado,verificado,C,consistencia,"Ratio 3 único, a 0.03% del precio, con volumen."
+CAAP,CAAP,CAAP.BA,CAAP,,Sin verificar,sin verificar,sin verificar,CAAP,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+CAH,"Cardinal Health, Inc.",CAH.BA,CAH,3,Salud,verificado,verificado,CAH,consistencia,"Ratio 3 único, a 0.02% del precio, con volumen."
+CAR,CAR,CAR.BA,CAR,,Sin verificar,sin verificar,sin verificar,CAR,feed,El precio no coincide con un único ratio de la grilla.
+CCJ,CCJ,CCJ.BA,CCJ,,Sin verificar,sin verificar,sin verificar,CCJ,feed,El precio no coincide con un único ratio de la grilla.
+CCL,Carnival Corporation Ltd.,CCL.BA,CCL,3,Consumo,verificado,verificado,CCL,consistencia,"Ratio 3 único, a 0.66% del precio, con volumen."
+CDE,"Coeur Mining, Inc.",CDE.BA,CDE,1,Materiales,verificado,verificado,CDE,consistencia,"Ratio 1 único, a 0.39% del precio, con volumen."
+CIBR,First Trust NASDAQ Cybersecurit,CIBR.BA,CIBR,10,ETFs,verificado,verificado,CIBR,consistencia,"Ratio 10 único, a 0.13% del precio, con volumen."
+CLS,CLS,CLS.BA,CLS,,Sin verificar,sin verificar,sin verificar,CLS,feed,El precio no coincide con un único ratio de la grilla.
+COP,COP,COP.BA,COP,,Sin verificar,sin verificar,sin verificar,COP,feed,El precio no coincide con un único ratio de la grilla.
+CORN,Teucrium Corn Fund ETV,CORN.BA,CORN,4,ETFs,verificado,verificado,CORN,consistencia,"Ratio 4 único, a 0.22% del precio, con volumen."
+CRWV,CRWV,CRWV.BA,CRWV,,Sin verificar,sin verificar,sin verificar,CRWV,feed,El precio no coincide con un único ratio de la grilla.
+CSNA3,CSNA3,CSNA3.BA,CSNA3,,Sin verificar,sin verificar,sin verificar,CSNA3,feed,Sin precio del subyacente para verificar el ratio.
+CX,"Cemex, S.A.B. de C.V. Sponsored",CX.BA,CX,1,Materiales,verificado,verificado,CX,consistencia,"Ratio 1 único, a 0.44% del precio, con volumen."
+DAL,"Delta Air Lines, Inc.",DAL.BA,DAL,8,Industria,verificado,verificado,DAL,consistencia,"Ratio 8 único, a 0.24% del precio, con volumen."
+DD,DD,DD.BA,DD,,Sin verificar,sin verificar,sin verificar,DD,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+DECK,DECK,DECK.BA,DECK,,Sin verificar,sin verificar,sin verificar,DECK,feed,El precio no coincide con un único ratio de la grilla.
+DEO,Diageo plc,DEO.BA,DEO,6,Consumo,verificado,verificado,DEO,consistencia,"Ratio 6 único, a 0.19% del precio, con volumen."
+DHR,DHR,DHR.BA,DHR,,Sin verificar,sin verificar,sin verificar,DHR,feed,El precio no coincide con un único ratio de la grilla.
+DISN,DISN,DISN.BA,DISN,,Sin verificar,sin verificar,sin verificar,DISN,feed,Sin precio del subyacente para verificar el ratio.
+DOCU,DOCU,DOCU.BA,DOCU,,Sin verificar,sin verificar,sin verificar,DOCU,feed,El precio no coincide con un único ratio de la grilla.
+DOW,Dow Inc.,DOW.BA,DOW,6,Materiales,verificado,verificado,DOW,consistencia,"Ratio 6 único, a 0.04% del precio, con volumen."
+E,E,E.BA,E,,Sin verificar,sin verificar,sin verificar,E,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+ECL,ECL,ECL.BA,ECL,,Sin verificar,sin verificar,sin verificar,ECL,feed,El precio no coincide con un único ratio de la grilla.
+EFA,EFA,EFA.BA,EFA,,Sin verificar,sin verificar,sin verificar,EFA,feed,El precio no coincide con un único ratio de la grilla.
+EFX,EFX,EFX.BA,EFX,,Sin verificar,sin verificar,sin verificar,EFX,feed,El precio no coincide con un único ratio de la grilla.
+ELPC,ELPC,ELPC.BA,ELPC,,Sin verificar,sin verificar,sin verificar,ELPC,feed,El precio no coincide con un único ratio de la grilla.
+ERIC,ERIC,ERIC.BA,ERIC,,Sin verificar,sin verificar,sin verificar,ERIC,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+ESGU,ESGU,ESGU.BA,ESGU,,Sin verificar,sin verificar,sin verificar,ESGU,feed,El precio no coincide con un único ratio de la grilla.
+ETHA,iShares Ethereum Trust ETF,ETHA.BA,ETHA,5,ETFs,verificado,verificado,ETHA,consistencia,"Ratio 5 único, a 0.15% del precio, con volumen."
+ETSY,"Etsy, Inc.",ETSY.BA,ETSY,,Consumo,sin verificar,sin verificar,ETSY,feed,El precio no coincide con un único ratio de la grilla.
+EWY,EWY,EWY.BA,EWY,,Sin verificar,sin verificar,sin verificar,EWY,feed,El precio no coincide con un único ratio de la grilla.
+FCX,"Freeport-McMoRan, Inc.",FCX.BA,FCX,3,Materiales,verificado,verificado,FCX,consistencia,"Ratio 3 único, a 0.07% del precio, con volumen."
+FDX,FedEx Corporation,FDX.BA,FDX,10,Industria,verificado,verificado,FDX,consistencia,"Ratio 10 único, a 1.08% del precio, con volumen."
+FISV,"Fiserv, Inc.",FISV.BA,FISV,11,Sin verificar,verificado,sin verificar,FISV,consistencia,"Ratio 11 único, a 0.04% del precio, con volumen."
+FMX,Fomento Economico Mexicano S.A.,FMX.BA,FMX,6,Consumo,verificado,verificado,FMX,consistencia,"Ratio 6 único, a 1.62% del precio, con volumen."
+FNMA,FNMA,FNMA.BA,FNMA,,Sin verificar,sin verificar,sin verificar,FNMA,feed,El precio no coincide con un único ratio de la grilla.
+FSLR,FSLR,FSLR.BA,FSLR,,Sin verificar,sin verificar,sin verificar,FSLR,feed,El precio no coincide con un único ratio de la grilla.
+FXI,iShares China Large-Cap ETF,FXI.BA,FXI,5,ETFs,verificado,verificado,FXI,consistencia,"Ratio 5 único, a 0.33% del precio, con volumen."
+GDX,VanEck Gold Miners ETF,GDX.BA,GDX,10,ETFs,verificado,verificado,GDX,consistencia,"Ratio 10 único, a 0.36% del precio, con volumen."
+GE,GE Aerospace,GE.BA,GE,8,Industria,verificado,verificado,GE,consistencia,"Ratio 8 único, a 0.11% del precio, con volumen."
+GFI,Gold Fields Limited,GFI.BA,GFI,1,Materiales,verificado,verificado,GFI,consistencia,"Ratio 1 único, a 0.27% del precio, con volumen."
+GILD,"Gilead Sciences, Inc.",GILD.BA,GILD,4,Salud,verificado,verificado,GILD,consistencia,"Ratio 4 único, a 0.59% del precio, con volumen."
+GLNG,GLNG,GLNG.BA,GLNG,,Sin verificar,sin verificar,sin verificar,GLNG,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+GLOB,GLOB,GLOB.BA,GLOB,,Sin verificar,sin verificar,sin verificar,GLOB,feed,El precio no coincide con un único ratio de la grilla.
+GLW,Corning Incorporated,GLW.BA,GLW,4,Tecnología,verificado,verificado,GLW,consistencia,"Ratio 4 único, a 0.17% del precio, con volumen."
+GRMN,Garmin Ltd.,GRMN.BA,GRMN,3,Tecnología,verificado,verificado,GRMN,consistencia,"Ratio 3 único, a 0.06% del precio, con volumen."
+GSG,iShares GSCI Commodity-Indexed ,GSG.BA,GSG,6,ETFs,verificado,verificado,GSG,consistencia,"Ratio 6 único, a 0.06% del precio, con volumen."
+GSK,GSK plc,GSK.BA,GSK,4,Salud,verificado,verificado,GSK,consistencia,"Ratio 4 único, a 0.12% del precio, con volumen."
+HAPV3,HAPV3,HAPV3.BA,HAPV3,,Sin verificar,sin verificar,sin verificar,HAPV3,feed,Sin precio del subyacente para verificar el ratio.
+HDB,HDB,HDB.BA,HDB,,Sin verificar,sin verificar,sin verificar,HDB,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+HL,HL,HL.BA,HL,,Sin verificar,sin verificar,sin verificar,HL,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+HMC,HMC,HMC.BA,HMC,,Sin verificar,sin verificar,sin verificar,HMC,feed,El precio no coincide con un único ratio de la grilla.
+HMY,Harmony Gold Mining Company Lim,HMY.BA,HMY,1,Materiales,verificado,verificado,HMY,consistencia,"Ratio 1 único, a 0.09% del precio, con volumen."
+HOG,HOG,HOG.BA,HOG,,Sin verificar,sin verificar,sin verificar,HOG,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+HOOD,HOOD,HOOD.BA,HOOD,,Sin verificar,sin verificar,sin verificar,HOOD,feed,El precio no coincide con un único ratio de la grilla.
+HSBC,"HSBC Holdings, plc.",HSBC.BA,HSBC,2,Finanzas,verificado,verificado,HSBC,consistencia,"Ratio 2 único, a 0.04% del precio, con volumen."
+HWM,HWM,HWM.BA,HWM,,Sin verificar,sin verificar,sin verificar,HWM,feed,El precio no coincide con un único ratio de la grilla.
+IBKR,IBKR,IBKR.BA,IBKR,,Sin verificar,sin verificar,sin verificar,IBKR,feed,El precio no coincide con un único ratio de la grilla.
+IBM,IBM,IBM.BA,IBM,,Sin verificar,sin verificar,sin verificar,IBM,feed,El precio no coincide con un único ratio de la grilla.
+IBN,IBN,IBN.BA,IBN,,Sin verificar,sin verificar,sin verificar,IBN,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+ICLN,iShares Global Clean Energy ETF,ICLN.BA,ICLN,5,ETFs,verificado,verificado,ICLN,consistencia,"Ratio 5 único, a 0.13% del precio, con volumen."
+IEMG,iShares Core MSCI Emerging Mark,IEMG.BA,IEMG,12,ETFs,verificado,verificado,IEMG,consistencia,"Ratio 12 único, a 0.17% del precio, con volumen."
+IEUR,iShares Core MSCI Europe ETF,IEUR.BA,IEUR,11,ETFs,verificado,verificado,IEUR,consistencia,"Ratio 11 único, a 0.23% del precio, con volumen."
+IFF,IFF,IFF.BA,IFF,,Sin verificar,sin verificar,sin verificar,IFF,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+IJH,iShares Core S&P Mid-Cap ETF,IJH.BA,IJH,12,ETFs,verificado,verificado,IJH,consistencia,"Ratio 12 único, a 0.33% del precio, con volumen."
+ILF,iShares Latin America 40 ETF,ILF.BA,ILF,6,ETFs,verificado,verificado,ILF,consistencia,"Ratio 6 único, a 0.09% del precio, con volumen."
+INFY,Infosys Limited,INFY.BA,INFY,1,Tecnología,verificado,verificado,INFY,consistencia,"Ratio 1 único, a 1.49% del precio, con volumen."
+ING,"ING Group, N.V.",ING.BA,ING,3,Finanzas,verificado,verificado,ING,consistencia,"Ratio 3 único, a 0.40% del precio, con volumen."
+IP,International Paper Company,IP.BA,IP,4,Consumo,verificado,verificado,IP,consistencia,"Ratio 4 único, a 1.50% del precio, con volumen."
+ISRG,ISRG,ISRG.BA,ISRG,,Sin verificar,sin verificar,sin verificar,ISRG,feed,El precio no coincide con un único ratio de la grilla.
+ITUB3,ITUB3,ITUB3.BA,ITUB3,,Sin verificar,sin verificar,sin verificar,ITUB3,feed,Sin precio del subyacente para verificar el ratio.
+IVE,IVE,IVE.BA,IVE,,Sin verificar,sin verificar,sin verificar,IVE,feed,El precio no coincide con un único ratio de la grilla.
+IVV,IVV,IVV.BA,IVV,,Sin verificar,sin verificar,sin verificar,IVV,feed,El precio no coincide con un único ratio de la grilla.
+IVW,IVW,IVW.BA,IVW,,Sin verificar,sin verificar,sin verificar,IVW,feed,El precio no coincide con un único ratio de la grilla.
+JCI,JCI,JCI.BA,JCI,,Sin verificar,sin verificar,sin verificar,JCI,feed,El precio no coincide con un único ratio de la grilla.
+JD,"JD.com, Inc.",JD.BA,JD,4,Consumo,verificado,verificado,JD,consistencia,"Ratio 4 único, a 0.37% del precio, con volumen."
+JMIA,Jumia Technologies AG,JMIA.BA,JMIA,1,Consumo,verificado,verificado,JMIA,consistencia,"Ratio 1 único, a 0.08% del precio, con volumen."
+JOYY,JOYY,JOYY.BA,JOYY,5,Sin verificar,verificado,sin verificar,JOYY,consistencia,"Ratio 5 único, a 0.24% del precio, con volumen."
+KB,KB,KB.BA,KB,,Sin verificar,sin verificar,sin verificar,KB,feed,El precio no coincide con un único ratio de la grilla.
+KEEL,KEEL,KEEL.BA,KEEL,,Sin verificar,sin verificar,sin verificar,KEEL,feed,El precio no coincide con un único ratio de la grilla.
+KEP,KEP,KEP.BA,KEP,,Sin verificar,sin verificar,sin verificar,KEP,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+KGC,Kinross Gold Corporation,KGC.BA,KGC,1,Materiales,verificado,verificado,KGC,consistencia,"Ratio 1 único, a 1.77% del precio, con volumen."
+KLAC,KLAC,KLAC.BA,KLAC,,Sin verificar,sin verificar,sin verificar,KLAC,feed,El precio no coincide con un único ratio de la grilla.
+KMB,Kimberly-Clark Corporation,KMB.BA,KMB,6,Consumo,verificado,verificado,KMB,consistencia,"Ratio 6 único, a 0.00% del precio, con volumen."
+KOFM,KOFM,KOFM.BA,KOFM,,Sin verificar,sin verificar,sin verificar,KOFM,feed,Sin precio del subyacente para verificar el ratio.
+LAC,Lithium Americas Corp.,LAC.BA,LAC,1,Materiales,verificado,verificado,LAC,consistencia,"Ratio 1 único, a 0.68% del precio, con volumen."
+LAR,Lithium Argentina AG,LAR.BA,LAR,1,Materiales,verificado,verificado,LAR,consistencia,"Ratio 1 único, a 0.75% del precio, con volumen."
+LIN,LIN,LIN.BA,LIN,,Sin verificar,sin verificar,sin verificar,LIN,feed,El precio no coincide con un único ratio de la grilla.
+LND,LND,LND.BA,LND,1,Sin verificar,verificado,sin verificar,LND,consistencia,"Ratio 1 único, a 0.07% del precio, con volumen."
+LREN3,LREN3,LREN3.BA,LREN3,,Sin verificar,sin verificar,sin verificar,LREN3,feed,Sin precio del subyacente para verificar el ratio.
+LVS,LVS,LVS.BA,LVS,,Sin verificar,sin verificar,sin verificar,LVS,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+LYG,LYG,LYG.BA,LYG,,Sin verificar,sin verificar,sin verificar,LYG,feed,El precio no coincide con un único ratio de la grilla.
+MDT,Medtronic plc.,MDT.BA,MDT,4,Salud,verificado,verificado,MDT,consistencia,"Ratio 4 único, a 0.98% del precio, con volumen."
+MFG,MFG,MFG.BA,MFG,,Sin verificar,sin verificar,sin verificar,MFG,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+MGLU3,MGLU3,MGLU3.BA,MGLU3,,Sin verificar,sin verificar,sin verificar,MGLU3,feed,Sin precio del subyacente para verificar el ratio.
+MO,"Altria Group, Inc.",MO.BA,MO,4,Consumo,verificado,verificado,MO,consistencia,"Ratio 4 único, a 0.20% del precio, con volumen."
+MOS,Mosaic Company (The),MOS.BA,MOS,5,Materiales,verificado,verificado,MOS,consistencia,"Ratio 5 único, a 0.25% del precio, con volumen."
+MP,MP Materials Corp.,MP.BA,MP,10,Materiales,verificado,verificado,MP,consistencia,"Ratio 10 único, a 0.15% del precio, con volumen."
+MRK,"Merck & Company, Inc.",MRK.BA,MRK,5,Salud,verificado,verificado,MRK,consistencia,"Ratio 5 único, a 0.07% del precio, con volumen."
+MRSH,MRSH,MRSH.BA,MRSH,16,Sin verificar,verificado,sin verificar,MRSH,consistencia,"Ratio 16 único, a 0.14% del precio, con volumen."
+MSI,MSI,MSI.BA,MSI,,Sin verificar,sin verificar,sin verificar,MSI,feed,El precio no coincide con un único ratio de la grilla.
+MUFG,"Mitsubishi UFJ Financial Group,",MUFG.BA,MUFG,1,Finanzas,verificado,verificado,MUFG,consistencia,"Ratio 1 único, a 0.16% del precio, con volumen."
+MUX,MUX,MUX.BA,MUX,,Sin verificar,sin verificar,sin verificar,MUX,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+NATU3,NATU3,NATU3.BA,NATU3,,Sin verificar,sin verificar,sin verificar,NATU3,feed,Sin precio del subyacente para verificar el ratio.
+NBIS,NBIS,NBIS.BA,NBIS,,Sin verificar,sin verificar,sin verificar,NBIS,feed,El precio no coincide con un único ratio de la grilla.
+NEE,NEE,NEE.BA,NEE,,Sin verificar,sin verificar,sin verificar,NEE,feed,El precio no coincide con un único ratio de la grilla.
+NEM,Newmont Corporation,NEM.BA,NEM,3,Materiales,verificado,verificado,NEM,consistencia,"Ratio 3 único, a 0.23% del precio, con volumen."
+NG,Novagold Resources Inc.,NG.BA,NG,0.25,Materiales,verificado,verificado,NG,consistencia,"Ratio 0.25 único, a 0.96% del precio, con volumen."
+NGG,"National Grid Transco, PLC Nati",NGG.BA,NGG,2,Servicios públicos,verificado,verificado,NGG,consistencia,"Ratio 2 único, a 0.54% del precio, con volumen."
+NIO,NIO Inc.,NIO.BA,NIO,4,Consumo,verificado,verificado,NIO,consistencia,"Ratio 4 único, a 0.87% del precio, con volumen."
+NKE,"Nike, Inc.",NKE.BA,NKE,12,Consumo,verificado,verificado,NKE,consistencia,"Ratio 12 único, a 0.17% del precio, con volumen."
+NMR,Nomura Holdings Inc,NMR.BA,NMR,1,Finanzas,verificado,verificado,NMR,consistencia,"Ratio 1 único, a 0.02% del precio, con volumen."
+NOKA,NOKA,NOKA.BA,NOKA,,Sin verificar,sin verificar,sin verificar,NOKA,feed,Sin precio del subyacente para verificar el ratio.
+NOW,NOW,NOW.BA,NOW,,Sin verificar,sin verificar,sin verificar,NOW,feed,El precio no coincide con un único ratio de la grilla.
+NTES,"NetEase, Inc.",NTES.BA,NTES,14,Comunicaciones,verificado,verificado,NTES,consistencia,"Ratio 14 único, a 0.45% del precio, con volumen."
+NTRA,NTRA,NTRA.BA,NTRA,,Sin verificar,sin verificar,sin verificar,NTRA,feed,El precio no coincide con un único ratio de la grilla.
+NUE,NUE,NUE.BA,NUE,,Sin verificar,sin verificar,sin verificar,NUE,feed,El precio no coincide con un único ratio de la grilla.
+NVO,Novo Nordisk A/S,NVO.BA,NVO,7,Salud,verificado,verificado,NVO,consistencia,"Ratio 7 único, a 0.23% del precio, con volumen."
+NVS,Novartis AG,NVS.BA,NVS,4,Salud,verificado,verificado,NVS,consistencia,"Ratio 4 único, a 0.23% del precio, con volumen."
+NXE,NXE,NXE.BA,NXE,,Sin verificar,sin verificar,sin verificar,NXE,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+OKLO,OKLO,OKLO.BA,OKLO,,Sin verificar,sin verificar,sin verificar,OKLO,feed,El precio no coincide con un único ratio de la grilla.
+ONDS,Ondas Inc,ONDS.BA,ONDS,2,Tecnología,verificado,verificado,ONDS,consistencia,"Ratio 2 único, a 0.02% del precio, con volumen."
+ORLY,ORLY,ORLY.BA,ORLY,,Sin verificar,sin verificar,sin verificar,ORLY,feed,El precio no coincide con un único ratio de la grilla.
+PAAS,Pan American Silver Corp.,PAAS.BA,PAAS,3,Materiales,verificado,verificado,PAAS,consistencia,"Ratio 3 único, a 0.11% del precio, con volumen."
+PAC,PAC,PAC.BA,PAC,,Sin verificar,sin verificar,sin verificar,PAC,feed,El precio no coincide con un único ratio de la grilla.
+PATH,"UiPath, Inc.",PATH.BA,PATH,2,Tecnología,verificado,verificado,PATH,consistencia,"Ratio 2 único, a 0.32% del precio, con volumen."
+PBI,Pitney Bowes Inc.,PBI.BA,PBI,1,Industria,verificado,verificado,PBI,consistencia,"Ratio 1 único, a 0.43% del precio, con volumen."
+PCAR,PACCAR Inc.,PCAR.BA,PCAR,3,Industria,verificado,verificado,PCAR,consistencia,"Ratio 3 único, a 0.02% del precio, con volumen."
+PDD,PDD,PDD.BA,PDD,,Sin verificar,sin verificar,sin verificar,PDD,feed,El precio no coincide con un único ratio de la grilla.
+PETR3,PETR3,PETR3.BA,PETR3,,Sin verificar,sin verificar,sin verificar,PETR3,feed,Sin precio del subyacente para verificar el ratio.
+PHG,PHG,PHG.BA,PHG,,Sin verificar,sin verificar,sin verificar,PHG,feed,El precio no coincide con un único ratio de la grilla.
+PINS,"Pinterest, Inc.",PINS.BA,PINS,7,Comunicaciones,verificado,verificado,PINS,consistencia,"Ratio 7 único, a 1.20% del precio, con volumen."
+PKS,PKS,PKS.BA,PKS,,Sin verificar,sin verificar,sin verificar,PKS,feed,Sin precio del subyacente para verificar el ratio.
+PLD,PLD,PLD.BA,PLD,,Sin verificar,sin verificar,sin verificar,PLD,feed,El precio no coincide con un único ratio de la grilla.
+PM,PM,PM.BA,PM,,Sin verificar,sin verificar,sin verificar,PM,feed,El precio no coincide con un único ratio de la grilla.
+PRIO3,PRIO3,PRIO3.BA,PRIO3,,Sin verificar,sin verificar,sin verificar,PRIO3,feed,Sin precio del subyacente para verificar el ratio.
+PSQ,ProShares Short QQQ,PSQ.BA,PSQ,8,ETFs,verificado,verificado,PSQ,consistencia,"Ratio 8 único, a 0.08% del precio, con volumen."
+RBLX,Roblox Corporation,RBLX.BA,RBLX,2,Comunicaciones,verificado,verificado,RBLX,consistencia,"Ratio 2 único, a 0.77% del precio, con volumen."
+RBLXC,RBLXC,RBLXC.BA,RBLXC,,Sin verificar,sin verificar,sin verificar,RBLXC,feed,Sin precio del subyacente para verificar el ratio.
+RENT3,RENT3,RENT3.BA,RENT3,,Sin verificar,sin verificar,sin verificar,RENT3,feed,Sin precio del subyacente para verificar el ratio.
+RIO,Rio Tinto Plc,RIO.BA,RIO,8,Materiales,verificado,verificado,RIO,consistencia,"Ratio 8 único, a 0.14% del precio, con volumen."
+RIOT,"Riot Platforms, Inc.",RIOT.BA,RIOT,3,Finanzas,verificado,verificado,RIOT,consistencia,"Ratio 3 único, a 0.45% del precio, con volumen."
+RKLB,Rocket Lab Corporation,RKLB.BA,RKLB,12,Industria,verificado,verificado,RKLB,consistencia,"Ratio 12 único, a 0.19% del precio, con volumen."
+ROKU,ROKU,ROKU.BA,ROKU,,Sin verificar,sin verificar,sin verificar,ROKU,feed,El precio no coincide con un único ratio de la grilla.
+ROST,"Ross Stores, Inc.",ROST.BA,ROST,4,Consumo,verificado,verificado,ROST,consistencia,"Ratio 4 único, a 0.52% del precio, con volumen."
+RSP,RSP,RSP.BA,RSP,,Sin verificar,sin verificar,sin verificar,RSP,feed,El precio no coincide con un único ratio de la grilla.
+RTX,RTX Corporation,RTX.BA,RTX,5,Industria,verificado,verificado,RTX,consistencia,"Ratio 5 único, a 0.48% del precio, con volumen."
+SAN,"Banco Santander, S.A. Sponsored",SAN.BA,SAN,0.25,Finanzas,verificado,verificado,SAN,consistencia,"Ratio 0.25 único, a 0.12% del precio, con volumen."
+SAP,SAP  SE,SAP.BA,SAP,6,Tecnología,verificado,verificado,SAP,consistencia,"Ratio 6 único, a 0.01% del precio, con volumen."
+SATL,Satellogic Inc.,SATL.BA,SATL,1,Industria,verificado,verificado,SATL,consistencia,"Ratio 1 único, a 1.27% del precio, con volumen."
+SBS,Companhia de saneamento Basico ,SBS.BA,SBS,0.5,Servicios públicos,verificado,verificado,SBS,consistencia,"Ratio 0.5 único, a 0.01% del precio, con volumen."
+SBSP3,SBSP3,SBSP3.BA,SBSP3,,Sin verificar,sin verificar,sin verificar,SBSP3,feed,Sin precio del subyacente para verificar el ratio.
+SCCO,Southern Copper Corporation,SCCO.BA,SCCO,2,Materiales,verificado,verificado,SCCO,consistencia,"Ratio 2 único, a 0.28% del precio, con volumen."
+SDA,SDA,SDA.BA,SDA,,Sin verificar,sin verificar,sin verificar,SDA,feed,El precio no coincide con un único ratio de la grilla.
+SE,SE,SE.BA,SE,,Sin verificar,sin verificar,sin verificar,SE,feed,El precio no coincide con un único ratio de la grilla.
+SH,ProShares Short S&P500,SH.BA,SH,8,ETFs,verificado,verificado,SH,consistencia,"Ratio 8 único, a 0.04% del precio, con volumen."
+SHEL,Shell PLC,SHEL.BA,SHEL,2,Energía,verificado,verificado,SHEL,consistencia,"Ratio 2 único, a 0.01% del precio, con volumen."
+SHOP,SHOP,SHOP.BA,SHOP,,Sin verificar,sin verificar,sin verificar,SHOP,feed,El precio no coincide con un único ratio de la grilla.
+SHW,SHW,SHW.BA,SHW,,Sin verificar,sin verificar,sin verificar,SHW,feed,El precio no coincide con un único ratio de la grilla.
+SID,SID,SID.BA,SID,,Sin verificar,sin verificar,sin verificar,SID,feed,El precio no coincide con un único ratio de la grilla.
+SIEGY,SIEGY,SIEGY.BA,SIEGY,,Sin verificar,sin verificar,sin verificar,SIEGY,feed,El precio no coincide con un único ratio de la grilla.
+SKHY,SKHY,SKHY.BA,SKHY,,Sin verificar,sin verificar,sin verificar,SKHY,feed,El precio no coincide con un único ratio de la grilla.
+SLB,SLB Limited,SLB.BA,SLB,3,Energía,verificado,verificado,SLB,consistencia,"Ratio 3 único, a 0.18% del precio, con volumen."
+SNA,SNA,SNA.BA,SNA,,Sin verificar,sin verificar,sin verificar,SNA,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+SNAP,Snap Inc.,SNAP.BA,SNAP,1,Comunicaciones,verificado,verificado,SNAP,consistencia,"Ratio 1 único, a 0.32% del precio, con volumen."
+SNOW,SNOW,SNOW.BA,SNOW,,Sin verificar,sin verificar,sin verificar,SNOW,feed,El precio no coincide con un único ratio de la grilla.
+SONY,Sony Group Corporation,SONY.BA,SONY,8,Tecnología,verificado,verificado,SONY,consistencia,"Ratio 8 único, a 0.71% del precio, con volumen."
+SOYB,Teucrium Soybean Fund ETV,SOYB.BA,SOYB,5,ETFs,verificado,verificado,SOYB,consistencia,"Ratio 5 único, a 0.75% del precio, con volumen."
+SPCE,"Virgin Galactic Holdings, Inc.",SPCE.BA,SPCE,0.5,Industria,verificado,verificado,SPCE,consistencia,"Ratio 0.5 único, a 0.21% del precio, con volumen."
+SPGI,SPGI,SPGI.BA,SPGI,,Sin verificar,sin verificar,sin verificar,SPGI,feed,El precio no coincide con un único ratio de la grilla.
+SPHQ,Invesco S&P 500 Quality ETF,SPHQ.BA,SPHQ,14,ETFs,verificado,verificado,SPHQ,consistencia,"Ratio 14 único, a 0.05% del precio, con volumen."
+SPXL,SPXL,SPXL.BA,SPXL,,Sin verificar,sin verificar,sin verificar,SPXL,feed,El precio no coincide con un único ratio de la grilla.
+STNE,StoneCo Ltd.,STNE.BA,STNE,3,Tecnología,verificado,verificado,STNE,consistencia,"Ratio 3 único, a 0.39% del precio, con volumen."
+SUZ,SUZ,SUZ.BA,SUZ,,Sin verificar,sin verificar,sin verificar,SUZ,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+SUZB3,SUZB3,SUZB3.BA,SUZB3,,Sin verificar,sin verificar,sin verificar,SUZB3,feed,Sin precio del subyacente para verificar el ratio.
+SWKS,SWKS,SWKS.BA,SWKS,,Sin verificar,sin verificar,sin verificar,SWKS,feed,El precio no coincide con un único ratio de la grilla.
+T,AT&T Inc.,T.BA,T,3,Comunicaciones,verificado,verificado,T,consistencia,"Ratio 3 único, a 0.23% del precio, con volumen."
+TCOM,Trip.com Group Limited,TCOM.BA,TCOM,2,Consumo,verificado,verificado,TCOM,consistencia,"Ratio 2 único, a 0.27% del precio, con volumen."
+TEAM,TEAM,TEAM.BA,TEAM,,Sin verificar,sin verificar,sin verificar,TEAM,feed,El precio no coincide con un único ratio de la grilla.
+TEM,"Tempus AI, Inc.",TEM.BA,TEM,12,Salud,verificado,verificado,TEM,consistencia,"Ratio 12 único, a 1.05% del precio, con volumen."
+TEN,TEN,TEN.BA,TEN,,Sin verificar,sin verificar,sin verificar,TEN,feed,El precio no coincide con un único ratio de la grilla.
+TGT,TGT,TGT.BA,TGT,,Sin verificar,sin verificar,sin verificar,TGT,feed,El precio no coincide con un único ratio de la grilla.
+TIMB,TIMB,TIMB.BA,TIMB,,Sin verificar,sin verificar,sin verificar,TIMB,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+TIMS3,TIMS3,TIMS3.BA,TIMS3,,Sin verificar,sin verificar,sin verificar,TIMS3,feed,Sin precio del subyacente para verificar el ratio.
+TJX,TJX,TJX.BA,TJX,,Sin verificar,sin verificar,sin verificar,TJX,feed,El precio no coincide con un único ratio de la grilla.
+TLN,TLN,TLN.BA,TLN,,Sin verificar,sin verificar,sin verificar,TLN,feed,El precio no coincide con un único ratio de la grilla.
+TMO,TMO,TMO.BA,TMO,,Sin verificar,sin verificar,sin verificar,TMO,feed,El precio no coincide con un único ratio de la grilla.
+TMUS,TMUS,TMUS.BA,TMUS,,Sin verificar,sin verificar,sin verificar,TMUS,feed,El precio no coincide con un único ratio de la grilla.
+TQQQ,TQQQ,TQQQ.BA,TQQQ,,Sin verificar,sin verificar,sin verificar,TQQQ,feed,El precio no coincide con un único ratio de la grilla.
+TRIP,"TripAdvisor, Inc.",TRIP.BA,TRIP,2,Consumo,verificado,verificado,TRIP,consistencia,"Ratio 2 único, a 0.31% del precio, con volumen."
+TRVV,TRVV,TRVV.BA,TRVV,,Sin verificar,sin verificar,sin verificar,TRVV,feed,Sin precio del subyacente para verificar el ratio.
+TTE,TotalEnergies SE,TTE.BA,TTE,3,Energía,verificado,verificado,TTE,consistencia,"Ratio 3 único, a 0.30% del precio, con volumen."
+TV,Grupo Televisa S.A.B.,TV.BA,TV,3,Comunicaciones,verificado,verificado,TV,consistencia,"Ratio 3 único, a 1.68% del precio, con volumen."
+TVC,TVC,TVC.BA,TVC,,Sin verificar,sin verificar,sin verificar,TVC,feed,Sin precio del subyacente para verificar el ratio.
+TWLOC,TWLOC,TWLOC.BA,TWLOC,,Sin verificar,sin verificar,sin verificar,TWLOC,feed,Sin precio del subyacente para verificar el ratio.
+TXR,TXR,TXR.BA,TXR,,Sin verificar,sin verificar,sin verificar,TXR,feed,Sin precio del subyacente para verificar el ratio.
+UGP,Ultrapar Participacoes S.A. (Ne,UGP.BA,UGP,1,Energía,verificado,verificado,UGP,consistencia,"Ratio 1 único, a 0.59% del precio, con volumen."
+UNP,UNP,UNP.BA,UNP,,Sin verificar,sin verificar,sin verificar,UNP,feed,El precio no coincide con un único ratio de la grilla.
+UPST,"Upstart Holdings, Inc.",UPST.BA,UPST,5,Finanzas,verificado,verificado,UPST,consistencia,"Ratio 5 único, a 0.31% del precio, con volumen."
+URBN,"Urban Outfitters, Inc.",URBN.BA,URBN,2,Consumo,verificado,verificado,URBN,consistencia,"Ratio 2 único, a 0.42% del precio, con volumen."
+USB,U.S. Bancorp,USB.BA,USB,5,Finanzas,verificado,verificado,USB,consistencia,"Ratio 5 único, a 0.43% del precio, con volumen."
+VALE3,VALE3,VALE3.BA,VALE3,,Sin verificar,sin verificar,sin verificar,VALE3,feed,Sin precio del subyacente para verificar el ratio.
+VEA,Vanguard FTSE Developed Markets,VEA.BA,VEA,10,ETFs,verificado,verificado,VEA,consistencia,"Ratio 10 único, a 0.20% del precio, con volumen."
+VIG,VIG,VIG.BA,VIG,,Sin verificar,sin verificar,sin verificar,VIG,feed,El precio no coincide con un único ratio de la grilla.
+VIV,VIV,VIV.BA,VIV,,Sin verificar,sin verificar,sin verificar,VIV,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+VOD,Vodafone Group Plc,VOD.BA,VOD,1,Comunicaciones,verificado,verificado,VOD,consistencia,"Ratio 1 único, a 0.24% del precio, con volumen."
+VRSN,VRSN,VRSN.BA,VRSN,,Sin verificar,sin verificar,sin verificar,VRSN,feed,"El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+VRTX,VRTX,VRTX.BA,VRTX,,Sin verificar,sin verificar,sin verificar,VRTX,feed,El precio no coincide con un único ratio de la grilla.
+VST,VST,VST.BA,VST,,Sin verificar,sin verificar,sin verificar,VST,feed,El precio no coincide con un único ratio de la grilla.
+VXX,iPath Series B S&P 500 VIX Shor,VXX.BA,VXX,5,ETFs,verificado,verificado,VXX,consistencia,"Ratio 5 único, a 0.40% del precio, con volumen."
+VZ,Verizon Communications Inc.,VZ.BA,VZ,4,Comunicaciones,verificado,verificado,VZ,consistencia,"Ratio 4 único, a 0.52% del precio, con volumen."
+WBO,WBO,WBO.BA,WBO,,Sin verificar,sin verificar,sin verificar,WBO,feed,Sin precio del subyacente para verificar el ratio.
+WDC,WDC,WDC.BA,WDC,,Sin verificar,sin verificar,sin verificar,WDC,feed,El precio no coincide con un único ratio de la grilla.
+WEGE3,WEGE3,WEGE3.BA,WEGE3,,Sin verificar,sin verificar,sin verificar,WEGE3,feed,Sin precio del subyacente para verificar el ratio.
+WELL,WELL,WELL.BA,WELL,,Sin verificar,sin verificar,sin verificar,WELL,feed,El precio no coincide con un único ratio de la grilla.
+WFC,WFC,WFC.BA,WFC,5,Sin verificar,verificado,sin verificar,WFC,consistencia,"Ratio 5 único, a 0.17% del precio, con volumen."
+XLRE,State Street Real Estate Select,XLRE.BA,XLRE,9,ETFs,verificado,verificado,XLRE,consistencia,"Ratio 9 único, a 0.28% del precio, con volumen."
+XME,XME,XME.BA,XME,,Sin verificar,sin verificar,sin verificar,XME,feed,El precio no coincide con un único ratio de la grilla.
+XP,XP Inc.,XP.BA,XP,4,Finanzas,verificado,verificado,XP,consistencia,"Ratio 4 único, a 1.02% del precio, con volumen."
+XPEV,XPeng Inc.,XPEV.BA,XPEV,4,Consumo,verificado,verificado,XPEV,consistencia,"Ratio 4 único, a 0.84% del precio, con volumen."
+XROX,XROX,XROX.BA,XROX,,Sin verificar,sin verificar,sin verificar,XROX,feed,Sin precio del subyacente para verificar el ratio.
+XYZ,XYZ,XYZ.BA,XYZ,,Sin verificar,sin verificar,sin verificar,XYZ,feed,El precio no coincide con un único ratio de la grilla.
+YELP,YELP,YELP.BA,YELP,2,Sin verificar,verificado,sin verificar,YELP,consistencia,"Ratio 2 único, a 0.26% del precio, con volumen."
+YZCA,YZCA,YZCA.BA,YZCA,,Sin verificar,sin verificar,sin verificar,YZCA,feed,Sin precio del subyacente para verificar el ratio.
+ZM,ZM,ZM.BA,ZM,,Sin verificar,sin verificar,sin verificar,ZM,feed,El precio no coincide con un único ratio de la grilla.

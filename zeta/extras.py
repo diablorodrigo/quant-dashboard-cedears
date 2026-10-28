@@ -19,7 +19,7 @@ import yfinance as yf
 
 from zeta.senales import fechas_de_balance
 from zeta.tiempo import ahora_art
-from zeta.universo import WATCHLIST
+from zeta.universo import ESTADO_OK, WATCHLIST
 
 SIN_DATO = "Sin dato"
 DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -201,6 +201,8 @@ def bloque_mapa_calor(panel: dict, cerrar_grafico) -> None:
     caps = _capitalizaciones()
     filas = []
     for fila in panel["filas"].itertuples(index=False):
+        if getattr(fila, "sector_estado", ESTADO_OK) == "sin verificar":
+            continue
         hist = panel["historicos"].get(fila.ticker)
         if hist is None or len(hist) <= ruedas:
             continue
@@ -311,6 +313,12 @@ def vista_argentina() -> None:
         v = casas.get(casa, {}).get("venta")
         brecha = f"Brecha {_num(100 * (v / oficial - 1), 1, suf='%')}" if (v and oficial and casa != "oficial") else None
         col.metric(nombre, _num(v, 2, pre="$"), brecha, delta_color="off")
+
+    from zeta.fuentes import cuadro_cambiario
+    from zeta.tiempo import ahora_art as _ahora
+    from zeta.vistas import _cuadro_dolares
+
+    _cuadro_dolares(cuadro_cambiario(ccl_calculado=None, momento=_ahora().isoformat()))
 
     rp = _riesgo_pais()
     mv = _merval_y_adrs()

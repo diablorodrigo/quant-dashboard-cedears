@@ -1,6 +1,6 @@
 # Zeta Finance · Panel de análisis
 
-Tablero de lectura técnica de unos 130 CEDEARs para los clientes de Zeta Finance. Los precios salen de Yahoo Finance. No es una recomendación de inversión.
+Tablero de lectura técnica de CEDEARs para los clientes de Zeta Finance. El precio en vivo sale de data912 y se contrasta con Yahoo; la historia sigue en Yahoo. No es una recomendación de inversión.
 
 ## Cómo correrlo
 
