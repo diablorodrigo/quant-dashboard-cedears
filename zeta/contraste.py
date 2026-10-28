@@ -125,22 +125,20 @@ def contrastar_cotizacion(
         lectura["comparo"] = "frescura"
         return lectura
 
-    if mercado_abierto and not yahoo_es_hoy:
-        previo = cierre_previo(precio_vivo, variacion_pct)
-        lectura = semaforo(previo, precio_yahoo, edad_minutos=None, mercado_abierto=False)
-        if lectura["motivo"]:
-            lectura["motivo"] += " "
-        lectura["motivo"] += "Se contrastó el cierre anterior: Yahoo todavía no tiene la rueda de hoy."
-        lectura["comparo"] = "cierre_anterior"
-        return lectura
+    directo = semaforo(precio_vivo, precio_yahoo, edad_minutos=None, mercado_abierto=False)
+    directo["comparo"] = "precio"
+    # Si el último precio de Yahoo ya está al lado del vivo, no hace falta
+    # reconstruir el cierre: el desvío de verdad es el de ahora.
+    if not mercado_abierto or yahoo_es_hoy or directo["estado"] != ROJO:
+        return directo
 
-    lectura = semaforo(
-        precio_vivo,
-        precio_yahoo,
-        edad_minutos=None,
-        mercado_abierto=False,
-    )
-    lectura["comparo"] = "precio"
+    previo = cierre_previo(precio_vivo, variacion_pct)
+    lectura = semaforo(previo, precio_yahoo, edad_minutos=None, mercado_abierto=False)
+    if lectura["motivo"]:
+        lectura["motivo"] += " "
+    lectura["motivo"] += "Se contrastó el cierre anterior: Yahoo todavía no tiene la rueda de hoy."
+    lectura["comparo"] = "cierre_anterior"
+    lectura["valor_comparado"] = previo
     return lectura
 
 

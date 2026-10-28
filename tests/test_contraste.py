@@ -73,6 +73,20 @@ class Cierre(unittest.TestCase):
         self.assertEqual(lectura["comparo"], "cierre_anterior")
         self.assertFalse(lectura["bloquea_senal"])
 
+    def test_si_los_precios_de_ahora_coinciden_no_usa_el_cierre(self):
+        # El cierre reconstruido se iría lejos, pero el precio vivo y Yahoo ya coinciden.
+        lectura = contrastar_cotizacion(
+            precio_vivo=100.1,
+            variacion_pct=10,
+            precio_yahoo=100,
+            yahoo_es_hoy=False,
+            edad_minutos=1,
+            mercado_abierto=True,
+        )
+        self.assertEqual(lectura["estado"], VERDE)
+        self.assertEqual(lectura["comparo"], "precio")
+        self.assertFalse(lectura["bloquea_senal"])
+
     def test_el_mismo_dia_compara_el_precio(self):
         lectura = contrastar_cotizacion(
             precio_vivo=110,

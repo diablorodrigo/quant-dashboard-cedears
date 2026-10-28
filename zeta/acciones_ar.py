@@ -182,7 +182,6 @@ def vista_acciones_argentinas() -> None:
 
     from zeta.datos import descargar_simbolos
     from zeta.fuentes import cotizaciones_acciones, edad_cache
-    from zeta.marca import aviso
     from zeta.tiempo import ahora_art, mercado_cedears_abierto
     from zeta.universo import cargar_acciones
     from zeta.vistas import _cerrar_grafico, _estilo_variacion, _grafico_rotacion, _tabla_ranking, mostrar_tabla
@@ -194,7 +193,6 @@ def vista_acciones_argentinas() -> None:
         "no se arma con el volumen de una sola rueda, porque antes de las 11 ese número no dice nada. "
         "No es asesoramiento de inversión."
     )
-    aviso()
 
     with st.spinner("Buscando cotizaciones de acciones…"):
         vivos = cotizaciones_acciones() or {}
