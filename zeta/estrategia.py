@@ -3,6 +3,8 @@
 La compra es el cruce de la SMA rápida sobre la media, con volumen.
 La confirmación es el cruce de la rápida sobre la lenta dentro de la ventana:
 en la pantalla es la Compra fuerte. La compra sola es la Compra débil.
+Si la débil se confirma mientras sigue abierta, es la misma posición teórica:
+la tabla muestra una sola fila, Compra fuerte, con las dos fechas.
 
 La entrada teórica es la apertura de la rueda siguiente. Se sale por el stop,
 por tiempo, o por cruce bajista si el config lo activa. «Venta» es esa salida
@@ -440,6 +442,8 @@ def estado_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> dict:
                     "ruedas": trade["dias"],
                     "ret_pct": round(trade["ret"] * 100, 2),
                     "fecha_ultimo": trade["fecha_salida"],
+                    "idx": evento.get("idx"),
+                    "idx_compra": _idx_compra(evento),
                 }
             )
         elif trade["exit_idx"] >= n - int(cfg["recent_days"]):
@@ -456,6 +460,8 @@ def estado_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> dict:
                     "stop": trade["stop"],
                     "ret_pct": round(trade["ret"] * 100, 2),
                     "ruedas": trade["dias"],
+                    "idx": evento.get("idx"),
+                    "idx_compra": _idx_compra(evento),
                 }
             )
     senales_recientes = [e for e in eventos if e["idx"] >= n - int(cfg["recent_days"])]
@@ -478,6 +484,15 @@ def estado_ticker(ticker: str, df: pd.DataFrame, cfg: dict) -> dict:
     }
 
 
+def _idx_compra(evento: dict) -> int | None:
+    """La confirmación apunta a la compra que consumió. Sin eso, no hay cadena."""
+    if evento.get("tipo") != "confirmacion":
+        return None
+    if evento.get("idx") is None or evento.get("dias_desde_compra") is None:
+        return None
+    return int(evento["idx"]) - int(evento["dias_desde_compra"])
+
+
 def fuerza_compra(estado: dict) -> str:
     """La confirmación es la señal fuerte. La compra sola es la débil."""
     if any(p.get("origen") == "confirmacion" for p in estado.get("posiciones_abiertas") or []):
@@ -488,7 +503,12 @@ def fuerza_compra(estado: dict) -> str:
 
 
 def filas_de_estado(estado: dict, ultimo: float | None = None) -> list[dict]:
-    """Una fila por posición abierta y por venta reciente. Sin etiqueta, nada."""
+    """Como máximo una fila vigente por ETF. Sin etiqueta, nada.
+
+    La compra y la confirmación que la consume son la misma posición. Si
+    conviven, queda Compra fuerte: la entrada es la de la compra original
+    y se ven las dos fechas. Dos ventas de esa cadena también colapsan.
+    """
     if not estado.get("etiqueta"):
         return []
     precio = float(ultimo) if ultimo else float(estado["ultimo_cierre"])
@@ -497,8 +517,8 @@ def filas_de_estado(estado: dict, ultimo: float | None = None) -> list[dict]:
         posiciones = estado.get("posiciones_abiertas") or []
         if not posiciones:
             for evento in estado.get("senal_reciente") or []:
-                filas.append(_fila_pendiente(estado, evento, precio, fuertes))
-            return filas
+                filas.append(_fila_pendiente(estado, evento, precio))
+            return consolidar_filas(filas)
         ya = {p["fecha_senal"] for p in posiciones}
         for posicion in posiciones:
             # La confirmación es la señal fuerte. La compra que todavía no confirmó es la débil.
@@ -509,7 +529,11 @@ def filas_de_estado(estado: dict, ultimo: float | None = None) -> list[dict]:
                     "ticker": estado["ticker"],
                     "senal": "Compra fuerte" if es_fuerte else "Compra débil",
                     "fuerza": "fuerte" if es_fuerte else "debil",
+                    "origen": posicion.get("origen") or ("confirmacion" if es_fuerte else "compra"),
                     "fecha": posicion["fecha_senal"],
+                    "fecha_confirmacion": posicion["fecha_senal"] if es_fuerte else None,
+                    "idx": posicion.get("idx"),
+                    "idx_compra": posicion.get("idx_compra"),
                     "precio_entrada": entrada,
                     "stop": posicion.get("stop"),
                     "ultimo": round(precio, 2),
@@ -523,8 +547,8 @@ def filas_de_estado(estado: dict, ultimo: float | None = None) -> list[dict]:
         for evento in estado.get("senal_reciente") or []:
             # Señal del último cierre: la apertura siguiente todavía no existe.
             if evento["fecha"] == estado["fecha"] and evento["fecha"] not in ya:
-                filas.append(_fila_pendiente(estado, evento, precio, False))
-        return filas
+                filas.append(_fila_pendiente(estado, evento, precio))
+        return consolidar_filas(filas)
     for venta in estado.get("ventas_recientes") or []:
         entrada = float(venta["precio_entrada"])
         filas.append(
@@ -532,8 +556,12 @@ def filas_de_estado(estado: dict, ultimo: float | None = None) -> list[dict]:
                 "ticker": estado["ticker"],
                 "senal": "Venta",
                 "fuerza": None,
+                "origen": venta.get("origen") or "compra",
                 "fecha": venta["fecha"],
                 "fecha_senal": venta["fecha_senal"],
+                "fecha_confirmacion": venta["fecha_senal"] if venta.get("origen") == "confirmacion" else None,
+                "idx": venta.get("idx"),
+                "idx_compra": venta.get("idx_compra"),
                 "precio_entrada": entrada,
                 "precio_salida": venta["precio_salida"],
                 "stop": venta.get("stop"),
@@ -548,7 +576,7 @@ def filas_de_estado(estado: dict, ultimo: float | None = None) -> list[dict]:
                 ),
             }
         )
-    return filas
+    return consolidar_filas(filas)
 
 
 def _detalle_compra(fuerte: bool, posicion: dict) -> str:
@@ -565,14 +593,30 @@ def _detalle_compra(fuerte: bool, posicion: dict) -> str:
     )
 
 
-def _fila_pendiente(estado: dict, evento: dict, precio: float, fuertes: bool) -> dict:
-    del fuertes
+def _detalle_confirmada(fila: dict) -> str:
+    compra = fila.get("fecha_compra") or fila.get("fecha")
+    confirmacion = fila.get("fecha_confirmacion")
+    texto = (
+        f"Compra fuerte: la media de 10 cruzó a la de 20 con volumen "
+        f"(compra del {compra}) y después cruzó para arriba a la de 50 "
+        f"(confirmación del {confirmacion}). Es la misma posición teórica."
+    )
+    if fila.get("estado_posicion") == "pendiente" or fila.get("precio_entrada") is None:
+        return texto + " La entrada teórica es la apertura de la rueda siguiente; todavía no hay precio."
+    return texto + f" Va por la rueda {fila.get('ruedas')} desde la entrada."
+
+
+def _fila_pendiente(estado: dict, evento: dict, precio: float) -> dict:
     fuerte = evento.get("tipo") == "confirmacion"
     return {
         "ticker": estado["ticker"],
         "senal": "Compra fuerte" if fuerte else "Compra débil",
         "fuerza": "fuerte" if fuerte else "debil",
+        "origen": evento.get("tipo") or "compra",
         "fecha": evento["fecha"],
+        "fecha_confirmacion": evento["fecha"] if fuerte else None,
+        "idx": evento.get("idx"),
+        "idx_compra": _idx_compra(evento),
         "precio_entrada": None,
         "stop": evento.get("stop_sugerido"),
         "ultimo": round(precio, 2),
@@ -582,6 +626,126 @@ def _fila_pendiente(estado: dict, evento: dict, precio: float, fuertes: bool) ->
         "motivo": None,
         "detalle": "La señal es de este cierre. La entrada teórica es la apertura de la rueda siguiente; todavía no hay precio.",
     }
+
+
+def _fecha_de_senal(fila: dict) -> str:
+    if fila.get("estado_posicion") == "cerrada":
+        return str(fila.get("fecha_senal") or fila.get("fecha") or "")
+    return str(fila.get("fecha") or "")
+
+
+def _es_confirmacion(fila: dict) -> bool:
+    # Una fila ya fusionada conserva el origen «compra» y la etiqueta fuerte.
+    # No vuelve a buscar otra compra a la que pegarse.
+    if fila.get("origen") == "compra":
+        return False
+    return fila.get("origen") == "confirmacion" or fila.get("fuerza") == "fuerte"
+
+
+def _buscar_origen(confirmacion: dict, compras: list[dict], usadas: set[int]) -> dict | None:
+    idx_compra = confirmacion.get("idx_compra")
+    if idx_compra is not None:
+        for compra in compras:
+            if id(compra) not in usadas and compra.get("idx") == idx_compra:
+                return compra
+        # El idx dice a qué compra pertenece. Si esa compra no está en la lista,
+        # no se toma otra: sería otra posición.
+        return None
+    limite = _fecha_de_senal(confirmacion)
+    candidatas = [c for c in compras if id(c) not in usadas and _fecha_de_senal(c) <= limite]
+    if not candidatas:
+        return None
+    return max(candidatas, key=_fecha_de_senal)
+
+
+def _fusionar(origen: dict, confirmacion: dict) -> dict:
+    """La confirmación no abre otra posición: sube la etiqueta y deja la entrada original."""
+    if origen.get("estado_posicion") == "cerrada" and confirmacion.get("estado_posicion") == "cerrada":
+        return _fusionar_venta(origen, confirmacion)
+    if origen.get("precio_entrada") is not None and origen.get("estado_posicion") != "pendiente":
+        fila = dict(origen)
+    elif confirmacion.get("precio_entrada") is not None and confirmacion.get("estado_posicion") != "pendiente":
+        fila = dict(confirmacion)
+    else:
+        fila = dict(origen)
+    fila["senal"] = "Compra fuerte"
+    fila["fuerza"] = "fuerte"
+    fila["fecha"] = origen.get("fecha") or fila.get("fecha")
+    fila["fecha_compra"] = _fecha_de_senal(origen)
+    fila["fecha_confirmacion"] = _fecha_de_senal(confirmacion)
+    fila["detalle"] = _detalle_confirmada(fila)
+    return fila
+
+
+def _fusionar_venta(origen: dict, confirmacion: dict) -> dict:
+    """Una sola salida: la de la compra original. La confirmación no suma otra venta."""
+    fila = dict(origen)
+    fila["senal"] = "Venta"
+    fila["fuerza"] = None
+    fila["fecha_compra"] = origen.get("fecha_senal") or origen.get("fecha")
+    fila["fecha_confirmacion"] = confirmacion.get("fecha_senal") or _fecha_de_senal(confirmacion)
+    motivo = MOTIVOS_SALIDA.get(fila.get("motivo"), "")
+    fila["detalle"] = (
+        f"Salió el {fila['fecha']}. {motivo} "
+        f"La compra fue el {fila['fecha_compra']} y se confirmó el {fila['fecha_confirmacion']}. "
+        "Es la misma posición teórica. "
+        "No es una instrucción de vender lo que tengas: es la salida de la posición teórica."
+    )
+    return fila
+
+
+def _prioridad_vigente(fila: dict) -> tuple:
+    """Fuerte le gana a débil. Si empatan, la que ya tiene entrada y, después, la más reciente."""
+    rango = {"fuerte": 2, "debil": 1}.get(fila.get("fuerza") or "", 0)
+    con_entrada = 0 if fila.get("estado_posicion") == "pendiente" or fila.get("precio_entrada") is None else 1
+    momento = max(str(fila.get("fecha") or ""), str(fila.get("fecha_confirmacion") or ""))
+    return (rango, con_entrada, momento)
+
+
+def _unir_cadenas(filas: list[dict]) -> list[dict]:
+    compras = [fila for fila in filas if not _es_confirmacion(fila)]
+    confirmaciones = [fila for fila in filas if _es_confirmacion(fila)]
+    usadas: set[int] = set()
+    consumidas: set[int] = set()
+    unidas: list[dict] = []
+    for confirmacion in confirmaciones:
+        origen = _buscar_origen(confirmacion, compras, usadas)
+        if origen is None:
+            continue
+        usadas.add(id(origen))
+        consumidas.add(id(confirmacion))
+        unidas.append(_fusionar(origen, confirmacion))
+    for fila in filas:
+        if id(fila) in usadas or id(fila) in consumidas:
+            continue
+        unidas.append(fila)
+    return unidas
+
+
+def consolidar_filas(filas: list[dict]) -> list[dict]:
+    """Como máximo una fila vigente por ticker."""
+    if len(filas) <= 1:
+        return list(filas)
+    grupos: dict[str, list[dict]] = {}
+    orden: list[str] = []
+    for fila in filas:
+        ticker = str(fila.get("ticker") or "")
+        if ticker not in grupos:
+            orden.append(ticker)
+            grupos[ticker] = []
+        grupos[ticker].append(fila)
+    salida: list[dict] = []
+    for ticker in orden:
+        grupo = grupos[ticker]
+        if len(grupo) == 1:
+            salida.extend(grupo)
+            continue
+        unidas = _unir_cadenas(grupo)
+        if len(unidas) <= 1:
+            salida.extend(unidas)
+            continue
+        salida.append(max(unidas, key=_prioridad_vigente))
+    return salida
 
 
 def aplicar_semaforo(filas: list[dict], lecturas: dict[str, dict]) -> tuple[list[dict], list[dict]]:

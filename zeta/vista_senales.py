@@ -119,6 +119,35 @@ def _cuadrantes(ranking: pd.DataFrame | None) -> dict[str, str]:
     return {str(fila.Ticker): str(fila.Cuadrante) for fila in ranking.itertuples(index=False)}
 
 
+def _marcas_rrg(filas: list[dict], cuadrantes: dict[str, str]) -> list[dict]:
+    """Un rombo o una cruz por ETF. Si hubiera dos filas, manda la etiqueta más avanzada."""
+    prioridad = {"fuerte": 2, "debil": 1}
+    ordenadas = sorted(
+        filas,
+        key=lambda fila: (
+            prioridad.get(fila.get("fuerza") or "", 0),
+            str(fila.get("fecha_confirmacion") or ""),
+            str(fila.get("fecha") or ""),
+        ),
+        reverse=True,
+    )
+    marcas = []
+    vistos: set[str] = set()
+    for fila in ordenadas:
+        if fila["ticker"] in vistos or fila["ticker"] not in cuadrantes:
+            continue
+        vistos.add(fila["ticker"])
+        marcas.append(
+            {
+                "ticker": fila["ticker"],
+                "senal": fila["senal"],
+                "cuadrante": fila.get("cuadrante"),
+                "relacion": fila.get("rrg"),
+            }
+        )
+    return marcas
+
+
 def _anotar_rrg(filas: list[dict], cuadrantes: dict[str, str]) -> None:
     for fila in filas:
         crudo = cuadrantes.get(fila["ticker"])
@@ -183,6 +212,7 @@ def _tabla(filas: list[dict], *, cerradas: bool) -> pd.DataFrame:
             "Ticker": fila["ticker"],
             "Señal": fila["senal"],
             "Fecha": fila["fecha"],
+            "Confirmación": fila.get("fecha_confirmacion") or "—",
             "Entrada teórica": _ars(fila.get("precio_entrada")),
             "Stop": _ars(fila.get("stop")),
             "Último precio": _ars(fila.get("ultimo")),
@@ -220,7 +250,8 @@ def vista_senales() -> None:
     monedas = {e["ticker"]: e.get("moneda") or "ARS" for e in especies}
     st.caption(
         "Cruce de la media de 10 sobre la de 20, con volumen de al menos 1,5 veces el promedio. "
-        "Si dentro de las 30 ruedas la media de 10 cruza la de 50, la compra pasa a ser fuerte. "
+        "Si dentro de las 30 ruedas la media de 10 cruza la de 50, la compra pasa a ser fuerte "
+        "y el ETF sigue en una sola fila. "
         "La entrada teórica es la apertura de la rueda siguiente. "
         "Se sale por un stop fijo del 7% o a las 20 ruedas, lo que pase primero. "
         "En los ETFs en USD MEP, el precio, el stop y el retorno están en dólares MEP, "
@@ -328,6 +359,8 @@ def vista_senales() -> None:
     st.caption(
         "Compra fuerte es la que ya confirmó con la media de 50. "
         "Compra débil es el cruce de 10 sobre 20 con volumen, todavía sin esa confirmación. "
+        "Si la débil se confirma, queda una sola fila: Compra fuerte, con la fecha de la compra "
+        "y la de la confirmación. La entrada, el stop y las ruedas son los de esa primera entrada. "
         "«Desde la señal» compara el precio de ahora con la entrada teórica, sin costos."
     )
     if abiertas:
@@ -342,7 +375,8 @@ def vista_senales() -> None:
     st.markdown("#### Salidas recientes")
     st.caption(
         "Estas ventas ya cerraron la posición teórica. La fecha es la de la salida, no la de hoy. "
-        "El resultado es bruto, sin el costo de la vuelta."
+        "El resultado es bruto, sin el costo de la vuelta. "
+        "Cada ETF aparece una sola vez: la confirmación no suma otra venta."
     )
     if cerradas:
         mostrar_tabla(
@@ -369,22 +403,8 @@ def vista_senales() -> None:
     if colas is None or getattr(colas, "empty", True):
         st.info("No hay rotación para cruzar. Si Yahoo no trajo al SPY y a los ETFs de sector, el cuadrante queda vacío.")
     else:
-        marcas = []
-        vistos: set[str] = set()
-        for fila in abiertas + cerradas:
-            if fila["ticker"] in vistos or fila["ticker"] not in cuadrantes:
-                continue
-            vistos.add(fila["ticker"])
-            marcas.append(
-                {
-                    "ticker": fila["ticker"],
-                    "senal": fila["senal"],
-                    "cuadrante": fila.get("cuadrante"),
-                    "relacion": fila.get("rrg"),
-                }
-            )
         st.plotly_chart(
-            _grafico_rotacion(colas, marcas=marcas),
+            _grafico_rotacion(colas, marcas=_marcas_rrg(abiertas + cerradas, cuadrantes)),
             width="stretch",
             theme=None,
             key="rrg_senales",
