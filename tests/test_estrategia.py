@@ -611,6 +611,51 @@ class UnaFilaPorEtf(unittest.TestCase):
         self.assertEqual(por_ticker["IJH"]["senal"], "Compra débil")
         self.assertEqual(por_ticker["XLP"]["relacion"], "coincide")
 
+    def test_en_el_universo_de_referencia_solo_vig_xlp_y_xlb_venian_duplicados(self):
+        import json
+        from pathlib import Path
+
+        doc = json.loads(Path("tests/fixtures/senales_etf_v3.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            sorted(estado["ticker"] for estado in doc["estado"]),
+            sorted(tickers_de(cargar_config())),
+        )
+        duplicados = []
+        filas = []
+        for estado in doc["estado"]:
+            abiertas = estado.get("posiciones_abiertas") or []
+            ventas = estado.get("ventas_recientes") or []
+            self.assertLessEqual(len(ventas), 1, estado["ticker"])
+            if len(abiertas) > 1 or len(ventas) > 1:
+                duplicados.append(estado["ticker"])
+            if estado.get("etiqueta") != "Compra":
+                continue
+            hechas = filas_de_estado(estado, estado.get("ultimo_cierre"))
+            self.assertLessEqual(len(hechas), 1, estado["ticker"])
+            filas.extend(hechas)
+        self.assertEqual(duplicados, ["XLP", "XLB", "VIG"])
+        self.assertEqual(len({f["ticker"] for f in filas}), len(filas))
+        por_ticker = {f["ticker"]: f for f in filas}
+        for ticker, compra, confirmacion in (
+            ("XLP", "2026-10-15", "2026-10-19"),
+            ("XLB", "2026-10-16", "2026-10-26"),
+            ("VIG", "2026-10-02", "2026-10-15"),
+        ):
+            fila = por_ticker[ticker]
+            self.assertEqual(fila["senal"], "Compra fuerte")
+            self.assertEqual(fila["fecha"], compra)
+            self.assertEqual(fila["fecha_confirmacion"], confirmacion)
+        # Los que ya tenían una sola señal no cambian de etiqueta.
+        self.assertEqual(por_ticker["IJH"]["senal"], "Compra débil")
+        self.assertEqual(por_ticker["IEMG"]["senal"], "Compra débil")
+        self.assertIsNone(por_ticker["IJH"]["fecha_confirmacion"])
+        ventas = {
+            estado["ticker"]
+            for estado in doc["estado"]
+            if estado.get("etiqueta") == "Venta" and len(estado.get("ventas_recientes") or []) == 1
+        }
+        self.assertEqual(ventas, {"EWZ", "QQQ", "EEM", "CIBR"})
+
     def test_la_serie_no_duplica_ni_inventa_una_confirmacion(self):
         precios = np.r_[np.linspace(100, 80, 150), np.linspace(80, 130, 150)]
         volumen = np.full(300, 1000.0)
