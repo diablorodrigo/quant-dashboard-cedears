@@ -18,6 +18,7 @@ from zeta.estrategia import (
     estado_ticker,
     filas_de_estado,
     recortar_vela_abierta,
+    especies_de,
     relacion_rrg,
     tickers_de,
     universo_por_id,
@@ -53,13 +54,20 @@ def _historia(simbolos: tuple[str, ...], periodo: str) -> dict:
     return {"series": series, "faltan": faltan}
 
 
-def _lecturas(historias: dict[str, pd.DataFrame], vivos: dict | None, ahora: pd.Timestamp) -> dict[str, dict]:
+def _lecturas(
+    historias: dict[str, pd.DataFrame],
+    vivos: dict | None,
+    especies: list[dict],
+    ahora: pd.Timestamp,
+) -> dict[str, dict]:
     lecturas = {}
     mercado = mercado_cedears_abierto(ahora)
     edad = edad_cache("cedears")
     hoy = pd.Timestamp(ahora.date())
-    for ticker, df in historias.items():
-        quote = (vivos or {}).get(ticker)
+    for especie in especies:
+        ticker = especie["ticker"]
+        df = historias.get(ticker)
+        quote = (vivos or {}).get(especie.get("simbolo_data912") or ticker)
         if df is None or df.empty or "Close" not in df.columns:
             continue
         cierre = float(df["Close"].iloc[-1])
@@ -178,6 +186,7 @@ def _tabla(filas: list[dict], *, cerradas: bool) -> pd.DataFrame:
             "Stop": _ars(fila.get("stop")),
             "Último precio": _ars(fila.get("ultimo")),
             "Desde la señal": _pct(fila.get("desde_senal")),
+            "Moneda": fila.get("moneda") or "ARS",
             "Ruedas": "—" if fila.get("ruedas") is None else str(fila["ruedas"]),
             "Cuadrante RRG": fila.get("cuadrante") or "Sin cuadrante",
             "Con el RRG": {"coincide": "Coincide", "contradice": "Se contradice"}.get(fila.get("rrg"), "Sin cuadrante"),
@@ -206,11 +215,16 @@ def vista_senales() -> None:
     if universo.get("nota"):
         st.caption(universo["nota"])
     tickers = tickers_de(cfg, elegido)
+    especies = especies_de(cfg, elegido)
+    monedas = {e["ticker"]: e.get("moneda") or "ARS" for e in especies}
     st.caption(
         "Cruce de la media de 10 sobre la de 20, con volumen de al menos 1,5 veces el promedio. "
         "Si dentro de las 30 ruedas la media de 10 cruza la de 50, la compra pasa a ser fuerte. "
         "La entrada teórica es la apertura de la rueda siguiente. "
-        "Se sale por un stop fijo del 7% o a las 20 ruedas, lo que pase primero."
+        "Se sale por un stop fijo del 7% o a las 20 ruedas, lo que pase primero. "
+        "En los ETFs en USD MEP, el precio, el stop y el retorno están en dólares MEP, "
+        "sin el efecto del CCL, y no se comparan uno a uno con los de pesos. "
+        "Esa historia tiene unos 20 meses."
     )
     st.info(
         "Venta no quiere decir que vendas lo que tengas. "
@@ -218,9 +232,9 @@ def vista_senales() -> None:
         "tocó el stop, cumplió las 20 ruedas, o cruzó para abajo si esa salida está activada en el config."
     )
 
-    with st.spinner("Armando las señales con la historia en pesos…"):
+    with st.spinner("Armando las señales…"):
         ahora = ahora_art()
-        pares = {ticker: _yahoo(ticker) for ticker in _todos(cfg)}
+        pares = {e["ticker"]: e["simbolo_yahoo"] for e in especies} or {ticker: _yahoo(ticker) for ticker in tickers}
         crudo = _historia(tuple(pares.values()), str(cfg.get("history_period") or "5y"))
         historias = {}
         for ticker, yahoo in pares.items():
@@ -232,7 +246,7 @@ def vista_senales() -> None:
                 continue
             historias[ticker] = serie
         vivos = cotizaciones_cedears() or {}
-        lecturas = _lecturas(historias, vivos, ahora)
+        lecturas = _lecturas(historias, vivos, especies, ahora)
         filas = []
         sin_datos = [ticker for ticker in tickers if ticker not in historias]
         for ticker in tickers:
@@ -242,10 +256,14 @@ def vista_senales() -> None:
             estado = estado_ticker(ticker, serie, cfg)
             ultimo = None
             lectura = lecturas.get(ticker) or {}
-            quote = vivos.get(ticker) or {}
+            simbolo = next((e["simbolo_data912"] for e in especies if e["ticker"] == ticker), ticker)
+            quote = vivos.get(simbolo) or {}
             if quote.get("c") is not None and not lectura.get("bloquea_senal"):
                 ultimo = float(quote["c"])
-            filas.extend(filas_de_estado(estado, ultimo))
+            nuevas = filas_de_estado(estado, ultimo)
+            for fila in nuevas:
+                fila["moneda"] = monedas.get(ticker, "ARS")
+            filas.extend(nuevas)
         emitidas, bloqueadas = aplicar_semaforo(filas, lecturas)
         cuadrantes = {}
         rotacion = {"ranking": pd.DataFrame(), "colas": pd.DataFrame(), "frase": ""}
@@ -369,27 +387,6 @@ def vista_senales() -> None:
         if rotacion.get("frase"):
             st.caption(rotacion["frase"])
 
-    sin_historia = universo.get("sin_historia") or []
-    if sin_historia:
-        st.markdown("**Sin señal, porque no hay historia en pesos**")
-        st.caption(
-            "Estos sectoriales están en el gráfico de rotación del Panel, "
-            "pero ni Yahoo .BA ni data912 tienen su serie en pesos. No se les calcula Compra ni Venta."
-        )
-        mostrar_tabla(
-            pd.DataFrame(
-                [
-                    {
-                        "Ticker": ticker,
-                        "Señal": "Sin señal (sin historia en pesos)",
-                        "Cuadrante RRG": NOMBRE_CUADRANTE.get(cuadrantes.get(ticker), cuadrantes.get(ticker) or "Sin cuadrante"),
-                    }
-                    for ticker in sin_historia
-                ]
-            ),
-            alto=320,
-        )
-
     _bloque_backtest(backtest, elegido)
     with st.expander("Parámetros y limitaciones"):
         st.markdown(
@@ -410,8 +407,7 @@ def _bloque_backtest(backtest: dict, universo_id: str) -> None:
     st.caption(
         "La tabla no se recalcula con los precios de hoy. "
         "El 0,6% y el 1,2% son un supuesto de ida y vuelta, no la tarifa de un broker, y no incluyen impuestos. "
-        "Para cambiar las cifras se edita data/estrategia_backtest.json. "
-        "La v3 de ETFs entra en ese archivo, con id etfs, sin tocar esta pantalla."
+        "Para cambiar las cifras se edita data/estrategia_backtest.json."
     )
     estudios = backtest.get("estudios") or []
     propio = next((e for e in estudios if e.get("id") == universo_id), None)

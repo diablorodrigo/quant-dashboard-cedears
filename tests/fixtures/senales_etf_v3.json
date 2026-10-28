@@ -1,7 +1,7 @@
 {
  "meta": {
   "fuente": "Yahoo Finance via yfinance (BYMA .BA, ARS, auto_adjust) con ajuste de cambios de ratio vs ETF en EE.UU.; contraste data912",
-  "generado": "2026-10-28T11:56-03:00",
+  "generado": "2026-10-28T12:13-03:00",
   "config": {
    "suffix": ".BA",
    "period": "2y",
@@ -45,6 +45,8 @@
    "tendencia": "10>20",
    "senal_reciente": [],
    "stop_sugerido_hoy": 43077.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "XLF.BA",
    "origen": "WATCHLIST",
    "nombre": "State Street Financial Select Sector SPDR ETF",
    "tipo_activo": "Financial",
@@ -63,6 +65,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 11476.2,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "GLD.BA",
    "origen": "WATCHLIST",
    "nombre": "SPDR Gold Shares",
    "tipo_activo": "Commodities Focused",
@@ -81,6 +85,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 19278.9,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "EEM.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares MSCI Emerging Markets ETF",
    "tipo_activo": "Diversified Emerging Mkts",
@@ -111,6 +117,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 43077.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IWM.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares Russell 2000 ETF",
    "tipo_activo": "Small Blend",
@@ -129,12 +137,62 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 52475.25,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "XLE.BA",
    "origen": "WATCHLIST",
    "nombre": "State Street Energy Select Sector SPDR ETF",
    "tipo_activo": "Equity Energy",
    "ventas_recientes": [],
    "posiciones_abiertas": [],
    "etiqueta": null
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 5.79,
+   "sma10": 5.78,
+   "sma20": 5.57,
+   "sma50": 5.54,
+   "atr14": 0.13,
+   "tendencia": "alcista",
+   "senal_reciente": [
+    {
+     "tipo": "compra",
+     "fecha": "2026-10-15",
+     "stop_sugerido": 5.28
+    },
+    {
+     "tipo": "confirmacion",
+     "fecha": "2026-10-19",
+     "stop_sugerido": 5.36
+    }
+   ],
+   "stop_sugerido_hoy": 5.38,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLPD.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Consumer Staples Select Sector SPDR ETF",
+   "tipo_activo": "Consumer Defensive",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [
+    {
+     "origen": "compra",
+     "fecha_senal": "2026-10-15",
+     "precio_entrada": 5.72,
+     "stop": 5.32,
+     "ruedas": 8,
+     "ret_pct": 1.22
+    },
+    {
+     "origen": "confirmacion",
+     "fecha_senal": "2026-10-19",
+     "precio_entrada": 5.76,
+     "stop": 5.36,
+     "ruedas": 6,
+     "ret_pct": 0.52
+    }
+   ],
+   "etiqueta": "Compra"
   },
   {
    "ticker": "XLU",
@@ -147,6 +205,8 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 4394.25,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "XLU.BA",
    "origen": "WATCHLIST",
    "nombre": "State Street Utilities Select Sector SPDR ETF",
    "tipo_activo": "Utilities",
@@ -165,6 +225,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 12889.8,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "ARKK.BA",
    "origen": "WATCHLIST",
    "nombre": "ARK Innovation ETF",
    "tipo_activo": "Mid-Cap Growth",
@@ -183,6 +245,8 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 26523.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "EWZ.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares MSCI Brazil ETF",
    "tipo_activo": "Focused Region",
@@ -213,6 +277,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 7044.75,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IBIT.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares Bitcoin Trust ETF",
    "tipo_activo": "Digital Assets",
@@ -231,6 +297,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 55567.5,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "QQQ.BA",
    "origen": "WATCHLIST",
    "nombre": "Invesco QQQ Trust",
    "tipo_activo": "Large Growth",
@@ -261,6 +329,8 @@
    "tendencia": "10>20",
    "senal_reciente": [],
    "stop_sugerido_hoy": 40306.2,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "DIA.BA",
    "origen": "WATCHLIST",
    "nombre": "State Street SPDR Dow Jones Industrial Average ETF Trust",
    "tipo_activo": "Large Value",
@@ -279,9 +349,31 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 16758.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "USO.BA",
    "origen": "WATCHLIST",
    "nombre": "United States Oil Fund, LP",
    "tipo_activo": "Commodities Focused",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
+   "ticker": "XLV",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 6.55,
+   "sma10": 6.5,
+   "sma20": 6.3,
+   "sma50": 6.21,
+   "atr14": 0.16,
+   "tendencia": "alcista",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 6.09,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLVD.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Health Care Select Sector SPDR ETF",
+   "tipo_activo": "Health",
    "ventas_recientes": [],
    "posiciones_abiertas": [],
    "etiqueta": null
@@ -297,6 +389,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 12592.2,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "SLV.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares Silver Trust",
    "tipo_activo": "Commodities Focused",
@@ -315,9 +409,139 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 10499.7,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "EWJ.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares MSCI Japan ETF",
    "tipo_activo": "Japan Stock",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
+   "ticker": "XLY",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 2.87,
+   "sma10": 2.81,
+   "sma20": 2.76,
+   "sma50": 2.77,
+   "atr14": 0.05,
+   "tendencia": "10>20",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 2.67,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLYD.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Consumer Discretionary Select Sector SPDR ETF",
+   "tipo_activo": "Consumer Cyclical",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
+   "ticker": "XLB",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 3.06,
+   "sma10": 3.01,
+   "sma20": 2.94,
+   "sma50": 2.98,
+   "atr14": 0.05,
+   "tendencia": "10>20",
+   "senal_reciente": [
+    {
+     "tipo": "compra",
+     "fecha": "2026-10-16",
+     "stop_sugerido": 2.77
+    },
+    {
+     "tipo": "confirmacion",
+     "fecha": "2026-10-26",
+     "stop_sugerido": 2.87
+    }
+   ],
+   "stop_sugerido_hoy": 2.85,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLBD.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Materials Select Sector SPDR ETF",
+   "tipo_activo": "Natural Resources",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [
+    {
+     "origen": "compra",
+     "fecha_senal": "2026-10-16",
+     "precio_entrada": 3.01,
+     "stop": 2.8,
+     "ruedas": 7,
+     "ret_pct": 1.66
+    },
+    {
+     "origen": "confirmacion",
+     "fecha_senal": "2026-10-26",
+     "precio_entrada": 3.02,
+     "stop": 2.81,
+     "ruedas": 1,
+     "ret_pct": 1.32
+    }
+   ],
+   "etiqueta": "Compra"
+  },
+  {
+   "ticker": "XLC",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 5.83,
+   "sma10": 6.05,
+   "sma20": 6.08,
+   "sma50": 6.15,
+   "atr14": 0.07,
+   "tendencia": "bajista/neutral",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 5.42,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLCD.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Communication Services Select Sector SPDR ETF",
+   "tipo_activo": "Communications",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
+   "ticker": "XLI",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 6.4,
+   "sma10": 6.33,
+   "sma20": 6.34,
+   "sma50": 6.43,
+   "atr14": 0.13,
+   "tendencia": "bajista/neutral",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 5.95,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLID.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Industrial Select Sector SPDR ETF",
+   "tipo_activo": "Industrials",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
+   "ticker": "XLK",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 4.37,
+   "sma10": 4.31,
+   "sma20": 4.42,
+   "sma50": 4.32,
+   "atr14": 0.13,
+   "tendencia": "bajista/neutral",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 4.06,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLKD.BA",
+   "origen": "WATCHLIST",
+   "nombre": "State Street Technology Select Sector SPDR ETF",
+   "tipo_activo": "Technology",
    "ventas_recientes": [],
    "posiciones_abiertas": [],
    "etiqueta": null
@@ -333,6 +557,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 11057.7,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "URA.BA",
    "origen": "WATCHLIST",
    "nombre": "Global X Uranium ETF",
    "tipo_activo": "Natural Resources",
@@ -351,6 +577,8 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 19771.8,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "SPY.BA",
    "origen": "WATCHLIST",
    "nombre": "State Street SPDR S&P 500 ETF Trust",
    "tipo_activo": "Large Blend",
@@ -369,6 +597,8 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 12117.9,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IBB.BA",
    "origen": "WATCHLIST",
    "nombre": "iShares Biotechnology ETF",
    "tipo_activo": "Health",
@@ -387,6 +617,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 17195.7,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "SMH.BA",
    "origen": "WATCHLIST",
    "nombre": "VanEck Semiconductor ETF",
    "tipo_activo": "Technology",
@@ -405,6 +637,8 @@
    "tendencia": "alcista",
    "senal_reciente": [],
    "stop_sugerido_hoy": 16926.0,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "CIBR.BA",
    "origen": "agregado",
    "nombre": "First Trust NASDAQ Cybersecurity ETF",
    "tipo_activo": "Technology",
@@ -435,6 +669,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 16293.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "ETHA.BA",
    "origen": "agregado",
    "nombre": "iShares Ethereum Trust ETF",
    "tipo_activo": "Digital Assets",
@@ -453,6 +689,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 9960.3,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "FXI.BA",
    "origen": "agregado",
    "nombre": "iShares China Large-Cap ETF",
    "tipo_activo": "Greater China Region",
@@ -471,6 +709,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 12731.7,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "GDX.BA",
    "origen": "agregado",
    "nombre": "VanEck Gold Miners ETF",
    "tipo_activo": "Equity Precious Metals",
@@ -489,6 +729,8 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 9811.5,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IEMG.BA",
    "origen": "agregado",
    "nombre": "iShares Core MSCI Emerging Markets ETF",
    "tipo_activo": "Diversified Emerging Mkts",
@@ -516,6 +758,8 @@
    "tendencia": "10>20",
    "senal_reciente": [],
    "stop_sugerido_hoy": 10304.4,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IEUR.BA",
    "origen": "agregado",
    "nombre": "iShares Core MSCI Europe ETF",
    "tipo_activo": "Europe Stock",
@@ -534,6 +778,8 @@
    "tendencia": "10>20",
    "senal_reciente": [],
    "stop_sugerido_hoy": 9411.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IJH.BA",
    "origen": "agregado",
    "nombre": "iShares Core S&P Mid-Cap ETF",
    "tipo_activo": "Mid-Cap Blend",
@@ -551,6 +797,26 @@
    "etiqueta": "Compra"
   },
   {
+   "ticker": "IVE",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 6.38,
+   "sma10": 6.28,
+   "sma20": 6.17,
+   "sma50": 6.16,
+   "atr14": 0.09,
+   "tendencia": "alcista",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 5.93,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "IVED.BA",
+   "origen": "agregado",
+   "nombre": "iShares S&P 500 Value ETF",
+   "tipo_activo": "Large Value",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
    "ticker": "IVW",
    "fecha": "2026-10-27",
    "ultimo_cierre": 11500.0,
@@ -561,9 +827,31 @@
    "tendencia": "bajista/neutral",
    "senal_reciente": [],
    "stop_sugerido_hoy": 10695.0,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "IVW.BA",
    "origen": "agregado",
    "nombre": "iShares S&P 500 Growth ETF",
    "tipo_activo": "Large Growth",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
+  },
+  {
+   "ticker": "VEA",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 7.48,
+   "sma10": 7.39,
+   "sma20": 7.4,
+   "sma50": 7.52,
+   "atr14": 0.14,
+   "tendencia": "bajista/neutral",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 6.96,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "VEAD.BA",
+   "origen": "agregado",
+   "nombre": "Vanguard FTSE Developed Markets Index Fund ETF Shares",
+   "tipo_activo": "Foreign Large Blend",
    "ventas_recientes": [],
    "posiciones_abiertas": [],
    "etiqueta": null
@@ -585,6 +873,8 @@
     }
    ],
    "stop_sugerido_hoy": 9690.6,
+   "serie": "ARS (especie pesos)",
+   "simbolo_fuente": "VIG.BA",
    "origen": "agregado",
    "nombre": "Vanguard Dividend Appreciation Index Fund ETF Shares",
    "tipo_activo": "Large Blend",
@@ -608,6 +898,26 @@
     }
    ],
    "etiqueta": "Compra"
+  },
+  {
+   "ticker": "XLRE",
+   "fecha": "2026-10-27",
+   "ultimo_cierre": 5.02,
+   "sma10": 4.96,
+   "sma20": 4.87,
+   "sma50": 4.98,
+   "atr14": 0.1,
+   "tendencia": "10>20",
+   "senal_reciente": [],
+   "stop_sugerido_hoy": 4.67,
+   "serie": "USD MEP (especie D)",
+   "simbolo_fuente": "XLRED.BA",
+   "origen": "agregado",
+   "nombre": "State Street Real Estate Select Sector SPDR ETF",
+   "tipo_activo": "Real Estate",
+   "ventas_recientes": [],
+   "posiciones_abiertas": [],
+   "etiqueta": null
   }
  ],
  "senales": [
@@ -656,7 +966,7 @@
    "precio": 28546.47,
    "ratio_volumen": 1.44,
    "sma10_sobre_sma50": true,
-   "stop_sugerido": 26548.22,
+   "stop_sugerido": 26548.21,
    "dias_desde_compra": 16
   },
   {
@@ -707,6 +1017,15 @@
    "stop_sugerido": 9369.75
   },
   {
+   "ticker": "XLK",
+   "fecha": "2025-04-25",
+   "tipo": "compra",
+   "precio": 2.32,
+   "ratio_volumen": 1.63,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 2.16
+  },
+  {
    "ticker": "IEUR",
    "fecha": "2025-05-07",
    "tipo": "compra",
@@ -714,6 +1033,24 @@
    "ratio_volumen": 2.33,
    "sma10_sobre_sma50": false,
    "stop_sugerido": 6286.8
+  },
+  {
+   "ticker": "XLY",
+   "fecha": "2025-05-13",
+   "tipo": "compra",
+   "precio": 2.54,
+   "ratio_volumen": 2.97,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 2.36
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2025-05-19",
+   "tipo": "compra",
+   "precio": 5.26,
+   "ratio_volumen": 3.17,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.89
   },
   {
    "ticker": "IEUR",
@@ -733,6 +1070,15 @@
    "ratio_volumen": 2.01,
    "sma10_sobre_sma50": false,
    "stop_sugerido": 22919.74
+  },
+  {
+   "ticker": "XLV",
+   "fecha": "2025-06-11",
+   "tipo": "compra",
+   "precio": 4.71,
+   "ratio_volumen": 4.09,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 4.38
   },
   {
    "ticker": "XLE",
@@ -781,6 +1127,53 @@
    "stop_sugerido": 7198.2
   },
   {
+   "ticker": "XLY",
+   "fecha": "2025-07-04",
+   "tipo": "compra",
+   "precio": 2.59,
+   "ratio_volumen": 2.74,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 2.41
+  },
+  {
+   "ticker": "XLV",
+   "fecha": "2025-07-11",
+   "tipo": "confirmacion",
+   "precio": 4.7,
+   "ratio_volumen": 0.75,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.38,
+   "dias_desde_compra": 19
+  },
+  {
+   "ticker": "VEA",
+   "fecha": "2025-08-04",
+   "tipo": "compra",
+   "precio": 5.71,
+   "ratio_volumen": 8.44,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.31
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2025-08-07",
+   "tipo": "compra",
+   "precio": 5.35,
+   "ratio_volumen": 1.65,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 4.97
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2025-08-11",
+   "tipo": "confirmacion",
+   "precio": 5.18,
+   "ratio_volumen": 1.02,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.82,
+   "dias_desde_compra": 2
+  },
+  {
    "ticker": "IJH",
    "fecha": "2025-08-25",
    "tipo": "compra",
@@ -817,6 +1210,24 @@
    "stop_sugerido": 36770.85
   },
   {
+   "ticker": "XLB",
+   "fecha": "2025-09-02",
+   "tipo": "compra",
+   "precio": 2.56,
+   "ratio_volumen": 20.76,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 2.38
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2025-09-29",
+   "tipo": "compra",
+   "precio": 5.06,
+   "ratio_volumen": 4.25,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 4.7
+  },
+  {
    "ticker": "EWJ",
    "fecha": "2025-10-06",
    "tipo": "compra",
@@ -826,6 +1237,42 @@
    "stop_sugerido": 8411.85
   },
   {
+   "ticker": "XLP",
+   "fecha": "2025-10-27",
+   "tipo": "compra",
+   "precio": 5.09,
+   "ratio_volumen": 2.11,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 4.73
+  },
+  {
+   "ticker": "XLRE",
+   "fecha": "2025-10-28",
+   "tipo": "compra",
+   "precio": 4.75,
+   "ratio_volumen": 11.44,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.42
+  },
+  {
+   "ticker": "XLK",
+   "fecha": "2025-10-29",
+   "tipo": "compra",
+   "precio": 3.37,
+   "ratio_volumen": 2.95,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 3.13
+  },
+  {
+   "ticker": "VEA",
+   "fecha": "2025-10-31",
+   "tipo": "compra",
+   "precio": 6.33,
+   "ratio_volumen": 1.64,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.89
+  },
+  {
    "ticker": "XLF",
    "fecha": "2025-10-31",
    "tipo": "compra",
@@ -833,6 +1280,34 @@
    "ratio_volumen": 1.76,
    "sma10_sobre_sma50": true,
    "stop_sugerido": 36584.18
+  },
+  {
+   "ticker": "XLI",
+   "fecha": "2025-11-04",
+   "tipo": "compra",
+   "precio": 5.6,
+   "ratio_volumen": 4.13,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.21
+  },
+  {
+   "ticker": "XLV",
+   "fecha": "2025-11-11",
+   "tipo": "compra",
+   "precio": 5.29,
+   "ratio_volumen": 1.7,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.92
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2025-12-01",
+   "tipo": "confirmacion",
+   "precio": 5.09,
+   "ratio_volumen": 1.48,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.73,
+   "dias_desde_compra": 24
   },
   {
    "ticker": "SPY",
@@ -863,6 +1338,25 @@
    "stop_sugerido": 15279.9
   },
   {
+   "ticker": "XLI",
+   "fecha": "2025-12-04",
+   "tipo": "compra",
+   "precio": 5.78,
+   "ratio_volumen": 2.22,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 5.38
+  },
+  {
+   "ticker": "XLRE",
+   "fecha": "2025-12-04",
+   "tipo": "confirmacion",
+   "precio": 4.76,
+   "ratio_volumen": 1.19,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.43,
+   "dias_desde_compra": 26
+  },
+  {
    "ticker": "EEM",
    "fecha": "2025-12-05",
    "tipo": "confirmacion",
@@ -880,6 +1374,26 @@
    "ratio_volumen": 1.57,
    "sma10_sobre_sma50": false,
    "stop_sugerido": 13503.6
+  },
+  {
+   "ticker": "XLI",
+   "fecha": "2025-12-05",
+   "tipo": "confirmacion",
+   "precio": 5.58,
+   "ratio_volumen": 0.39,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.19,
+   "dias_desde_compra": 1
+  },
+  {
+   "ticker": "XLK",
+   "fecha": "2025-12-09",
+   "tipo": "confirmacion",
+   "precio": 3.32,
+   "ratio_volumen": 2.78,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 3.08,
+   "dias_desde_compra": 27
   },
   {
    "ticker": "IBB",
@@ -938,6 +1452,52 @@
    "dias_desde_compra": 5
   },
   {
+   "ticker": "XLP",
+   "fecha": "2026-01-15",
+   "tipo": "compra",
+   "precio": 5.38,
+   "ratio_volumen": 4.45,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.0
+  },
+  {
+   "ticker": "XLY",
+   "fecha": "2026-01-20",
+   "tipo": "compra",
+   "precio": 2.88,
+   "ratio_volumen": 2.9,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 2.68
+  },
+  {
+   "ticker": "XLC",
+   "fecha": "2026-02-02",
+   "tipo": "compra",
+   "precio": 6.47,
+   "ratio_volumen": 3.67,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 6.02
+  },
+  {
+   "ticker": "IVE",
+   "fecha": "2026-02-03",
+   "tipo": "compra",
+   "precio": 5.66,
+   "ratio_volumen": 2.01,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.26
+  },
+  {
+   "ticker": "XLC",
+   "fecha": "2026-02-23",
+   "tipo": "confirmacion",
+   "precio": 6.45,
+   "ratio_volumen": 31.24,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 6.0,
+   "dias_desde_compra": 13
+  },
+  {
    "ticker": "USO",
    "fecha": "2026-02-27",
    "tipo": "compra",
@@ -974,6 +1534,43 @@
    "stop_sugerido": 13540.8
   },
   {
+   "ticker": "VEA",
+   "fecha": "2026-04-10",
+   "tipo": "compra",
+   "precio": 7.11,
+   "ratio_volumen": 2.35,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 6.61
+  },
+  {
+   "ticker": "XLK",
+   "fecha": "2026-04-13",
+   "tipo": "compra",
+   "precio": 3.36,
+   "ratio_volumen": 1.71,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 3.12
+  },
+  {
+   "ticker": "XLV",
+   "fecha": "2026-04-13",
+   "tipo": "compra",
+   "precio": 5.37,
+   "ratio_volumen": 3.03,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 4.99
+  },
+  {
+   "ticker": "XLK",
+   "fecha": "2026-04-14",
+   "tipo": "confirmacion",
+   "precio": 3.35,
+   "ratio_volumen": 1.26,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 3.12,
+   "dias_desde_compra": 1
+  },
+  {
    "ticker": "ARKK",
    "fecha": "2026-04-15",
    "tipo": "compra",
@@ -990,6 +1587,25 @@
    "ratio_volumen": 2.75,
    "sma10_sobre_sma50": false,
    "stop_sugerido": 8742.0
+  },
+  {
+   "ticker": "VEA",
+   "fecha": "2026-04-15",
+   "tipo": "confirmacion",
+   "precio": 7.11,
+   "ratio_volumen": 1.02,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 6.61,
+   "dias_desde_compra": 3
+  },
+  {
+   "ticker": "XLC",
+   "fecha": "2026-04-15",
+   "tipo": "compra",
+   "precio": 6.41,
+   "ratio_volumen": 2.02,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 5.96
   },
   {
    "ticker": "ARKK",
@@ -1022,6 +1638,16 @@
    "dias_desde_compra": 7
   },
   {
+   "ticker": "XLC",
+   "fecha": "2026-04-20",
+   "tipo": "confirmacion",
+   "precio": 6.22,
+   "ratio_volumen": 0.66,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.78,
+   "dias_desde_compra": 3
+  },
+  {
    "ticker": "CIBR",
    "fecha": "2026-04-22",
    "tipo": "confirmacion",
@@ -1032,6 +1658,15 @@
    "dias_desde_compra": 5
   },
   {
+   "ticker": "XLP",
+   "fecha": "2026-04-30",
+   "tipo": "compra",
+   "precio": 5.48,
+   "ratio_volumen": 1.87,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 5.09
+  },
+  {
    "ticker": "XLE",
    "fecha": "2026-05-04",
    "tipo": "compra",
@@ -1039,6 +1674,26 @@
    "ratio_volumen": 2.12,
    "sma10_sobre_sma50": true,
    "stop_sugerido": 40911.59
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2026-05-08",
+   "tipo": "confirmacion",
+   "precio": 5.48,
+   "ratio_volumen": 1.36,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.09,
+   "dias_desde_compra": 5
+  },
+  {
+   "ticker": "XLV",
+   "fecha": "2026-05-22",
+   "tipo": "confirmacion",
+   "precio": 5.4,
+   "ratio_volumen": 1.2,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.02,
+   "dias_desde_compra": 28
   },
   {
    "ticker": "IEUR",
@@ -1066,6 +1721,44 @@
    "ratio_volumen": 2.33,
    "sma10_sobre_sma50": true,
    "stop_sugerido": 39676.32
+  },
+  {
+   "ticker": "XLRE",
+   "fecha": "2026-06-12",
+   "tipo": "compra",
+   "precio": 5.21,
+   "ratio_volumen": 2.52,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.85
+  },
+  {
+   "ticker": "XLB",
+   "fecha": "2026-07-03",
+   "tipo": "compra",
+   "precio": 3.21,
+   "ratio_volumen": 1.61,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 2.99
+  },
+  {
+   "ticker": "XLB",
+   "fecha": "2026-07-03",
+   "tipo": "confirmacion",
+   "precio": 3.21,
+   "ratio_volumen": 1.61,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 2.99,
+   "dias_desde_compra": 0
+  },
+  {
+   "ticker": "XLRE",
+   "fecha": "2026-07-03",
+   "tipo": "confirmacion",
+   "precio": 5.22,
+   "ratio_volumen": 0.48,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 4.85,
+   "dias_desde_compra": 14
   },
   {
    "ticker": "USO",
@@ -1171,6 +1864,34 @@
    "dias_desde_compra": 4
   },
   {
+   "ticker": "XLK",
+   "fecha": "2026-08-10",
+   "tipo": "compra",
+   "precio": 4.23,
+   "ratio_volumen": 1.76,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 3.93
+  },
+  {
+   "ticker": "XLC",
+   "fecha": "2026-08-11",
+   "tipo": "compra",
+   "precio": 6.1,
+   "ratio_volumen": 8.17,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.67
+  },
+  {
+   "ticker": "XLC",
+   "fecha": "2026-08-11",
+   "tipo": "confirmacion",
+   "precio": 6.1,
+   "ratio_volumen": 8.17,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.67,
+   "dias_desde_compra": 0
+  },
+  {
    "ticker": "URA",
    "fecha": "2026-08-12",
    "tipo": "confirmacion",
@@ -1179,6 +1900,16 @@
    "sma10_sobre_sma50": true,
    "stop_sugerido": 13308.3,
    "dias_desde_compra": 5
+  },
+  {
+   "ticker": "XLK",
+   "fecha": "2026-08-12",
+   "tipo": "confirmacion",
+   "precio": 4.28,
+   "ratio_volumen": 0.76,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 3.98,
+   "dias_desde_compra": 2
   },
   {
    "ticker": "ETHA",
@@ -1197,6 +1928,15 @@
    "ratio_volumen": 2.98,
    "sma10_sobre_sma50": true,
    "stop_sugerido": 6054.3
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2026-08-24",
+   "tipo": "compra",
+   "precio": 5.66,
+   "ratio_volumen": 1.55,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.26
   },
   {
    "ticker": "EWJ",
@@ -1281,6 +2021,15 @@
    "dias_desde_compra": 8
   },
   {
+   "ticker": "XLP",
+   "fecha": "2026-10-15",
+   "tipo": "compra",
+   "precio": 5.68,
+   "ratio_volumen": 2.77,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 5.28
+  },
+  {
    "ticker": "CIBR",
    "fecha": "2026-10-16",
    "tipo": "venta",
@@ -1303,6 +2052,25 @@
    "ret_pct": -7.0
   },
   {
+   "ticker": "XLB",
+   "fecha": "2026-10-16",
+   "tipo": "compra",
+   "precio": 2.98,
+   "ratio_volumen": 1.65,
+   "sma10_sobre_sma50": false,
+   "stop_sugerido": 2.77
+  },
+  {
+   "ticker": "XLP",
+   "fecha": "2026-10-19",
+   "tipo": "confirmacion",
+   "precio": 5.76,
+   "ratio_volumen": 2.59,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 5.36,
+   "dias_desde_compra": 2
+  },
+  {
    "ticker": "QQQ",
    "fecha": "2026-10-20",
    "tipo": "venta",
@@ -1323,6 +2091,16 @@
    "precio": 26600.0,
    "precio_entrada": 34720.0,
    "ret_pct": -23.39
+  },
+  {
+   "ticker": "XLB",
+   "fecha": "2026-10-26",
+   "tipo": "confirmacion",
+   "precio": 3.09,
+   "ratio_volumen": 0.64,
+   "sma10_sobre_sma50": true,
+   "stop_sugerido": 2.87,
+   "dias_desde_compra": 6
   }
  ]
 }

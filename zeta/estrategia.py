@@ -92,6 +92,27 @@ def cargar_config(ruta: Path | None = None) -> dict:
         sin_historia = universo.get("sin_historia") or []
         if isinstance(sin_historia, str):
             sin_historia = sin_historia.split()
+        especies = []
+        for item in universo.get("especies") or []:
+            ticker = str(item.get("ticker") or "")
+            if not ticker:
+                continue
+            yahoo = str(item.get("simbolo_yahoo") or f"{ticker.replace('.', '-')}.BA")
+            data912 = str(item.get("simbolo_data912") or yahoo[:-3])
+            serie = str(item.get("serie") or "ARS (especie pesos)")
+            moneda = str(item.get("moneda") or ("USD MEP" if "USD" in serie else "ARS"))
+            especies.append(
+                {
+                    "ticker": ticker,
+                    "nombre": item.get("nombre") or ticker,
+                    "serie": serie,
+                    "moneda": moneda,
+                    "simbolo_yahoo": yahoo,
+                    "simbolo_data912": data912,
+                }
+            )
+        if not tickers and especies:
+            tickers = [e["ticker"] for e in especies]
         limpios.append(
             {
                 "id": str(universo.get("id") or "lista"),
@@ -99,6 +120,7 @@ def cargar_config(ruta: Path | None = None) -> dict:
                 "nota": universo.get("nota") or "",
                 "tickers": [str(t) for t in tickers],
                 "sin_historia": [str(t) for t in sin_historia],
+                "especies": especies,
             }
         )
     datos["universos"] = limpios
@@ -125,6 +147,24 @@ def universo_por_id(cfg: dict, universo_id: str | None = None) -> dict:
 
 def tickers_de(cfg: dict, universo_id: str | None = None) -> list[str]:
     return list(universo_por_id(cfg, universo_id).get("tickers") or [])
+
+
+def especies_de(cfg: dict, universo_id: str | None = None) -> list[dict]:
+    """Cada ETF con la moneda de su serie y el símbolo de Yahoo y de data912."""
+    universo = universo_por_id(cfg, universo_id)
+    if universo.get("especies"):
+        return list(universo["especies"])
+    return [
+        {
+            "ticker": ticker,
+            "nombre": ticker,
+            "serie": "ARS (especie pesos)",
+            "moneda": "ARS",
+            "simbolo_yahoo": f"{str(ticker).replace('.', '-')}.BA",
+            "simbolo_data912": str(ticker).replace(".", ""),
+        }
+        for ticker in universo.get("tickers") or []
+    ]
 
 
 def relacion_rrg(senal: str, cuadrante: str | None) -> str:

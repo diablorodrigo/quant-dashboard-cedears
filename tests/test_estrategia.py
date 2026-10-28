@@ -202,16 +202,22 @@ class Semaforo(unittest.TestCase):
 
 
 class UniversoYRrg(unittest.TestCase):
-    def test_el_universo_por_defecto_son_los_27_etfs(self):
+    def test_el_universo_por_defecto_son_los_37_etfs(self):
+        from zeta.estrategia import especies_de
+
         cfg = cargar_config()
         self.assertEqual(cfg["universo_default"], "etfs")
         tickers = tickers_de(cfg)
-        self.assertEqual(len(tickers), 27)
-        for nombre in ("SPY", "QQQ", "EEM", "EWZ", "XLF", "VIG", "IJH", "IEMG", "CIBR"):
+        self.assertEqual(len(tickers), 37)
+        for nombre in ("SPY", "QQQ", "EEM", "EWZ", "XLK", "XLP", "XLB", "XLRE", "VEA", "IVE"):
             self.assertIn(nombre, tickers)
-        sin_historia = set(next(u["sin_historia"] for u in cfg["universos"] if u["id"] == "etfs"))
-        self.assertEqual(sin_historia, {"XLK", "XLV", "XLY", "XLP", "XLB", "XLC", "XLI"})
-        self.assertTrue(sin_historia.isdisjoint(tickers))
+        especies = {e["ticker"]: e for e in especies_de(cfg)}
+        self.assertEqual(especies["XLK"]["simbolo_yahoo"], "XLKD.BA")
+        self.assertEqual(especies["XLK"]["simbolo_data912"], "XLKD")
+        self.assertEqual(especies["XLK"]["moneda"], "USD MEP")
+        self.assertEqual(especies["SPY"]["moneda"], "ARS")
+        self.assertEqual(especies["SPY"]["simbolo_data912"], "SPY")
+        self.assertEqual(next(u["sin_historia"] for u in cfg["universos"] if u["id"] == "etfs"), [])
 
     def test_la_compra_en_lideres_coincide_y_en_rezagados_no(self):
         self.assertEqual(relacion_rrg("Compra fuerte", "Líder"), "coincide")
@@ -229,17 +235,19 @@ class UniversoYRrg(unittest.TestCase):
         self.assertIn("azar", doc["advertencia"].lower())
         self.assertIn("chica", doc["advertencia"].lower())
         filas = next(e["filas"] for e in doc["estudios"] if e["id"] == "etfs")
-        compra = next(f for f in filas if f["universo"] == "ETF (27)" and f["entrada"].startswith("Compra"))
-        confirmacion = next(f for f in filas if f["universo"] == "ETF (27)" and "Confirmación" in f["entrada"])
-        self.assertEqual(compra["n"], 48)
-        self.assertEqual(compra["media_06"], 4.87)
-        self.assertEqual(compra["acierto"], 75.0)
-        self.assertEqual(confirmacion["n"], 20)
-        self.assertEqual(confirmacion["media_06"], 2.25)
+        compra = next(f for f in filas if f["universo"].startswith("ETF 37") and f["entrada"] == "compra" and f["costo"] == "0,6%")
+        confirmacion = next(f for f in filas if f["universo"].startswith("ETF 37") and f["entrada"] == "confirmacion" and f["costo"] == "0,6%")
+        nuevos = next(f for f in filas if f["universo"].startswith("10 nuevos") and f["entrada"] == "compra" and f["costo"] == "0,6%")
+        self.assertEqual(compra["n"], 78)
+        self.assertEqual(compra["media"], 3.01)
+        self.assertEqual(compra["acierto"], 66.7)
+        self.assertEqual(confirmacion["n"], 36)
+        self.assertEqual(confirmacion["media"], 0.87)
+        self.assertEqual(nuevos["media"], 0.04)
         from pathlib import Path
 
         vista = Path("zeta/vista_senales.py").read_text(encoding="utf-8")
-        self.assertNotIn("XLK", vista)
+        self.assertNotIn("sin historia en pesos", vista)
         self.assertNotIn("2,43", vista)
         self.assertNotIn("4,19", vista)
 
@@ -257,6 +265,8 @@ class Referencia(unittest.TestCase):
                 "VIG": "Compra",
                 "IJH": "Compra",
                 "IEMG": "Compra",
+                "XLP": "Compra",
+                "XLB": "Compra",
                 "EWZ": "Venta",
                 "EEM": "Venta",
                 "QQQ": "Venta",

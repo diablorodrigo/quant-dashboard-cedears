@@ -25,8 +25,8 @@
  "universos": [
   {
    "id": "etfs",
-   "titulo": "ETFs (27)",
-   "nota": "Universo vigente de la v3: 27 ETFs con historia en pesos. Los 7 SPDR sectoriales del RRG no tienen historia y se listan aparte, sin calcularles una señal.",
+   "titulo": "ETFs (37)",
+   "nota": "Universo v3.1. 27 series en pesos y 10 en dólares MEP (especie D: XLKD.BA y similares, más XLRE, VEA e IVE). La especie en pesos de esos 10 existe en BYMA, pero Yahoo y data912 no tienen su historia.",
    "tickers": [
     "SPY",
     "EWZ",
@@ -47,24 +47,361 @@
     "USO",
     "FXI",
     "ARKK",
+    "XLV",
     "VIG",
+    "VEA",
+    "XLP",
     "CIBR",
     "IEUR",
     "IBB",
     "EWJ",
     "IEMG",
     "IVW",
-    "IJH"
-   ],
-   "sin_historia": [
     "XLK",
-    "XLV",
-    "XLY",
-    "XLP",
-    "XLB",
+    "IVE",
+    "XLI",
     "XLC",
-    "XLI"
-   ]
+    "IJH",
+    "XLRE",
+    "XLY",
+    "XLB"
+   ],
+   "especies": [
+    {
+     "ticker": "SPY",
+     "nombre": "State Street SPDR S&P 500 ETF Trust",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "SPY.BA",
+     "simbolo_data912": "SPY"
+    },
+    {
+     "ticker": "EWZ",
+     "nombre": "iShares MSCI Brazil ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "EWZ.BA",
+     "simbolo_data912": "EWZ"
+    },
+    {
+     "ticker": "IBIT",
+     "nombre": "iShares Bitcoin Trust ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IBIT.BA",
+     "simbolo_data912": "IBIT"
+    },
+    {
+     "ticker": "GLD",
+     "nombre": "SPDR Gold Shares",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "GLD.BA",
+     "simbolo_data912": "GLD"
+    },
+    {
+     "ticker": "QQQ",
+     "nombre": "Invesco QQQ Trust",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "QQQ.BA",
+     "simbolo_data912": "QQQ"
+    },
+    {
+     "ticker": "ETHA",
+     "nombre": "iShares Ethereum Trust ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "ETHA.BA",
+     "simbolo_data912": "ETHA"
+    },
+    {
+     "ticker": "SMH",
+     "nombre": "VanEck Semiconductor ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "SMH.BA",
+     "simbolo_data912": "SMH"
+    },
+    {
+     "ticker": "SLV",
+     "nombre": "iShares Silver Trust",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "SLV.BA",
+     "simbolo_data912": "SLV"
+    },
+    {
+     "ticker": "XLE",
+     "nombre": "State Street Energy Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "XLE.BA",
+     "simbolo_data912": "XLE"
+    },
+    {
+     "ticker": "XLU",
+     "nombre": "State Street Utilities Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "XLU.BA",
+     "simbolo_data912": "XLU"
+    },
+    {
+     "ticker": "DIA",
+     "nombre": "State Street SPDR Dow Jones Industrial Average ETF Trust",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "DIA.BA",
+     "simbolo_data912": "DIA"
+    },
+    {
+     "ticker": "XLF",
+     "nombre": "State Street Financial Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "XLF.BA",
+     "simbolo_data912": "XLF"
+    },
+    {
+     "ticker": "EEM",
+     "nombre": "iShares MSCI Emerging Markets ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "EEM.BA",
+     "simbolo_data912": "EEM"
+    },
+    {
+     "ticker": "GDX",
+     "nombre": "VanEck Gold Miners ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "GDX.BA",
+     "simbolo_data912": "GDX"
+    },
+    {
+     "ticker": "IWM",
+     "nombre": "iShares Russell 2000 ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IWM.BA",
+     "simbolo_data912": "IWM"
+    },
+    {
+     "ticker": "URA",
+     "nombre": "Global X Uranium ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "URA.BA",
+     "simbolo_data912": "URA"
+    },
+    {
+     "ticker": "USO",
+     "nombre": "United States Oil Fund, LP",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "USO.BA",
+     "simbolo_data912": "USO"
+    },
+    {
+     "ticker": "FXI",
+     "nombre": "iShares China Large-Cap ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "FXI.BA",
+     "simbolo_data912": "FXI"
+    },
+    {
+     "ticker": "ARKK",
+     "nombre": "ARK Innovation ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "ARKK.BA",
+     "simbolo_data912": "ARKK"
+    },
+    {
+     "ticker": "XLV",
+     "nombre": "State Street Health Care Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLVD.BA",
+     "simbolo_data912": "XLVD"
+    },
+    {
+     "ticker": "VIG",
+     "nombre": "Vanguard Dividend Appreciation Index Fund ETF Shares",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "VIG.BA",
+     "simbolo_data912": "VIG"
+    },
+    {
+     "ticker": "VEA",
+     "nombre": "Vanguard FTSE Developed Markets Index Fund ETF Shares",
+     "origen": "agregado",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "VEAD.BA",
+     "simbolo_data912": "VEAD"
+    },
+    {
+     "ticker": "XLP",
+     "nombre": "State Street Consumer Staples Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLPD.BA",
+     "simbolo_data912": "XLPD"
+    },
+    {
+     "ticker": "CIBR",
+     "nombre": "First Trust NASDAQ Cybersecurity ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "CIBR.BA",
+     "simbolo_data912": "CIBR"
+    },
+    {
+     "ticker": "IEUR",
+     "nombre": "iShares Core MSCI Europe ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IEUR.BA",
+     "simbolo_data912": "IEUR"
+    },
+    {
+     "ticker": "IBB",
+     "nombre": "iShares Biotechnology ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IBB.BA",
+     "simbolo_data912": "IBB"
+    },
+    {
+     "ticker": "EWJ",
+     "nombre": "iShares MSCI Japan ETF",
+     "origen": "WATCHLIST",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "EWJ.BA",
+     "simbolo_data912": "EWJ"
+    },
+    {
+     "ticker": "IEMG",
+     "nombre": "iShares Core MSCI Emerging Markets ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IEMG.BA",
+     "simbolo_data912": "IEMG"
+    },
+    {
+     "ticker": "IVW",
+     "nombre": "iShares S&P 500 Growth ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IVW.BA",
+     "simbolo_data912": "IVW"
+    },
+    {
+     "ticker": "XLK",
+     "nombre": "State Street Technology Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLKD.BA",
+     "simbolo_data912": "XLKD"
+    },
+    {
+     "ticker": "IVE",
+     "nombre": "iShares S&P 500 Value ETF",
+     "origen": "agregado",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "IVED.BA",
+     "simbolo_data912": "IVED"
+    },
+    {
+     "ticker": "XLI",
+     "nombre": "State Street Industrial Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLID.BA",
+     "simbolo_data912": "XLID"
+    },
+    {
+     "ticker": "XLC",
+     "nombre": "State Street Communication Services Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLCD.BA",
+     "simbolo_data912": "XLCD"
+    },
+    {
+     "ticker": "IJH",
+     "nombre": "iShares Core S&P Mid-Cap ETF",
+     "origen": "agregado",
+     "serie": "ARS (especie pesos)",
+     "moneda": "ARS",
+     "simbolo_yahoo": "IJH.BA",
+     "simbolo_data912": "IJH"
+    },
+    {
+     "ticker": "XLRE",
+     "nombre": "State Street Real Estate Select Sector SPDR ETF",
+     "origen": "agregado",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLRED.BA",
+     "simbolo_data912": "XLRED"
+    },
+    {
+     "ticker": "XLY",
+     "nombre": "State Street Consumer Discretionary Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLYD.BA",
+     "simbolo_data912": "XLYD"
+    },
+    {
+     "ticker": "XLB",
+     "nombre": "State Street Materials Select Sector SPDR ETF",
+     "origen": "WATCHLIST",
+     "serie": "USD MEP (especie D)",
+     "moneda": "USD MEP",
+     "simbolo_yahoo": "XLBD.BA",
+     "simbolo_data912": "XLBD"
+    }
+   ],
+   "sin_historia": []
   },
   {
    "id": "40",
