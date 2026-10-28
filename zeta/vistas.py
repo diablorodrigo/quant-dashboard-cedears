@@ -106,7 +106,7 @@ def _num(valor, decimales: int = 2, sufijo: str = "") -> str:
 
 def panel_o_aviso() -> dict | None:
     try:
-        with st.spinner("Descargando cotizaciones de Yahoo Finance…"):
+        with st.spinner("Descargando cotizaciones…"):
             return cargar_panel(clave_cierre())
     except Exception:
         logging.exception("No se pudo armar el panel")
@@ -183,14 +183,22 @@ def encabezado() -> None:
         unsafe_allow_html=True,
     )
     try:
-        with st.spinner("Descargando cotizaciones de Yahoo Finance…"):
+        with st.spinner("Descargando cotizaciones…"):
             panel = cargar_panel(clave_cierre())
     except Exception:
         logging.exception("No se pudo leer el sello de la descarga")
         panel = None
     texto, boton = st.columns([5.2, 1], vertical_alignment="center")
     with texto:
-        aviso_datos(panel)
+        extra = "Precios en vivo de data912" if panel and panel.get("fuente_viva") else ""
+        aviso_datos(panel, extra=extra)
+    if panel is not None and not panel.get("fuente_viva"):
+        st.warning("data912 no respondió. Las señales quedan con el precio de Yahoo y sin contraste en vivo.")
+    if panel is not None and isinstance(panel.get("sin_senal"), pd.DataFrame) and not panel["sin_senal"].empty:
+        st.error(
+            f"{len(panel['sin_senal'])} activos con el contraste en rojo. "
+            "De esos no se calcula la señal."
+        )
     with boton:
         st.button("Actualizar datos", on_click=_refrescar_datos, width="stretch")
     aviso()
@@ -231,6 +239,17 @@ def _estilo_variacion(valor: str) -> str:
         return f"color: {p['variacion_pos']}; font-weight: 650;"
     if numero < 0:
         return f"color: {p['variacion_neg']}; font-weight: 650;"
+    return ""
+
+
+def _estilo_contraste(valor: str) -> str:
+    texto = (valor or "").lower()
+    if texto == "verde":
+        return "color: #1e7f4f; font-weight: 650;"
+    if texto == "amarillo":
+        return "color: #a56b12; font-weight: 650;"
+    if texto == "rojo":
+        return "color: #a32020; font-weight: 650;"
     return ""
 
 
@@ -307,6 +326,7 @@ def _tabla(df: pd.DataFrame) -> pd.DataFrame:
             "Notas": df["penalizaciones"].map(lambda notas: " · ".join(notas) if notas else "—"),
             "Precio ARS": df["precio_ars"].map(dinero),
             "Gap vs CCL": df["gap_ccl"].map(gap),
+            "Contraste": df["contraste"].map(lambda v: str(v or "—").capitalize()) if "contraste" in df.columns else "—",
         }
     )
 
@@ -319,8 +339,43 @@ def _mostrar_tabla(vista: pd.DataFrame) -> None:
             "Var. 1D": _estilo_variacion,
             "Gap vs CCL": _estilo_variacion,
             "Vol. relativo": _estilo_volumen,
+            "Contraste": _estilo_contraste,
         },
         alto=520,
+    )
+
+
+def _cuadro_dolares(cuadro: dict | None) -> None:
+    if not cuadro:
+        return
+    st.markdown("**Dólares y riesgo país, con contraste**")
+    columnas = st.columns(4)
+    for columna, (clave, titulo) in zip(
+        columnas,
+        (("mep", "MEP"), ("ccl", "CCL"), ("oficial", "Oficial mayorista"), ("riesgo", "Riesgo país")),
+    ):
+        pieza = cuadro.get(clave) or {}
+        principal = pieza.get("principal")
+        if principal is None:
+            texto = "N/D"
+        elif clave == "riesgo":
+            texto = f"{principal:,.0f}"
+        else:
+            texto = f"{principal:,.1f}"
+        estado = str(pieza.get("estado") or "sin dato")
+        columna.metric(titulo, texto, estado)
+        contraste = pieza.get("contraste")
+        if contraste is not None:
+            columna.caption(f"{pieza.get('fuente_contraste')}: {contraste:,.1f}" if clave != "riesgo" else f"{pieza.get('fuente_contraste')}: {contraste:,.0f}")
+    fechas = cuadro.get("fechas") or {}
+    st.caption(
+        "MEP y CCL contra ArgentinaDatos (verde si difieren menos del 1%). "
+        "El oficial es el mayorista de referencia del BCRA contra el mayorista de ArgentinaDatos. "
+        "El riesgo país de Ámbito se contrasta con ArgentinaDatos (verde bajo 0,5%). "
+        "Rojo si la diferencia pasa el 2%. "
+        f"Fechas: MEP {fechas.get('bolsa') or '—'}, CCL {fechas.get('ccl') or '—'}, "
+        f"BCRA {fechas.get('bcra') or '—'}, riesgo Ámbito {fechas.get('riesgo_ambito') or '—'}, "
+        f"ArgentinaDatos {fechas.get('riesgo_argentina') or '—'}."
     )
 
 
@@ -333,14 +388,20 @@ def vista_resumen() -> None:
     alcistas = df["lectura"].str.contains("alcista", case=False) & ~df["lectura"].str.contains("observación", case=False)
     con_media = df.loc[~df["historia_corta"].astype(bool)]
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("CCL implícito (AAPL)", "N/D" if not ccl else f"{ccl:,.0f} ARS")
+    sin_verificar = panel.get("sin_verificar")
+    n_sin_verificar = 0 if not isinstance(sin_verificar, pd.DataFrame) else len(sin_verificar)
+    n_universo = len(df) + n_sin_verificar + (0 if not isinstance(panel.get("sin_senal"), pd.DataFrame) else len(panel["sin_senal"]))
+    m1.metric("CCL implícito (mediana)", "N/D" if not ccl else f"{ccl:,.0f} ARS")
     m2.metric("Lecturas alcistas", f"{int(alcistas.sum())} / {len(df)}")
     m3.metric("Stage 2 (sobre EMA 200)", f"{int(con_media['stage2'].sum())}")
-    m4.metric("CEDEARs en el panel", f"{len(df)}")
+    m4.metric("CEDEARs en el universo", f"{n_universo}")
+    pares = panel.get("ccl_pares") or 0
     st.caption(
-        "El CCL sale de AAPL.BA y AAPL con ratio 20. "
+        f"El CCL es la mediana de {pares} pares con ratio verificado ({panel.get('ccl_fuente') or 'sin fuente'}). "
+        f"Sin verificar: {n_sin_verificar}. Esos no entran al CCL ni al gap. "
         "La lectura es técnica y de corto plazo: no es una instrucción de operar."
     )
+    _cuadro_dolares(panel.get("dolares"))
 
     st.markdown("### Movimiento del día")
     c1, c2, c3, c4 = st.columns(4)
@@ -383,41 +444,79 @@ def vista_monitor() -> None:
     df = panel["filas"].copy()
     st.markdown("### Monitor")
     st.caption(
-        "Gap vs CCL: positivo quiere decir que el CEDEAR implica un dólar más caro que el CCL de Apple. "
+        "Gap vs CCL: positivo quiere decir que el CEDEAR implica un dólar más caro que la mediana de los pares verificados. "
         "El calendario completo de balances está en la página Balances."
     )
-    f1, f2, f3 = st.columns([1.4, 1, 1])
-    with f1:
-        busqueda = st.text_input("Buscar ticker o nombre", placeholder="Ej. MELI, bancos, oro")
-    with f2:
-        rubro = st.selectbox("Rubro", ["Todos", *sorted(df["rubro"].unique())])
-    with f3:
-        lectura = st.selectbox("Lectura", ["Todas", *sorted(df["lectura"].unique())])
-    solo_stage = st.checkbox("Solo Stage 2")
-    from zeta.extras import filtros_rapidos
-
-    df = filtros_rapidos(panel, df)
-
-    if busqueda.strip():
-        texto = busqueda.strip().lower()
-        mask = (
-            df["ticker"].str.lower().str.contains(texto, regex=False)
-            | df["nombre"].str.lower().str.contains(texto, regex=False)
-            | df["rubro"].str.lower().str.contains(texto, regex=False)
-        )
-        df = df[mask]
-    if rubro != "Todos":
-        df = df[df["rubro"] == rubro]
-    if lectura != "Todas":
-        df = df[df["lectura"] == lectura]
-    if solo_stage:
-        df = df[df["stage2"]]
-
-    st.caption(f"{len(df)} activos")
     if df.empty:
-        st.info("Ningún activo coincide con el filtro.")
-        return
-    _mostrar_tabla(_tabla(df))
+        st.info("Ningún activo tiene señal en esta rueda.")
+    else:
+        f1, f2, f3 = st.columns([1.4, 1, 1])
+        with f1:
+            busqueda = st.text_input("Buscar ticker o nombre", placeholder="Ej. MELI, bancos, oro")
+        with f2:
+            rubro = st.selectbox("Rubro", ["Todos", *sorted(df["rubro"].dropna().unique())])
+        with f3:
+            lectura = st.selectbox("Lectura", ["Todas", *sorted(df["lectura"].dropna().unique())])
+        solo_stage = st.checkbox("Solo Stage 2")
+        from zeta.extras import filtros_rapidos
+
+        df = filtros_rapidos(panel, df)
+
+        if busqueda.strip():
+            texto = busqueda.strip().lower()
+            mask = (
+                df["ticker"].str.lower().str.contains(texto, regex=False)
+                | df["nombre"].str.lower().str.contains(texto, regex=False)
+                | df["rubro"].str.lower().str.contains(texto, regex=False)
+            )
+            df = df[mask]
+        if rubro != "Todos":
+            df = df[df["rubro"] == rubro]
+        if lectura != "Todas":
+            df = df[df["lectura"] == lectura]
+        if solo_stage:
+            df = df[df["stage2"]]
+
+        st.caption(f"{len(df)} activos con señal")
+        if df.empty:
+            st.info("Ningún activo coincide con el filtro.")
+        else:
+            _mostrar_tabla(_tabla(df))
+    sin_verificar = panel.get("sin_verificar")
+    if isinstance(sin_verificar, pd.DataFrame) and not sin_verificar.empty:
+        with st.expander(f"Sin verificar ({len(sin_verificar)})"):
+            st.caption(
+                "Están en el feed de BYMA, pero el ratio no se pudo verificar. "
+                "No entran al CCL, al gap ni a una señal que dependa de ese ratio."
+            )
+            mostrar_tabla(
+                sin_verificar[["ticker", "nombre", "rubro", "precio_ars", "variacion", "contraste_motivo"]].rename(
+                    columns={
+                        "ticker": "Ticker",
+                        "nombre": "Nombre",
+                        "rubro": "Rubro",
+                        "precio_ars": "Precio ARS",
+                        "variacion": "Var. 1D",
+                        "contraste_motivo": "Por qué",
+                    }
+                ),
+                alto=360,
+            )
+    sin_senal = panel.get("sin_senal")
+    if isinstance(sin_senal, pd.DataFrame) and not sin_senal.empty:
+        with st.expander(f"Sin señal por contraste ({len(sin_senal)})"):
+            st.caption("El contraste está en rojo. El precio se muestra y la señal no se calcula.")
+            mostrar_tabla(
+                sin_senal[["ticker", "nombre", "precio_ars", "contraste_motivo"]].rename(
+                    columns={
+                        "ticker": "Ticker",
+                        "nombre": "Nombre",
+                        "precio_ars": "Precio ARS",
+                        "contraste_motivo": "Motivo",
+                    }
+                ),
+                alto=280,
+            )
 
 
 def _grafico(fila: pd.Series, hist: pd.DataFrame) -> go.Figure:
@@ -682,17 +781,21 @@ def vista_activo() -> None:
     if panel is None:
         return
     df = panel["filas"]
+    if df.empty:
+        st.info("No hay activos con señal para abrir la ficha.")
+        return
     opciones = df.sort_values("ticker")["ticker"].tolist()
+    configs = panel.get("configs") or WATCHLIST
     ticker = st.selectbox(
         "Activo",
         opciones,
-        format_func=lambda clave: f"{clave} — {WATCHLIST[clave]['name']}",
+        format_func=lambda clave: f"{clave} — {configs.get(clave, {}).get('name', clave)}",
     )
     fila = df.loc[df["ticker"] == ticker].iloc[0]
     hist = panel["historicos"][ticker]
     aviso_datos(panel, extra="Precio y gráfico de este activo")
     with st.spinner("Consultando consenso y calendario…"):
-        ficha = ficha_activo(WATCHLIST[ticker]["underlying"], clave_cierre())
+        ficha = ficha_activo(configs[ticker]["underlying"], clave_cierre())
     if ficha.get("obtenido_en"):
         aviso_datos(
             {"obtenido_en": ficha["obtenido_en"]},
@@ -740,7 +843,8 @@ def vista_activo() -> None:
 def _rrg_de_panel(panel: dict) -> pd.DataFrame:
     precios = panel["precios_usd"]
     columnas = {}
-    for clave, cfg in WATCHLIST.items():
+    configs = panel.get("configs") or WATCHLIST
+    for clave, cfg in configs.items():
         simbolo = cfg["underlying"]
         if simbolo in precios.columns:
             columnas[clave] = precios[simbolo]
@@ -900,7 +1004,7 @@ def _tabla_ranking(bloque: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(filas)
 
 
-def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
+def _grafico_rotacion(colas: pd.DataFrame, benchmark: str = "SPY") -> go.Figure:
     """RRG oscuro, centrado en 0. El 0 es la fuerza 100 y el momentum 100."""
     fig = go.Figure()
     series = []
@@ -1012,8 +1116,8 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
             font=dict(family=p["fuente_mono"], size=11, color=color),
         )
     for x, ancla, texto in (
-        (0, "left", "◂ MÁS DÉBIL QUE SPY"),
-        (1, "right", "MÁS FUERTE QUE SPY ▸"),
+        (0, "left", f"◂ MÁS DÉBIL QUE {benchmark}"),
+        (1, "right", f"MÁS FUERTE QUE {benchmark} ▸"),
     ):
         fig.add_annotation(
             xref="paper",
@@ -1051,7 +1155,7 @@ def _grafico_rotacion(colas: pd.DataFrame) -> go.Figure:
         margin=dict(t=36, b=72, l=78, r=28),
         showlegend=False,
         xaxis=dict(
-            title=dict(text="FUERZA RELATIVA vs SPY", font=dict(family=p["fuente_mono"], size=12, color=p["titulo_eje"])),
+            title=dict(text=f"FUERZA RELATIVA vs {benchmark}", font=dict(family=p["fuente_mono"], size=12, color=p["titulo_eje"])),
             range=[x0, x1],
             showgrid=False,
             zeroline=False,
@@ -1254,12 +1358,23 @@ En el medio el sesgo global es neutral. Son ideas de análisis, no una recomenda
 Si el subyacente tiene menos de 210 ruedas (hoy, SpaceX), entra igual al monitor como **Historia corta**,
 con precio y gap, pero sin sesgo de medias.
 
-**Gap vs CCL** compara el dólar implícito de cada CEDEAR con el de Apple
-`(precio ARS × ratio) / precio USD`. Los ratios y los símbolos de Yahoo se revisaron contra el listado de BYMA.
-En particular: 3M usa `MMM.BA` (antes apuntaba a CrowdStrike), Bank of America usa `BA-C.BA`,
-Constellation usa `CEG.BA`, Halliburton figura como `HAL`, Morgan Stanley usa ratio 41,
-Japón (`EWJ`) ratio 14 y el sector de comunicaciones (`XLC`) ratio 19.
-`BNG.BA` (Bunge) y `SPCX.BA` (SpaceX) cotizan y se dejaron como estaban.
+**Gap vs CCL** compara el dólar implícito de cada CEDEAR con la mediana de varios pares
+con ratio verificado: `(precio ARS × ratio) / precio USD`. No sale de un solo ticker.
+Los ratios y los símbolos se revisaron contra data912 y contra Yahoo el 28/10/2026.
+Bank of America en pesos es `BA.C` en BYMA y `BA-C.BA` en Yahoo (el símbolo `BAC.BA` es otra especie).
+Bunge es `BNG` en BYMA y `BNG.BA` en Yahoo: `BG.BA` no existe. El ratio 5 cierra contra el CCL.
+3M usa `MMM.BA`, Constellation usa `CEG.BA`, Halliburton figura como `HAL`,
+Morgan Stanley usa ratio 41, Japón (`EWJ`) ratio 14 y comunicaciones (`XLC`) ratio 19.
+
+**Contraste.** El precio en vivo es el de data912. Se lo compara con Yahoo `.BA`.
+Verde si difieren menos de 0,5%, amarillo hasta 2% y rojo si pasan de 2% o si el dato
+tiene más de 30 minutos con el mercado abierto. En rojo no se calcula la señal de ese activo.
+data912 no manda la hora de la operación: esos 30 minutos se cuentan desde que el panel
+leyó el feed, y el feed se vuelve a pedir al minuto. El MEP, el CCL, el oficial y el riesgo
+país se publican una vez por día: ahí se mira la diferencia de valor, no el reloj.
+El MEP y el CCL se contrastan con ArgentinaDatos, el mayorista de referencia con el BCRA
+y el riesgo país de Ámbito con ArgentinaDatos. Los desvíos quedan en un CSV del día.
+Un CEDEAR cuyo ratio no se puede verificar figura como «Sin verificar» y no entra al CCL ni al gap.
 
 **Radar.** Fuerza relativa contra SPY, normalizada a 50 ruedas, y su cambio a 10 ruedas.
 Arriba a la derecha: líderes. Arriba a la izquierda: mejorando. Abajo a la derecha: debilitándose.
@@ -1279,7 +1394,8 @@ volatilidad anualizada, caída máxima, VaR 95% diario, Sharpe y Sortino) las ca
 sobre el bloque de renta variable, con los precios de Yahoo, en la moneda del subyacente.
 No incluyen las obligaciones negociables. No son un pronóstico.
 
-Los datos salen de Yahoo Finance en una descarga agrupada. El sello
+La historia sale de Yahoo Finance en una descarga agrupada. El precio en vivo de BYMA sale de data912.
+El sello
 «Datos actualizados» es la hora de Argentina en que esa descarga respondió, guardada con la caché:
 abrir otra sección no la cambia. **Actualizar datos** borra la caché y vuelve a pedir los precios.
 La rueda de CEDEARs figura abierta de lunes a viernes, de 11:00 a 17:00, hora de Argentina

@@ -8,6 +8,7 @@ Punto de entrada. En Streamlit Community Cloud hay que ejecutarlo con
 import streamlit as st
 
 from zeta.marca import FAVICON, aplicar_estilos, vista_login
+from zeta.acciones_ar import vista_acciones_argentinas
 from zeta.extras import vista_argentina, vista_balances, vista_mercado
 from zeta.paleta import TEMA_DEFAULT
 from zeta.vistas import (
@@ -49,6 +50,7 @@ st.navigation(
         st.Page(vista_mercado, title="Termómetro y mapa", icon=":material/thermostat:"),
         st.Page(vista_monitor, title="Monitor", icon=":material/monitoring:"),
         st.Page(vista_argentina, title="Argentina", icon=":material/flag:"),
+        st.Page(vista_acciones_argentinas, title="Acciones argentinas", icon=":material/monitoring:"),
         st.Page(vista_balances, title="Balances", icon=":material/event:"),
         st.Page(vista_activo, title="Análisis por activo", icon=":material/query_stats:"),
         st.Page(vista_radar, title="Radar", icon=":material/radar:"),

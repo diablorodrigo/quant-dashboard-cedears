@@ -1,0 +1,93 @@
+ticker,nombre,rubro,panel,sector_estado
+A3,A3 MERCADOS S.A,Finanzas,general,verificado
+AGRO,AGROMETAL SA,Industria,general,verificado
+ALUA,ALUAR ALUMINIO ARGENTINA SA,Materiales,lider,verificado
+ALUAD,ALUAR ALUMINIO ARGENTINA SA,Sin clasificar,general,sin verificar
+AUSO,AUTOPISTAS DEL SOL SA,Industria,general,verificado
+BBAR,BANCO BBVA ARGENTINA S A,Finanzas,lider,verificado
+BBARD,BANCO BBVA ARGENTINA S A,Sin clasificar,general,sin verificar
+BHIP,BANCO HIPOTECAIRO SA,Finanzas,general,verificado
+BMA,BANCO MACRO S.A.,Finanzas,lider,verificado
+BMA.D,BMA.D,Sin clasificar,general,sin verificar
+BOLT,BOLDT SA,Tecnología,general,verificado
+BPAT,BANCO PATAGONIA SA,Finanzas,general,verificado
+BYMA,BOLSAS Y MERCADOS ARGENTINOS SA,Finanzas,lider,verificado
+BYMAD,BOLSAS Y MERCADOS ARGENTINOS SA,Sin clasificar,general,sin verificar
+CADO,CARLOS CASADO SA,Industria,general,verificado
+CAPX,CAPEX SA,Energía,general,verificado
+CARC,CARBOCLOR S.A.,Materiales,general,verificado
+CECO2,CENTRAL COSTANERA SA,Servicios públicos,general,verificado
+CELU,CELULOSA ARGENTINA,Materiales,general,verificado
+CEPU,CENTRAL PUERTO SA,Servicios públicos,lider,verificado
+CEPUD,CENTRAL PUERTO SA,Sin clasificar,general,sin verificar
+CGPA2,CAMUZZI GAS PAMPEANA Y DEL SUR,Servicios públicos,general,verificado
+COME,SOCIEDAD COMERCIAL DEL PLATA,Industria,lider,verificado
+COMED,SOCIEDAD COMERCIAL DEL PLATA,Sin clasificar,general,sin verificar
+CRES,CRESUD S.A.C.I.F.Y.A.,Industria,lider,verificado
+CRESD,CRESUD S.A.C.I.F.Y.A.,Sin clasificar,general,sin verificar
+CTIO,CONSULTATIO SA,Inmuebles,general,verificado
+CVH,CABLEVISION HOLDING SA,Comunicaciones,general,verificado
+CVHD,CABLEVISION HOLDING SA,Sin clasificar,general,sin verificar
+DGCU2,DISTRIBUIDORA DE GAS CUYANA SA,Servicios públicos,general,verificado
+DOME,DOMEC SA,Consumo,general,verificado
+ECOG,ECOGAS INVERSIONES SA,Servicios públicos,lider,verificado
+ECOGD,ECOGAS INVERSIONES SA,Sin clasificar,general,sin verificar
+EDN,EMPRESA DISTR Y COMERC NORTE ED,Servicios públicos,lider,verificado
+EDND,EMPRESA DISTR Y COMERC NORTE ED,Sin clasificar,general,sin verificar
+EDSH,EDESA HOLDING S.A.,Servicios públicos,general,verificado
+FERR,FERRUM SA DE CERAMICA Y METALUR,Industria,general,verificado
+FIPL,FIPLASTO,Consumo,general,verificado
+GAMI,B-GAMING S.A.,Tecnología,general,verificado
+GARO,GAROVAGLIO ZORRAQUIN,Industria,general,verificado
+GBAN,NATURGY BAN SA,Servicios públicos,general,verificado
+GCDI,GCDI SA,Inmuebles,general,verificado
+GCLA,GRUPO CLARIN SA,Comunicaciones,general,verificado
+GGAL,GRUPO FINANCIERO GALICIA SA,Finanzas,lider,verificado
+GGALD,GRUPO FINANCIERO GALICIA SA,Sin clasificar,general,sin verificar
+GRIM,GRIMOLDI,Consumo,general,verificado
+HARG,HOLCIM (ARGENTINA) S.A,Materiales,general,verificado
+HAVA,HAVANNA HOLDING SA,Consumo,general,verificado
+HSAT,HOLDSAT SA,Sin clasificar,general,sin verificar
+IEB,IEB CONSTRUCCIONES S.A,Sin clasificar,general,sin verificar
+INTR,COMPANIA INTRODUCTORA BA,Consumo,general,verificado
+INVJ,INVERSORA JURAMENTO SA,Consumo,general,verificado
+IRSA,IRSA INVERSIONES Y REPRESENTACI,Inmuebles,lider,verificado
+IRSAD,IRSA INVERSIONES Y REPRESENTACI,Sin clasificar,general,sin verificar
+LEDE,LEDESMA SOC ANONIMA AGRICOLA IN,Industria,general,verificado
+LOMA,LOMA NEGRA CIA IND ARGENTINA SA,Materiales,lider,verificado
+LOMAD,LOMA NEGRA CIA IND ARGENTINA SA,Sin clasificar,general,sin verificar
+LONG,LONGVIE,Consumo,general,verificado
+METR,METROGAS SA,Servicios públicos,lider,verificado
+METRD,METROGAS SA,Sin clasificar,general,sin verificar
+MIRG,MIRGOR S.A.COMERC INDUST FINANC,Tecnología,general,verificado
+MOLA,MOLINOS AGRO SA,Consumo,general,verificado
+MOLI,MOLINOS RIO DE LA PLATA,Consumo,general,verificado
+MORI,MORIXE HERMANOS,Consumo,general,verificado
+OEST,GRUPO CONCESIONARIO DEL OESTE S,Industria,general,verificado
+PAMP,PAMPA ENERGIA S.A.,Industria,lider,verificado
+PAMPD,PAMPA ENERGIA S.A.,Sin clasificar,general,sin verificar
+PATA,IMPORT Y EXPORT DE LA PATAGONIA,Consumo,general,verificado
+REIT,REIT,Sin clasificar,general,sin verificar
+REITC,REITC,Sin clasificar,general,sin verificar
+REITD,REITD,Sin clasificar,general,sin verificar
+RICH,LABORATORIOS RICHMOND SACIF,Salud,general,verificado
+RIGO,RIGOLLEAU,Consumo,general,verificado
+ROSE,INSTITUTO ROSENBUCH SA DE BIOLO,Salud,general,verificado
+SAMI,SAN MIGUEL SA,Consumo,general,verificado
+SEMI,MOLINOS JUAN SEMINO S.A,Consumo,general,verificado
+SUPV,GRUPO SUPERVIELLE S.A.,Finanzas,lider,verificado
+SUPVD,GRUPO SUPERVIELLE S.A.,Sin clasificar,general,sin verificar
+TECO2,TELECOM ARGENTINA SA,Comunicaciones,lider,verificado
+TECOD,TELECOM ARGENTINA SA,Sin clasificar,general,sin verificar
+TGN4D,TRANSPORTADORA DE GAS DEL NORTE,Sin clasificar,general,sin verificar
+TGNO4,TRANSPORTADORA DE GAS DEL NORTE,Energía,lider,verificado
+TGSU2,TRANSPORTADORA DE GAS DEL SUR S,Energía,lider,verificado
+TGSUD,TRANSPORTADORA DE GAS DEL SUR S,Sin clasificar,general,sin verificar
+TRAN,CIA DE TRANSP DE ENERGIA ELECTR,Servicios públicos,lider,verificado
+TRAND,CIA DE TRANSP DE ENERGIA ELECTR,Sin clasificar,general,sin verificar
+TXAR,TERNIUM ARGENTINA SA,Materiales,lider,verificado
+TXARD,TERNIUM ARGENTINA SA,Sin clasificar,general,sin verificar
+VALO,BANCO DE VALORES S.A.,Finanzas,lider,verificado
+VALOD,BANCO DE VALORES S.A.,Sin clasificar,general,sin verificar
+YPFD,YPF SOCIEDAD ANONIMA,Energía,lider,verificado
+YPFDD,YPF SOCIEDAD ANONIMA,Sin clasificar,general,sin verificar

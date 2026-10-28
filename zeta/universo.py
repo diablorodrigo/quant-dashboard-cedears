@@ -1,148 +1,439 @@
-"""Universo de CEDEARs del panel.
+"""Universo de CEDEARs.
 
-Los símbolos de Yahoo y los ratios se contrastaron contra el listado BYMA
-y contra el CCL implícito de AAPL (octubre 2026).
+La lista a mano vive en ``data/cedears_manual.csv`` (nombre, símbolo de
+Yahoo, subyacente, ratio y rubro). El universo que muestra el panel sale
+de data912 más ese CSV: cada ticker, ratio y rubro queda verificado o
+marcado como ``sin verificar``. Un ratio que no se puede verificar no se
+inventa y no entra en el CCL ni en el gap.
 """
 
-WATCHLIST = {
-    "AAPL": {"name": "Apple", "cedear": "AAPL.BA", "underlying": "AAPL", "ratio": 20, "rubro": "Tecnología"},
-    "MSFT": {"name": "Microsoft", "cedear": "MSFT.BA", "underlying": "MSFT", "ratio": 30, "rubro": "Tecnología"},
-    "AMZN": {"name": "Amazon", "cedear": "AMZN.BA", "underlying": "AMZN", "ratio": 144, "rubro": "Consumo"},
-    "NVDA": {"name": "Nvidia", "cedear": "NVDA.BA", "underlying": "NVDA", "ratio": 24, "rubro": "Tecnología"},
-    "META": {"name": "Meta", "cedear": "META.BA", "underlying": "META", "ratio": 24, "rubro": "Comunicaciones"},
-    "TSLA": {"name": "Tesla", "cedear": "TSLA.BA", "underlying": "TSLA", "ratio": 15, "rubro": "Consumo"},
-    "KO": {"name": "Coca-Cola", "cedear": "KO.BA", "underlying": "KO", "ratio": 5, "rubro": "Consumo"},
-    "MELI": {"name": "Mercado Libre", "cedear": "MELI.BA", "underlying": "MELI", "ratio": 120, "rubro": "Consumo"},
-    "VIST": {"name": "Vista Energy", "cedear": "VIST.BA", "underlying": "VIST", "ratio": 3, "rubro": "Energía"},
-    "GOOGL": {"name": "Google", "cedear": "GOOGL.BA", "underlying": "GOOGL", "ratio": 58, "rubro": "Comunicaciones"},
-    "JPM": {"name": "JP Morgan", "cedear": "JPM.BA", "underlying": "JPM", "ratio": 15, "rubro": "Finanzas"},
-    "F": {"name": "Ford", "cedear": "F.BA", "underlying": "F", "ratio": 1, "rubro": "Consumo"},
-    "MCD": {"name": "McDonald's", "cedear": "MCD.BA", "underlying": "MCD", "ratio": 24, "rubro": "Consumo"},
-    "PEP": {"name": "Pepsi", "cedear": "PEP.BA", "underlying": "PEP", "ratio": 18, "rubro": "Consumo"},
-    "V": {"name": "Visa", "cedear": "V.BA", "underlying": "V", "ratio": 18, "rubro": "Finanzas"},
-    "MA": {"name": "Mastercard", "cedear": "MA.BA", "underlying": "MA", "ratio": 33, "rubro": "Finanzas"},
-    "AXP": {"name": "American Express", "cedear": "AXP.BA", "underlying": "AXP", "ratio": 15, "rubro": "Finanzas"},
-    "XLF": {"name": "Sector Financial", "cedear": "XLF.BA", "underlying": "XLF", "ratio": 2, "rubro": "ETFs"},
-    "GLD": {"name": "ETF GOLD", "cedear": "GLD.BA", "underlying": "GLD", "ratio": 50, "rubro": "ETFs"},
-    "LLY": {"name": "Eli Lilly", "cedear": "LLY.BA", "underlying": "LLY", "ratio": 56, "rubro": "Salud"},
-    "WMT": {"name": "Walmart", "cedear": "WMT.BA", "underlying": "WMT", "ratio": 18, "rubro": "Consumo"},
-    "EEM": {"name": "Emerging Market", "cedear": "EEM.BA", "underlying": "EEM", "ratio": 5, "rubro": "ETFs"},
-    "IWM": {"name": "Russell 2000", "cedear": "IWM.BA", "underlying": "IWM", "ratio": 10, "rubro": "ETFs"},
-    "CAT": {"name": "Caterpillar", "cedear": "CAT.BA", "underlying": "CAT", "ratio": 20, "rubro": "Industria"},
-    "BNY": {"name": "Bank of New York Mellon", "cedear": "BNY.BA", "underlying": "BNY", "ratio": 2, "rubro": "Finanzas"},
-    "XLE": {"name": "ETF Energy", "cedear": "XLE.BA", "underlying": "XLE", "ratio": 2, "rubro": "ETFs"},
-    "XLP": {"name": "ETF Consumo Basico", "cedear": "XLP.BA", "underlying": "XLP", "ratio": 16, "rubro": "ETFs"},
-    "XLU": {"name": "ETF Utilities", "cedear": "XLU.BA", "underlying": "XLU", "ratio": 15, "rubro": "ETFs"},
-    "ARKK": {"name": "ARK Innovation", "cedear": "ARKK.BA", "underlying": "ARKK", "ratio": 10, "rubro": "ETFs"},
-    "EWZ": {"name": "ETF Brasil", "cedear": "EWZ.BA", "underlying": "EWZ", "ratio": 2, "rubro": "ETFs"},
-    "IBIT": {"name": "ETF Bitcoin", "cedear": "IBIT.BA", "underlying": "IBIT", "ratio": 10, "rubro": "ETFs"},
-    "QQQ": {"name": "NASDAQ", "cedear": "QQQ.BA", "underlying": "QQQ", "ratio": 20, "rubro": "ETFs"},
-    "DIA": {"name": "Dow Jones", "cedear": "DIA.BA", "underlying": "DIA", "ratio": 20, "rubro": "ETFs"},
-    "USO": {"name": "United States Oil", "cedear": "USO.BA", "underlying": "USO", "ratio": 15, "rubro": "ETFs"},
-    "XLV": {"name": "ETF Health Care", "cedear": "XLV.BA", "underlying": "XLV", "ratio": 29, "rubro": "ETFs"},
-    "ABBV": {"name": "ABBVIE Inc", "cedear": "ABBV.BA", "underlying": "ABBV", "ratio": 10, "rubro": "Salud"},
-    "UNH": {"name": "U Health Group", "cedear": "UNH.BA", "underlying": "UNH", "ratio": 33, "rubro": "Salud"},
-    "AMGN": {"name": "Amgen Inc", "cedear": "AMGN.BA", "underlying": "AMGN", "ratio": 30, "rubro": "Salud"},
-    "PFE": {"name": "Pfizer", "cedear": "PFE.BA", "underlying": "PFE", "ratio": 4, "rubro": "Salud"},
-    "CVS": {"name": "CVS Health", "cedear": "CVS.BA", "underlying": "CVS", "ratio": 15, "rubro": "Salud"},
-    "MRNA": {"name": "Moderna", "cedear": "MRNA.BA", "underlying": "MRNA", "ratio": 19, "rubro": "Salud"},
-    "AAL": {"name": "American Airlines", "cedear": "AAL.BA", "underlying": "AAL", "ratio": 2, "rubro": "Industria"},
-    "ACN": {"name": "Accenture", "cedear": "ACN.BA", "underlying": "ACN", "ratio": 75, "rubro": "Tecnología"},
-    "ADBE": {"name": "Adobe Inc", "cedear": "ADBE.BA", "underlying": "ADBE", "ratio": 44, "rubro": "Tecnología"},
-    "ADI": {"name": "Analog Devices", "cedear": "ADI.BA", "underlying": "ADI", "ratio": 15, "rubro": "Tecnología"},
-    "AMD": {"name": "AMD", "cedear": "AMD.BA", "underlying": "AMD", "ratio": 10, "rubro": "Tecnología"},
-    "INTC": {"name": "INTEL Corp", "cedear": "INTC.BA", "underlying": "INTC", "ratio": 5, "rubro": "Tecnología"},
-    "ARCO": {"name": "Arcos Dorados", "cedear": "ARCO.BA", "underlying": "ARCO", "ratio": 0.5, "rubro": "Consumo"},
-    "ARM": {"name": "Arm Holdings", "cedear": "ARM.BA", "underlying": "ARM", "ratio": 27, "rubro": "Tecnología"},
-    "AVGO": {"name": "Broadcom", "cedear": "AVGO.BA", "underlying": "AVGO", "ratio": 39, "rubro": "Tecnología"},
-    "BBD": {"name": "Banco Bradesco", "cedear": "BBD.BA", "underlying": "BBD", "ratio": 1, "rubro": "Finanzas"},
-    "SPCX": {"name": "SpaceX", "cedear": "SPCX.BA", "underlying": "SPCX", "ratio": 50, "rubro": "Tecnología"},
-    "MU": {"name": "Micron Technology", "cedear": "MU.BA", "underlying": "MU", "ratio": 5, "rubro": "Tecnología"},
-    "NU": {"name": "Nubank", "cedear": "NU.BA", "underlying": "NU", "ratio": 2, "rubro": "Finanzas"},
-    "LMT": {"name": "Lockheed Martin", "cedear": "LMT.BA", "underlying": "LMT", "ratio": 20, "rubro": "Industria"},
-    "LRCX": {"name": "LAM Research", "cedear": "LRCX.BA", "underlying": "LRCX", "ratio": 56, "rubro": "Tecnología"},
-    "COPX": {"name": "Global Miners", "cedear": "COPX.BA", "underlying": "COPX", "ratio": 14, "rubro": "ETFs"},
-    "SLV": {"name": "Silver ETF", "cedear": "SLV.BA", "underlying": "SLV", "ratio": 6, "rubro": "ETFs"},
-    "ASML": {"name": "ASML Holding", "cedear": "ASML.BA", "underlying": "ASML", "ratio": 146, "rubro": "Tecnología"},
-    "BA": {"name": "Boeing Comp", "cedear": "BA.BA", "underlying": "BA", "ratio": 24, "rubro": "Industria"},
-    "BKR": {"name": "Baker Hughes", "cedear": "BKR.BA", "underlying": "BKR", "ratio": 7, "rubro": "Energía"},
-    "BMY": {"name": "Bristol M", "cedear": "BMY.BA", "underlying": "BMY", "ratio": 3, "rubro": "Salud"},
-    "BG": {"name": "Bunge", "cedear": "BNG.BA", "underlying": "BG", "ratio": 5, "rubro": "Consumo"},
-    "BRK-B": {"name": "Berkshire Hathaway", "cedear": "BRKB.BA", "underlying": "BRK-B", "ratio": 22, "rubro": "Finanzas"},
-    "BAC": {"name": "Bank of America", "cedear": "BA-C.BA", "underlying": "BAC", "ratio": 4, "rubro": "Finanzas"},
-    "CEG": {"name": "Constellation Energy", "cedear": "CEG.BA", "underlying": "CEG", "ratio": 45, "rubro": "Energía"},
-    "CL": {"name": "Colgate Palmolive", "cedear": "CL.BA", "underlying": "CL", "ratio": 3, "rubro": "Consumo"},
-    "COIN": {"name": "Coinbase", "cedear": "COIN.BA", "underlying": "COIN", "ratio": 27, "rubro": "Finanzas"},
-    "COST": {"name": "Costco Wholesale", "cedear": "COST.BA", "underlying": "COST", "ratio": 48, "rubro": "Consumo"},
-    "CRM": {"name": "SALESFORCE", "cedear": "CRM.BA", "underlying": "CRM", "ratio": 18, "rubro": "Tecnología"},
-    "CRWD": {"name": "CROWDSTRIKE", "cedear": "CRWD.BA", "underlying": "CRWD", "ratio": 79, "rubro": "Tecnología"},
-    "CSCO": {"name": "Cisco Systems", "cedear": "CSCO.BA", "underlying": "CSCO", "ratio": 5, "rubro": "Tecnología"},
-    "CVX": {"name": "Chevron Corp", "cedear": "CVX.BA", "underlying": "CVX", "ratio": 16, "rubro": "Energía"},
-    "DE": {"name": "DEERE Comp", "cedear": "DE.BA", "underlying": "DE", "ratio": 40, "rubro": "Industria"},
-    "DELL": {"name": "DELL", "cedear": "DELL.BA", "underlying": "DELL", "ratio": 74, "rubro": "Tecnología"},
-    "EMBJ": {"name": "Embraer", "cedear": "EMBJ.BA", "underlying": "EMBJ", "ratio": 1, "rubro": "Industria"},
-    "EBAY": {"name": "EBAY", "cedear": "EBAY.BA", "underlying": "EBAY", "ratio": 2, "rubro": "Consumo"},
-    "EWJ": {"name": "ETF Japan", "cedear": "EWJ.BA", "underlying": "EWJ", "ratio": 14, "rubro": "ETFs"},
-    "GEV": {"name": "GE VERNOVA", "cedear": "GEV.BA", "underlying": "GEV", "ratio": 180, "rubro": "Energía"},
-    "GM": {"name": "General Motors", "cedear": "GM.BA", "underlying": "GM", "ratio": 6, "rubro": "Consumo"},
-    "GS": {"name": "Goldman Sachs", "cedear": "GS.BA", "underlying": "GS", "ratio": 13, "rubro": "Finanzas"},
-    "GT": {"name": "Goodyear Tire", "cedear": "GT.BA", "underlying": "GT", "ratio": 2, "rubro": "Consumo"},
-    "HAL": {"name": "Halliburton", "cedear": "HAL.BA", "underlying": "HAL", "ratio": 2, "rubro": "Energía"},
-    "HD": {"name": "Home Depot", "cedear": "HD.BA", "underlying": "HD", "ratio": 32, "rubro": "Consumo"},
-    "HON": {"name": "Honeywell", "cedear": "HON.BA", "underlying": "HON", "ratio": 8, "rubro": "Industria"},
-    "HPQ": {"name": "Hp Inc", "cedear": "HPQ.BA", "underlying": "HPQ", "ratio": 1, "rubro": "Tecnología"},
-    "HSY": {"name": "Hershey Company", "cedear": "HSY.BA", "underlying": "HSY", "ratio": 21, "rubro": "Consumo"},
-    "HUT": {"name": "Hut 8 Mining", "cedear": "HUT.BA", "underlying": "HUT", "ratio": 5, "rubro": "Tecnología"},
-    "ITA": {"name": "Aeropace & Defense", "cedear": "ITA.BA", "underlying": "ITA", "ratio": 50, "rubro": "ETFs"},
-    "IREN": {"name": "IREN", "cedear": "IREN.BA", "underlying": "IREN", "ratio": 12, "rubro": "Tecnología"},
-    "ITUB": {"name": "ITAU Unibanco", "cedear": "ITUB.BA", "underlying": "ITUB", "ratio": 1, "rubro": "Finanzas"},
-    "JNJ": {"name": "Johnson & Johnson", "cedear": "JNJ.BA", "underlying": "JNJ", "ratio": 15, "rubro": "Salud"},
-    "MDLZ": {"name": "Mondelez", "cedear": "MDLZ.BA", "underlying": "MDLZ", "ratio": 15, "rubro": "Consumo"},
-    "MMM": {"name": "3M", "cedear": "MMM.BA", "underlying": "MMM", "ratio": 10, "rubro": "Industria"},
-    "MS": {"name": "Morgan Stanley", "cedear": "MS.BA", "underlying": "MS", "ratio": 41, "rubro": "Finanzas"},
-    "MSTR": {"name": "Microstrategy", "cedear": "MSTR.BA", "underlying": "MSTR", "ratio": 20, "rubro": "Tecnología"},
-    "NFLX": {"name": "Netflix", "cedear": "NFLX.BA", "underlying": "NFLX", "ratio": 48, "rubro": "Comunicaciones"},
-    "O": {"name": "Realty Income", "cedear": "O.BA", "underlying": "O", "ratio": 13, "rubro": "Finanzas"},
-    "ORCL": {"name": "Oracle Corp", "cedear": "ORCL.BA", "underlying": "ORCL", "ratio": 3, "rubro": "Tecnología"},
-    "OXY": {"name": "Occidental Petroleum", "cedear": "OXY.BA", "underlying": "OXY", "ratio": 5, "rubro": "Energía"},
-    "PAGS": {"name": "Pagseguro", "cedear": "PAGS.BA", "underlying": "PAGS", "ratio": 3, "rubro": "Finanzas"},
-    "PBR": {"name": "Petrobras", "cedear": "PBR.BA", "underlying": "PBR", "ratio": 1, "rubro": "Energía"},
-    "PG": {"name": "Procter & Gamble", "cedear": "PG.BA", "underlying": "PG", "ratio": 15, "rubro": "Consumo"},
-    "PLTR": {"name": "Palantir Technologies", "cedear": "PLTR.BA", "underlying": "PLTR", "ratio": 3, "rubro": "Tecnología"},
-    "PYPL": {"name": "Paypal", "cedear": "PYPL.BA", "underlying": "PYPL", "ratio": 8, "rubro": "Finanzas"},
-    "QCOM": {"name": "Qualcomm", "cedear": "QCOM.BA", "underlying": "QCOM", "ratio": 11, "rubro": "Tecnología"},
-    "RACE": {"name": "Ferrari", "cedear": "RACE.BA", "underlying": "RACE", "ratio": 83, "rubro": "Consumo"},
-    "RGTI": {"name": "Rigetti Computing", "cedear": "RGTI.BA", "underlying": "RGTI", "ratio": 2, "rubro": "Tecnología"},
-    "SBUX": {"name": "Starbucks", "cedear": "SBUX.BA", "underlying": "SBUX", "ratio": 12, "rubro": "Consumo"},
-    "XOM": {"name": "Exxon Mobil", "cedear": "XOM.BA", "underlying": "XOM", "ratio": 10, "rubro": "Energía"},
-    "XLY": {"name": "Consumo Discrecional ETF", "cedear": "XLY.BA", "underlying": "XLY", "ratio": 43, "rubro": "ETFs"},
-    "XLB": {"name": "Materials Select", "cedear": "XLB.BA", "underlying": "XLB", "ratio": 18, "rubro": "ETFs"},
-    "XLC": {"name": "Communication Services", "cedear": "XLC.BA", "underlying": "XLC", "ratio": 19, "rubro": "ETFs"},
-    "XLI": {"name": "Industrial Select", "cedear": "XLI.BA", "underlying": "XLI", "ratio": 28, "rubro": "ETFs"},
-    "XLK": {"name": "Technology Select", "cedear": "XLK.BA", "underlying": "XLK", "ratio": 46, "rubro": "ETFs"},
-    "VALE": {"name": "Vale Do Rio Doce", "cedear": "VALE.BA", "underlying": "VALE", "ratio": 2, "rubro": "Materiales"},
-    "URA": {"name": "Global X Uranium", "cedear": "URA.BA", "underlying": "URA", "ratio": 5, "rubro": "ETFs"},
-    "UL": {"name": "Unilever NV NY", "cedear": "UL.BA", "underlying": "UL", "ratio": 3, "rubro": "Consumo"},
-    "UBER": {"name": "UBER Technologies", "cedear": "UBER.BA", "underlying": "UBER", "ratio": 2, "rubro": "Consumo"},
-    "TXN": {"name": "Texas Instruments", "cedear": "TXN.BA", "underlying": "TXN", "ratio": 5, "rubro": "Tecnología"},
-    "UAL": {"name": "United Airlines", "cedear": "UAL.BA", "underlying": "UAL", "ratio": 5, "rubro": "Industria"},
-    "TWLO": {"name": "Twilio Inc", "cedear": "TWLO.BA", "underlying": "TWLO", "ratio": 36, "rubro": "Tecnología"},
-    "TSM": {"name": "Taiwan Semic. Manuf.", "cedear": "TSM.BA", "underlying": "TSM", "ratio": 9, "rubro": "Tecnología"},
-    "TM": {"name": "Toyota Motors", "cedear": "TM.BA", "underlying": "TM", "ratio": 15, "rubro": "Consumo"},
-    "SYY": {"name": "Sysco Corporation", "cedear": "SYY.BA", "underlying": "SYY", "ratio": 8, "rubro": "Consumo"},
-    "STLA": {"name": "Stellantis NV", "cedear": "STLA.BA", "underlying": "STLA", "ratio": 5, "rubro": "Consumo"},
-    "SPOT": {"name": "Spotify Tech", "cedear": "SPOT.BA", "underlying": "SPOT", "ratio": 28, "rubro": "Comunicaciones"},
-    "SNDK": {"name": "Sandisk Corp", "cedear": "SNDK.BA", "underlying": "SNDK", "ratio": 170, "rubro": "Tecnología"},
-    "HIMS": {"name": "Hims & Hers Healths", "cedear": "HIMS.BA", "underlying": "HIMS", "ratio": 4, "rubro": "Salud"},
-    "SPY": {"name": "SPDR S&P 500 ETF Trust", "cedear": "SPY.BA", "underlying": "SPY", "ratio": 60, "rubro": "ETFs"},
-    "IBB": {"name": "ETF Biotechnology", "cedear": "IBB.BA", "underlying": "IBB", "ratio": 27, "rubro": "ETFs"},
-    "MRVL": {"name": "Marvell Technology", "cedear": "MRVL.BA", "underlying": "MRVL", "ratio": 14, "rubro": "Tecnología"},
-    "PANW": {"name": "Palo Alto Networks", "cedear": "PANW.BA", "underlying": "PANW", "ratio": 50, "rubro": "Tecnología"},
-    "PSX": {"name": "Phillips 66", "cedear": "PSX.BA", "underlying": "PSX", "ratio": 6, "rubro": "Energía"},
-    "EQNR": {"name": "Equinor ASA", "cedear": "EQNR.BA", "underlying": "EQNR", "ratio": 6, "rubro": "Energía"},
-    "SMH": {"name": "VanEck Semiconductor ETF", "cedear": "SMH.BA", "underlying": "SMH", "ratio": 50, "rubro": "ETFs"},
-    "GPRK": {"name": "GeoPark", "cedear": "GPRK.BA", "underlying": "GPRK", "ratio": 1, "rubro": "Energía"},
-    "GGB": {"name": "Gerdau", "cedear": "GGB.BA", "underlying": "GGB", "ratio": 0.25, "rubro": "Materiales"},
-    "YPF": {"name": "YPF", "cedear": "YPFD.BA", "underlying": "YPF", "ratio": 10, "rubro": "Energía"},
+from __future__ import annotations
+
+import csv
+from pathlib import Path
+
+RAIZ = Path(__file__).resolve().parent.parent
+RUTA_MANUAL = RAIZ / "data" / "cedears_manual.csv"
+RUTA_UNIVERSO = RAIZ / "data" / "cedears_universo.csv"
+RUTA_ACCIONES = RAIZ / "data" / "acciones_ar.csv"
+
+ESTADO_OK = "verificado"
+ESTADO_NO = "sin verificar"
+TOLERANCIA_MANUAL = 0.04
+TOLERANCIA_NUEVO = 0.02
+SEPARACION_NUEVO = 0.06
+SPREAD_MAX = 0.05
+
+MAPA_RUBRO = {
+    "Technology": "Tecnología",
+    "Financial Services": "Finanzas",
+    "Energy": "Energía",
+    "Healthcare": "Salud",
+    "Consumer Cyclical": "Consumo",
+    "Consumer Defensive": "Consumo",
+    "Industrials": "Industria",
+    "Basic Materials": "Materiales",
+    "Utilities": "Servicios públicos",
+    "Real Estate": "Inmuebles",
+    "Communication Services": "Comunicaciones",
 }
 
+SUFIJOS_ESPECIE = (".CD", ".CC", ".C", ".D", "C", "D")
+
+
+def _numero(texto: str | None) -> float | None:
+    if texto is None:
+        return None
+    limpio = str(texto).strip()
+    if not limpio:
+        return None
+    try:
+        valor = float(limpio.replace(",", "."))
+    except ValueError:
+        return None
+    if valor.is_integer():
+        return int(valor)
+    return valor
+
+
+def _leer_csv(ruta: Path) -> list[dict]:
+    if not ruta.exists():
+        return []
+    with ruta.open(newline="", encoding="utf-8") as archivo:
+        return list(csv.DictReader(archivo))
+
+
+def simbolo_byma(cedear: str) -> str:
+    """Pasa el símbolo de Yahoo (``BA-C.BA``) al símbolo BYMA (``BA.C``)."""
+    texto = str(cedear or "").strip()
+    if texto.endswith(".BA"):
+        texto = texto[:-3]
+    return texto.replace("-", ".")
+
+
+def yahoo_cedear(simbolo: str) -> str:
+    """Pasa el símbolo BYMA al ticker de Yahoo en Buenos Aires."""
+    return str(simbolo).replace(".", "-") + ".BA"
+
+
+def cargar_manual(ruta: Path | None = None) -> dict[str, dict]:
+    filas = _leer_csv(ruta or RUTA_MANUAL)
+    salida: dict[str, dict] = {}
+    for fila in filas:
+        ticker = (fila.get("ticker") or "").strip()
+        if not ticker:
+            continue
+        salida[ticker] = {
+            "name": (fila.get("nombre") or ticker).strip(),
+            "cedear": (fila.get("cedear") or "").strip(),
+            "underlying": (fila.get("underlying") or "").strip(),
+            "ratio": _numero(fila.get("ratio")),
+            "rubro": (fila.get("rubro") or "Otros").strip(),
+        }
+    return salida
+
+
+def cargar_universo(ruta: Path | None = None) -> dict[str, dict]:
+    filas = _leer_csv(ruta or RUTA_UNIVERSO)
+    salida: dict[str, dict] = {}
+    for fila in filas:
+        ticker = (fila.get("ticker") or "").strip()
+        if not ticker:
+            continue
+        salida[ticker] = {
+            "name": (fila.get("nombre") or ticker).strip(),
+            "cedear": (fila.get("cedear") or "").strip(),
+            "underlying": (fila.get("underlying") or "").strip(),
+            "ratio": _numero(fila.get("ratio")),
+            "rubro": (fila.get("rubro") or "Sin verificar").strip(),
+            "estado": (fila.get("estado") or ESTADO_NO).strip(),
+            "sector_estado": (fila.get("sector_estado") or ESTADO_NO).strip(),
+            "byma": (fila.get("byma") or simbolo_byma(fila.get("cedear") or "")).strip(),
+            "origen": (fila.get("origen") or "").strip(),
+            "motivo": (fila.get("motivo") or "").strip(),
+        }
+    return salida
+
+
+def cargar_acciones(ruta: Path | None = None) -> dict[str, dict]:
+    filas = _leer_csv(ruta or RUTA_ACCIONES)
+    salida: dict[str, dict] = {}
+    for fila in filas:
+        ticker = (fila.get("ticker") or "").strip()
+        if not ticker:
+            continue
+        salida[ticker] = {
+            "name": (fila.get("nombre") or ticker).strip(),
+            "rubro": (fila.get("rubro") or "Sin clasificar").strip(),
+            "panel": (fila.get("panel") or "general").strip(),
+            "sector_estado": (fila.get("sector_estado") or ESTADO_NO).strip(),
+        }
+    return salida
+
+
+WATCHLIST = cargar_manual()
+
+
+def grilla_ratios() -> list[float]:
+    """Ratios que usa BYMA: cuartos hasta 2 y enteros hasta 200. Nada intermedio."""
+    valores = [numero / 4 for numero in range(1, 9)]
+    valores.extend(float(numero) for numero in range(1, 201))
+    return sorted(set(valores))
+
+
+GRILLA = grilla_ratios()
+
+
+def elegir_ratio(implicito: float | None, *, tolerancia: float = TOLERANCIA_NUEVO, separacion: float = SEPARACION_NUEVO) -> float | None:
+    """Devuelve el ratio de la grilla solo si el precio lo señala sin ambigüedad."""
+    if implicito is None or implicito <= 0:
+        return None
+    ordenados = sorted(GRILLA, key=lambda ratio: abs(implicito / ratio - 1))
+    mejor, segundo = ordenados[0], ordenados[1]
+    distancia = abs(implicito / mejor - 1)
+    siguiente = abs(implicito / segundo - 1)
+    if distancia <= tolerancia and siguiente >= separacion:
+        if float(mejor).is_integer():
+            return int(mejor)
+        return mejor
+    return None
+
+
+def rubro_desde_yahoo(sector: str | None, tipo: str | None = None) -> str | None:
+    if tipo and str(tipo).upper() == "ETF":
+        return "ETFs"
+    if not sector:
+        return None
+    return MAPA_RUBRO.get(str(sector))
+
+
+def es_variante_dolar(simbolo: str, precios: dict[str, float]) -> bool:
+    """True si el símbolo es la especie en dólares o cable de otro papel.
+
+    ``BBD`` no se descarta: cotiza en la misma escala que ``BB`` y es otro
+    activo. ``MUD`` sí: vale una fracción de ``MU``.
+    """
+    for sufijo in SUFIJOS_ESPECIE:
+        if simbolo.endswith(sufijo) and len(simbolo) > len(sufijo):
+            base = simbolo[: -len(sufijo)]
+            precio_base = precios.get(base)
+            precio = precios.get(simbolo)
+            if precio_base and precio:
+                if precio < precio_base * 0.15:
+                    return True
+                return False
+    precio = precios.get(simbolo) or 0
+    if simbolo.endswith(("D", "C", ".D", ".C", ".CD", ".CC")) and 0 < precio < 80:
+        return True
+    return False
+
+
+def simbolos_pesos(cotizaciones: dict[str, dict]) -> list[str]:
+    precios = {simbolo: float(fila.get("c") or 0) for simbolo, fila in cotizaciones.items()}
+    return [simbolo for simbolo in cotizaciones if not es_variante_dolar(simbolo, precios)]
+
+
+def _spread(fila: dict) -> float | None:
+    try:
+        bid = float(fila.get("px_bid") or 0)
+        ask = float(fila.get("px_ask") or 0)
+    except (TypeError, ValueError):
+        return None
+    if bid <= 0 or ask <= 0:
+        return None
+    medio = (bid + ask) / 2
+    if medio <= 0:
+        return None
+    return (ask - bid) / medio
+
+
+def _ccl_implicito(precio_ars: float, precio_usd: float, ratio: float) -> float | None:
+    if precio_ars <= 0 or precio_usd <= 0 or ratio <= 0:
+        return None
+    return (precio_ars * ratio) / precio_usd
+
+
+def usa_ratio(cfg: dict) -> bool:
+    return cfg.get("estado") == ESTADO_OK and cfg.get("ratio") not in (None, "")
+
+
+def usa_sector(cfg: dict) -> bool:
+    return cfg.get("sector_estado") == ESTADO_OK and cfg.get("rubro") not in (None, "", "Sin verificar", "Sin clasificar")
+
+
+def _registro(
+    ticker: str,
+    *,
+    nombre: str,
+    cedear: str,
+    underlying: str,
+    ratio,
+    rubro: str,
+    estado: str,
+    sector_estado: str,
+    byma: str,
+    origen: str,
+    motivo: str,
+) -> dict:
+    return {
+        "name": nombre,
+        "cedear": cedear,
+        "underlying": underlying,
+        "ratio": ratio,
+        "rubro": rubro or "Sin verificar",
+        "estado": estado,
+        "sector_estado": sector_estado,
+        "byma": byma,
+        "origen": origen,
+        "motivo": motivo,
+    }
+
+
+def armar_universo(
+    cotizaciones: dict[str, dict],
+    manual: dict[str, dict],
+    precios_usd: dict[str, float],
+    ccl_referencia: float | None,
+    subyacentes: dict[str, str] | None = None,
+    sectores_yahoo: dict[str, str] | None = None,
+    nombres_yahoo: dict[str, str] | None = None,
+) -> dict[str, dict]:
+    """Une el feed de data912 con el CSV a mano y verifica ratio y rubro.
+
+    ``sectores_yahoo`` y ``nombres_yahoo`` están keyed por el subyacente.
+    Si Yahoo no trae el rubro, el activo queda sin verificar en ese campo.
+    """
+    subyacentes = subyacentes or {}
+    sectores_yahoo = sectores_yahoo or {}
+    nombres_yahoo = nombres_yahoo or {}
+    pesos = set(simbolos_pesos(cotizaciones)) if cotizaciones else set()
+    salida: dict[str, dict] = {}
+    byma_usados: set[str] = set()
+
+    for ticker, cfg in manual.items():
+        byma = simbolo_byma(cfg.get("cedear") or ticker)
+        byma_usados.add(byma)
+        fila = cotizaciones.get(byma) or {}
+        precio_ars = float(fila["c"]) if fila.get("c") else None
+        underlying = cfg.get("underlying") or ""
+        precio_usd = precios_usd.get(underlying)
+        rubro_yahoo = sectores_yahoo.get(underlying)
+        rubro_manual = cfg.get("rubro") or "Sin verificar"
+        if rubro_yahoo and rubro_yahoo == rubro_manual:
+            sector_estado = ESTADO_OK
+        elif rubro_yahoo and rubro_yahoo != rubro_manual:
+            sector_estado = ESTADO_NO
+        else:
+            sector_estado = ESTADO_NO
+        ratio = cfg.get("ratio")
+        estado = ESTADO_NO
+        motivo = "Sin precio en las dos patas para verificar el ratio."
+        if ccl_referencia and precio_ars and precio_usd and ratio:
+            implicito = _ccl_implicito(precio_ars, float(precio_usd), float(ratio))
+            if implicito:
+                desvio = abs(implicito / ccl_referencia - 1)
+                if desvio <= TOLERANCIA_MANUAL:
+                    estado = ESTADO_OK
+                    motivo = f"El ratio {ratio} implica un CCL a {desvio * 100:.2f}% de la referencia."
+                else:
+                    motivo = (
+                        f"El ratio {ratio} implica un CCL a {desvio * 100:.2f}% de la referencia. "
+                        "Queda sin verificar."
+                    )
+        elif not (ccl_referencia and precio_ars and precio_usd):
+            motivo = "Sin precio en las dos patas para verificar el ratio."
+        salida[ticker] = _registro(
+            ticker,
+            nombre=cfg.get("name") or ticker,
+            cedear=cfg.get("cedear") or yahoo_cedear(byma),
+            underlying=underlying,
+            ratio=ratio,
+            rubro=rubro_manual,
+            estado=estado,
+            sector_estado=sector_estado,
+            byma=byma,
+            origen="manual",
+            motivo=motivo,
+        )
+
+    if not ccl_referencia:
+        for simbolo in sorted(pesos):
+            if simbolo in byma_usados or simbolo in salida:
+                continue
+            salida[simbolo] = _registro(
+                simbolo,
+                nombre=simbolo,
+                cedear=yahoo_cedear(simbolo),
+                underlying=subyacentes.get(simbolo) or simbolo.replace(".", "-"),
+                ratio=None,
+                rubro="Sin verificar",
+                estado=ESTADO_NO,
+                sector_estado=ESTADO_NO,
+                byma=simbolo,
+                origen="feed",
+                motivo="Sin CCL de referencia no se verifica el ratio.",
+            )
+        return salida
+
+    for simbolo in sorted(pesos):
+        if simbolo in byma_usados or simbolo in salida:
+            continue
+        fila = cotizaciones.get(simbolo) or {}
+        precio_ars = float(fila["c"]) if fila.get("c") else None
+        underlying = subyacentes.get(simbolo) or simbolo.replace(".", "-")
+        precio_usd = precios_usd.get(underlying) or precios_usd.get(simbolo)
+        nombre = nombres_yahoo.get(underlying) or simbolo
+        rubro = sectores_yahoo.get(underlying)
+        sector_estado = ESTADO_OK if rubro else ESTADO_NO
+        ratio = None
+        estado = ESTADO_NO
+        motivo = "Sin precio del subyacente para verificar el ratio."
+        if precio_ars and precio_usd:
+            implicito = (float(precio_usd) * ccl_referencia) / precio_ars
+            candidato = elegir_ratio(implicito)
+            volumen = float(fila.get("v") or 0)
+            spread = _spread(fila)
+            liquido = volumen > 0 and spread is not None and spread < SPREAD_MAX
+            if candidato is None:
+                motivo = "El precio no coincide con un único ratio de la grilla."
+            elif not liquido:
+                motivo = "El ratio cierra, pero no hubo volumen o el spread es ancho: queda sin verificar."
+            else:
+                ratio = candidato
+                estado = ESTADO_OK
+                desvio = abs(implicito / float(candidato) - 1)
+                motivo = f"Ratio {candidato} único, a {desvio * 100:.2f}% del precio, con volumen."
+        salida[simbolo] = _registro(
+            simbolo,
+            nombre=nombre,
+            cedear=yahoo_cedear(simbolo),
+            underlying=underlying,
+            ratio=ratio if estado == ESTADO_OK else None,
+            rubro=rubro or "Sin verificar",
+            estado=estado,
+            sector_estado=sector_estado if estado == ESTADO_OK else ESTADO_NO,
+            byma=simbolo,
+            origen="consistencia" if estado == ESTADO_OK else "feed",
+            motivo=motivo,
+        )
+    return salida
+
+
+def incorporar_faltantes(universo: dict[str, dict], simbolos: list[str]) -> dict[str, dict]:
+    """Suma tickers nuevos del feed como sin verificar, sin inventarles un ratio."""
+    salida = dict(universo)
+    presentes = {cfg.get("byma") or simbolo_byma(cfg.get("cedear") or "") for cfg in universo.values()}
+    presentes.update(universo)
+    for simbolo in simbolos:
+        if simbolo in presentes:
+            continue
+        salida[simbolo] = _registro(
+            simbolo,
+            nombre=simbolo,
+            cedear=yahoo_cedear(simbolo),
+            underlying="",
+            ratio=None,
+            rubro="Sin verificar",
+            estado=ESTADO_NO,
+            sector_estado=ESTADO_NO,
+            byma=simbolo,
+            origen="feed",
+            motivo="Apareció en data912 y todavía no tiene ratio verificado.",
+        )
+    return salida
+
+
+def guardar_universo(universo: dict[str, dict], ruta: Path | None = None) -> None:
+    destino = ruta or RUTA_UNIVERSO
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    campos = ["ticker", "nombre", "cedear", "underlying", "ratio", "rubro", "estado", "sector_estado", "byma", "origen", "motivo"]
+    with destino.open("w", newline="", encoding="utf-8") as archivo:
+        writer = csv.DictWriter(archivo, fieldnames=campos)
+        writer.writeheader()
+        for ticker, cfg in universo.items():
+            writer.writerow(
+                {
+                    "ticker": ticker,
+                    "nombre": cfg.get("name") or "",
+                    "cedear": cfg.get("cedear") or "",
+                    "underlying": cfg.get("underlying") or "",
+                    "ratio": "" if cfg.get("ratio") is None else cfg.get("ratio"),
+                    "rubro": cfg.get("rubro") or "",
+                    "estado": cfg.get("estado") or ESTADO_NO,
+                    "sector_estado": cfg.get("sector_estado") or ESTADO_NO,
+                    "byma": cfg.get("byma") or "",
+                    "origen": cfg.get("origen") or "",
+                    "motivo": cfg.get("motivo") or "",
+                }
+            )
+
+
+def contar(universo: dict[str, dict]) -> dict[str, int]:
+    verificados = sum(1 for cfg in universo.values() if cfg.get("estado") == ESTADO_OK)
+    sector = sum(1 for cfg in universo.values() if cfg.get("sector_estado") == ESTADO_OK)
+    return {
+        "total": len(universo),
+        "verificados": verificados,
+        "sin_verificar": len(universo) - verificados,
+        "sector_verificado": sector,
+    }

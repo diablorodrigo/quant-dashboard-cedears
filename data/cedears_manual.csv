@@ -1,0 +1,140 @@
+ticker,nombre,cedear,underlying,ratio,rubro
+AAPL,Apple,AAPL.BA,AAPL,20,Tecnología
+MSFT,Microsoft,MSFT.BA,MSFT,30,Tecnología
+AMZN,Amazon,AMZN.BA,AMZN,144,Consumo
+NVDA,Nvidia,NVDA.BA,NVDA,24,Tecnología
+META,Meta,META.BA,META,24,Comunicaciones
+TSLA,Tesla,TSLA.BA,TSLA,15,Consumo
+KO,Coca-Cola,KO.BA,KO,5,Consumo
+MELI,Mercado Libre,MELI.BA,MELI,120,Consumo
+VIST,Vista Energy,VIST.BA,VIST,3,Energía
+GOOGL,Google,GOOGL.BA,GOOGL,58,Comunicaciones
+JPM,JP Morgan,JPM.BA,JPM,15,Finanzas
+F,Ford,F.BA,F,1,Consumo
+MCD,McDonald's,MCD.BA,MCD,24,Consumo
+PEP,Pepsi,PEP.BA,PEP,18,Consumo
+V,Visa,V.BA,V,18,Finanzas
+MA,Mastercard,MA.BA,MA,33,Finanzas
+AXP,American Express,AXP.BA,AXP,15,Finanzas
+XLF,Sector Financial,XLF.BA,XLF,2,ETFs
+GLD,ETF GOLD,GLD.BA,GLD,50,ETFs
+LLY,Eli Lilly,LLY.BA,LLY,56,Salud
+WMT,Walmart,WMT.BA,WMT,18,Consumo
+EEM,Emerging Market,EEM.BA,EEM,5,ETFs
+IWM,Russell 2000,IWM.BA,IWM,10,ETFs
+CAT,Caterpillar,CAT.BA,CAT,20,Industria
+BNY,Bank of New York Mellon,BNY.BA,BNY,2,Finanzas
+XLE,ETF Energy,XLE.BA,XLE,2,ETFs
+XLP,ETF Consumo Básico,XLP.BA,XLP,16,ETFs
+XLU,ETF Utilities,XLU.BA,XLU,15,ETFs
+ARKK,ARK Innovation,ARKK.BA,ARKK,10,ETFs
+EWZ,ETF Brasil,EWZ.BA,EWZ,2,ETFs
+IBIT,ETF Bitcoin,IBIT.BA,IBIT,10,ETFs
+QQQ,NASDAQ,QQQ.BA,QQQ,20,ETFs
+DIA,Dow Jones,DIA.BA,DIA,20,ETFs
+USO,United States Oil,USO.BA,USO,15,ETFs
+XLV,ETF Health Care,XLV.BA,XLV,29,ETFs
+ABBV,ABBVIE Inc,ABBV.BA,ABBV,10,Salud
+UNH,UnitedHealth Group,UNH.BA,UNH,33,Salud
+AMGN,Amgen Inc,AMGN.BA,AMGN,30,Salud
+PFE,Pfizer,PFE.BA,PFE,4,Salud
+CVS,CVS Health,CVS.BA,CVS,15,Salud
+MRNA,Moderna,MRNA.BA,MRNA,19,Salud
+AAL,American Airlines,AAL.BA,AAL,2,Industria
+ACN,Accenture,ACN.BA,ACN,75,Tecnología
+ADBE,Adobe Inc,ADBE.BA,ADBE,44,Tecnología
+ADI,Analog Devices,ADI.BA,ADI,15,Tecnología
+AMD,AMD,AMD.BA,AMD,10,Tecnología
+INTC,INTEL Corp,INTC.BA,INTC,5,Tecnología
+ARCO,Arcos Dorados,ARCO.BA,ARCO,0.5,Consumo
+ARM,Arm Holdings,ARM.BA,ARM,27,Tecnología
+AVGO,Broadcom,AVGO.BA,AVGO,39,Tecnología
+BBD,Banco Bradesco,BBD.BA,BBD,1,Finanzas
+SPCX,SpaceX,SPCX.BA,SPCX,50,Tecnología
+MU,Micron Technology,MU.BA,MU,5,Tecnología
+NU,Nubank,NU.BA,NU,2,Finanzas
+LMT,Lockheed Martin,LMT.BA,LMT,20,Industria
+LRCX,LAM Research,LRCX.BA,LRCX,56,Tecnología
+COPX,Global Miners,COPX.BA,COPX,14,ETFs
+SLV,Silver ETF,SLV.BA,SLV,6,ETFs
+ASML,ASML Holding,ASML.BA,ASML,146,Tecnología
+BA,Boeing,BA.BA,BA,24,Industria
+BKR,Baker Hughes,BKR.BA,BKR,7,Energía
+BMY,Bristol-Myers,BMY.BA,BMY,3,Salud
+BG,Bunge,BNG.BA,BG,5,Consumo
+BRK-B,Berkshire Hathaway,BRKB.BA,BRK-B,22,Finanzas
+BAC,Bank of America,BA-C.BA,BAC,4,Finanzas
+CEG,Constellation Energy,CEG.BA,CEG,45,Energía
+CL,Colgate Palmolive,CL.BA,CL,3,Consumo
+COIN,Coinbase,COIN.BA,COIN,27,Finanzas
+COST,Costco Wholesale,COST.BA,COST,48,Consumo
+CRM,SALESFORCE,CRM.BA,CRM,18,Tecnología
+CRWD,CROWDSTRIKE,CRWD.BA,CRWD,79,Tecnología
+CSCO,Cisco Systems,CSCO.BA,CSCO,5,Tecnología
+CVX,Chevron Corp,CVX.BA,CVX,16,Energía
+DE,Deere,DE.BA,DE,40,Industria
+DELL,DELL,DELL.BA,DELL,74,Tecnología
+EMBJ,Embraer,EMBJ.BA,EMBJ,1,Industria
+EBAY,EBAY,EBAY.BA,EBAY,2,Consumo
+EWJ,ETF Japan,EWJ.BA,EWJ,14,ETFs
+GEV,GE VERNOVA,GEV.BA,GEV,180,Energía
+GM,General Motors,GM.BA,GM,6,Consumo
+GS,Goldman Sachs,GS.BA,GS,13,Finanzas
+GT,Goodyear Tire,GT.BA,GT,2,Consumo
+HAL,Halliburton,HAL.BA,HAL,2,Energía
+HD,Home Depot,HD.BA,HD,32,Consumo
+HON,Honeywell,HON.BA,HON,8,Industria
+HPQ,HP Inc.,HPQ.BA,HPQ,1,Tecnología
+HSY,Hershey Company,HSY.BA,HSY,21,Consumo
+HUT,Hut 8 Mining,HUT.BA,HUT,5,Tecnología
+ITA,Aerospace & Defense,ITA.BA,ITA,50,ETFs
+IREN,IREN,IREN.BA,IREN,12,Tecnología
+ITUB,ITAU Unibanco,ITUB.BA,ITUB,1,Finanzas
+JNJ,Johnson & Johnson,JNJ.BA,JNJ,15,Salud
+MDLZ,Mondelez,MDLZ.BA,MDLZ,15,Consumo
+MMM,3M,MMM.BA,MMM,10,Industria
+MS,Morgan Stanley,MS.BA,MS,41,Finanzas
+MSTR,Microstrategy,MSTR.BA,MSTR,20,Tecnología
+NFLX,Netflix,NFLX.BA,NFLX,48,Comunicaciones
+O,Realty Income,O.BA,O,13,Finanzas
+ORCL,Oracle Corp,ORCL.BA,ORCL,3,Tecnología
+OXY,Occidental Petroleum,OXY.BA,OXY,5,Energía
+PAGS,Pagseguro,PAGS.BA,PAGS,3,Finanzas
+PBR,Petrobras,PBR.BA,PBR,1,Energía
+PG,Procter & Gamble,PG.BA,PG,15,Consumo
+PLTR,Palantir Technologies,PLTR.BA,PLTR,3,Tecnología
+PYPL,Paypal,PYPL.BA,PYPL,8,Finanzas
+QCOM,Qualcomm,QCOM.BA,QCOM,11,Tecnología
+RACE,Ferrari,RACE.BA,RACE,83,Consumo
+RGTI,Rigetti Computing,RGTI.BA,RGTI,2,Tecnología
+SBUX,Starbucks,SBUX.BA,SBUX,12,Consumo
+XOM,Exxon Mobil,XOM.BA,XOM,10,Energía
+XLY,Consumo Discrecional ETF,XLY.BA,XLY,43,ETFs
+XLB,Materials Select,XLB.BA,XLB,18,ETFs
+XLC,Communication Services,XLC.BA,XLC,19,ETFs
+XLI,Industrial Select,XLI.BA,XLI,28,ETFs
+XLK,Technology Select,XLK.BA,XLK,46,ETFs
+VALE,Vale Do Rio Doce,VALE.BA,VALE,2,Materiales
+URA,Global X Uranium,URA.BA,URA,5,ETFs
+UL,Unilever NV NY,UL.BA,UL,3,Consumo
+UBER,UBER Technologies,UBER.BA,UBER,2,Consumo
+TXN,Texas Instruments,TXN.BA,TXN,5,Tecnología
+UAL,United Airlines,UAL.BA,UAL,5,Industria
+TWLO,Twilio Inc,TWLO.BA,TWLO,36,Tecnología
+TSM,Taiwan Semic. Manuf.,TSM.BA,TSM,9,Tecnología
+TM,Toyota Motors,TM.BA,TM,15,Consumo
+SYY,Sysco Corporation,SYY.BA,SYY,8,Consumo
+STLA,Stellantis NV,STLA.BA,STLA,5,Consumo
+SPOT,Spotify Tech,SPOT.BA,SPOT,28,Comunicaciones
+SNDK,Sandisk Corp,SNDK.BA,SNDK,170,Tecnología
+HIMS,Hims & Hers Health,HIMS.BA,HIMS,4,Salud
+SPY,SPDR S&P 500 ETF Trust,SPY.BA,SPY,60,ETFs
+IBB,ETF Biotechnology,IBB.BA,IBB,27,ETFs
+MRVL,Marvell Technology,MRVL.BA,MRVL,14,Tecnología
+PANW,Palo Alto Networks,PANW.BA,PANW,50,Tecnología
+PSX,Phillips 66,PSX.BA,PSX,6,Energía
+EQNR,Equinor ASA,EQNR.BA,EQNR,6,Energía
+SMH,VanEck Semiconductor ETF,SMH.BA,SMH,50,ETFs
+GPRK,GeoPark,GPRK.BA,GPRK,1,Energía
+GGB,Gerdau,GGB.BA,GGB,0.25,Materiales
+YPF,YPF,YPFD.BA,YPF,10,Energía
