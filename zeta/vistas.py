@@ -47,6 +47,16 @@ TRADUCCION_CONSENSO = {
 }
 
 
+# El Radar mira ~50 ruedas. La rotación, el promedio de ~126. Misma lectura, otro plazo.
+HORIZONTE_RADAR = "Corto plazo, ~2,5 meses"
+HORIZONTE_ROTACION = "Mediano plazo, ~6 meses"
+NOTA_RADAR_Y_ROTACION = (
+    "Un mismo activo puede figurar distinto en el Radar y en la rotación, y no es una contradicción. "
+    "El Radar (corto plazo, ~2,5 meses) reacciona antes. "
+    "La rotación (mediano plazo, ~6 meses) confirma más tarde."
+)
+
+
 def _colores_cuadrante() -> dict[str, str]:
     p = paleta()
     return {
@@ -58,13 +68,24 @@ def _colores_cuadrante() -> dict[str, str]:
 
 
 def _color_cola(nombre: str) -> str:
+    return _colores_cuadrante()[nombre]
+
+
+def _titulo_horizonte(fig: go.Figure, texto: str) -> None:
+    """El plazo va pegado al borde de arriba, por encima de la leyenda y de las siglas."""
     p = paleta()
-    return {
-        "Líder": p["lider"],
-        "Mejorando": p["mejorando"],
-        "Debilitándose": p["debilitando"],
-        "Rezagado": p["rezagado"],
-    }[nombre]
+    fig.update_layout(
+        title=dict(
+            text=texto,
+            x=0,
+            xanchor="left",
+            y=1,
+            yanchor="top",
+            yref="container",
+            pad=dict(t=10, b=0, l=8, r=0),
+            font=dict(family=p["fuente"], size=15, color=p["texto_grafico"]),
+        )
+    )
 
 
 def _cerrar_grafico(fig: go.Figure) -> go.Figure:
@@ -924,7 +945,7 @@ def _grafico_radar(df: pd.DataFrame) -> go.Figure:
     )
     fig.update_layout(
         height=840,
-        margin=dict(t=48, b=56, l=64, r=28),
+        margin=dict(t=108, b=56, l=64, r=28),
         legend_title_text="",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
         hovermode="closest",
@@ -933,6 +954,7 @@ def _grafico_radar(df: pd.DataFrame) -> go.Figure:
         yaxis=dict(range=[y0, y1], fixedrange=False, showgrid=False),
     )
     fig = _cerrar_grafico(fig)
+    _titulo_horizonte(fig, HORIZONTE_RADAR)
     fig.update_layout(dragmode="pan")
     fig.update_xaxes(range=[x0, x1], fixedrange=False)
     fig.update_yaxes(range=[y0, y1], fixedrange=False)
@@ -944,7 +966,9 @@ def vista_radar() -> None:
     if panel is None:
         return
     st.markdown("### Radar de fuerza relativa")
+    st.caption(HORIZONTE_RADAR)
     aviso_datos(panel)
+    st.info(NOTA_RADAR_Y_ROTACION)
     st.caption(
         "Cada punto compara el subyacente contra SPY. "
         "La fuerza es el z-score de 50 ruedas del ratio de precios y el momentum es su cambio a 10 ruedas. "
@@ -969,10 +993,10 @@ def vista_radar() -> None:
         },
     )
     st.markdown("**Activos con fuerza relativa**")
-    st.caption("Líderes y mejorando, ordenados por momentum.")
+    st.caption("Líderes y Mejorando, ordenados por momentum.")
     destacados = df[df["Cuadrante"].isin(["Líderes", "Mejorando"])].sort_values("Momentum_Y", ascending=False).head(10)
     if destacados.empty:
-        st.info("Ningún activo en líderes o mejorando.")
+        st.info("Ningún activo en Líderes o Mejorando.")
     else:
         nombres = " · ".join(f"**{fila.Ticker}** ({fila.Cuadrante})" for fila in destacados.itertuples(index=False))
         st.markdown(nombres)
@@ -1183,9 +1207,10 @@ def _grafico_rotacion(
         font=dict(family=p["fuente_mono"], size=11, color=p["mute_grafico"]),
     )
     _cerrar_grafico(fig)
+    _titulo_horizonte(fig, HORIZONTE_ROTACION)
     fig.update_layout(
         height=720,
-        margin=dict(t=36, b=72, l=78, r=28),
+        margin=dict(t=96, b=72, l=78, r=28),
         showlegend=False,
         xaxis=dict(
             title=dict(text=f"FUERZA RELATIVA vs {benchmark}", font=dict(family=p["fuente_mono"], size=12, color=p["titulo_eje"])),
@@ -1210,7 +1235,9 @@ def vista_rotacion() -> None:
     if panel is None:
         return
     st.markdown("### Rotación sectorial")
+    st.caption(HORIZONTE_ROTACION)
     aviso_datos(panel)
+    st.info(NOTA_RADAR_Y_ROTACION)
     rotacion = armar_rotacion(panel["precios_usd"])
     st.markdown(f"**{rotacion['frase']}**")
     st.caption(
@@ -1225,7 +1252,7 @@ def vista_rotacion() -> None:
         st.plotly_chart(_grafico_rotacion(colas), width="stretch", theme=None, key=f"rotacion_rrg_{tema_activo()}")
         st.caption(
             "El centro es cero: a la derecha hay más fuerza contra SPY que el promedio de seis meses, y arriba esa fuerza se acelera. "
-            "La cola son las últimas cinco semanas. Verde líderes, azul mejorando, ámbar debilitándose, rojo rezagados."
+            "La cola son las últimas cinco semanas. Verde Líderes, azul Mejorando, ámbar Debilitándose, rojo Rezagados."
         )
 
     ranking = rotacion["ranking"]
@@ -1359,7 +1386,7 @@ def vista_carteras() -> None:
 def vista_metodologia() -> None:
     st.markdown("### Cómo está armada la lectura")
     st.markdown(
-        """
+        f"""
 El puntaje técnico mira, en dólares y sobre el subyacente:
 
 - la EMA de 200 ruedas (si el precio está debajo, resta);
@@ -1409,18 +1436,20 @@ El MEP y el CCL se contrastan con ArgentinaDatos, el mayorista de referencia con
 y el riesgo país de Ámbito con ArgentinaDatos. Los desvíos quedan en un CSV del día.
 Un CEDEAR cuyo ratio no se puede verificar figura como «Sin verificar» y no entra al CCL ni al gap.
 
-**Radar.** Fuerza relativa contra SPY, normalizada a 50 ruedas, y su cambio a 10 ruedas.
-Arriba a la derecha: líderes. Arriba a la izquierda: mejorando. Abajo a la derecha: debilitándose.
-Abajo a la izquierda: rezagados. La escala de entrada deja afuera el 2% de cada punta para que
+**Radar ({HORIZONTE_RADAR}).** Fuerza relativa contra SPY, normalizada a 50 ruedas, y su cambio a 10 ruedas.
+Arriba a la derecha: Líderes. Arriba a la izquierda: Mejorando. Abajo a la derecha: Debilitándose.
+Abajo a la izquierda: Rezagados. La escala de entrada deja afuera el 2% de cada punta para que
 el centro se lea; la rueda acerca y aleja, y arrastrar mueve el gráfico.
 
-**Rotación sectorial.** Otra cuenta, sobre los ETF de sector (XLK, XLF, XLE, XLV, XLY, XLP, XLI, XLB, XLU, XLRE, XLC)
+**Rotación sectorial ({HORIZONTE_ROTACION}).** Otra cuenta, sobre los ETF de sector (XLK, XLF, XLE, XLV, XLY, XLP, XLI, XLB, XLU, XLRE, XLC)
 y los índices QQQ, IWM, EEM, EWZ y ARGT, siempre contra SPY. La fuerza es el ratio de precios suavizado,
 puesto en 100 contra su promedio de unos seis meses. El momentum compara esa fuerza con la de diez ruedas atrás.
 En el gráfico el centro es cero (ese 100). La cola son las últimas cinco semanas, pintada según el cuadrante
-de hoy: verde líderes, azul mejorando, ámbar debilitándose, rojo rezagados. Las flechas de 1 semana, 1 mes
+de hoy: verde Líderes, azul Mejorando, ámbar Debilitándose, rojo Rezagados. Las flechas de 1 semana, 1 mes
 y 3 meses dicen si el exceso contra SPY de esa ventana mejoró o empeoró contra la ventana anterior del mismo largo.
 El listado de CEDEARs es el recorte de este panel, no la cartera completa del ETF.
+
+{NOTA_RADAR_Y_ROTACION}
 
 **Carteras modelo.** Los pesos de renta fija se respetan. Las métricas (rendimiento compuesto,
 volatilidad anualizada, caída máxima, VaR 95% diario, Sharpe y Sortino) las calcula QuantStats

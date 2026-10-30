@@ -92,13 +92,14 @@ def simbolos_extra() -> list[str]:
 
 
 def cuadrante(fuerza: float, momentum: float) -> str:
+    """Mismos nombres que el Radar: Líderes, Mejorando, Debilitándose, Rezagados."""
     if fuerza >= CRUCE and momentum >= CRUCE:
-        return "Líder"
+        return "Líderes"
     if fuerza >= CRUCE and momentum < CRUCE:
         return "Debilitándose"
     if fuerza < CRUCE and momentum >= CRUCE:
         return "Mejorando"
-    return "Rezagado"
+    return "Rezagados"
 
 
 def _alinear(precio: pd.Series, spy: pd.Series) -> tuple[pd.Series, pd.Series]:
@@ -190,8 +191,8 @@ def frase_rotacion(sectores: pd.DataFrame) -> str:
     def _nombres(mask: pd.Series) -> list[str]:
         return sectores.loc[mask, "Nombre"].tolist()
 
-    entran = _nombres(sectores["Cuadrante"].isin(["Líder", "Mejorando"]) & (sectores["Ritmo"] == "▲"))
-    salen = _nombres(sectores["Cuadrante"].isin(["Debilitándose", "Rezagado"]) & (sectores["Ritmo"] == "▼"))
+    entran = _nombres(sectores["Cuadrante"].isin(["Líderes", "Mejorando"]) & (sectores["Ritmo"] == "▲"))
+    salen = _nombres(sectores["Cuadrante"].isin(["Debilitándose", "Rezagados"]) & (sectores["Ritmo"] == "▼"))
     if not entran:
         entran = _nombres(sectores["Cuadrante"] == "Mejorando")
     if not salen:
