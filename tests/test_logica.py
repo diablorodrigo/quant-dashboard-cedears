@@ -247,11 +247,11 @@ class Paleta(unittest.TestCase):
 
 class Rotacion(unittest.TestCase):
     def test_cuadrantes_en_castellano(self):
-        self.assertEqual(cuadrante(110, 110), "Líder")
-        self.assertEqual(cuadrante(100, 100), "Líder")
+        self.assertEqual(cuadrante(110, 110), "Líderes")
+        self.assertEqual(cuadrante(100, 100), "Líderes")
         self.assertEqual(cuadrante(110, 99.9), "Debilitándose")
         self.assertEqual(cuadrante(99.9, 110), "Mejorando")
-        self.assertEqual(cuadrante(90, 90), "Rezagado")
+        self.assertEqual(cuadrante(90, 90), "Rezagados")
 
     def test_la_cola_entra_en_cuatro_a_seis_marcas(self):
         idx = pd.bdate_range("2025-01-01", periods=40)
@@ -277,7 +277,7 @@ class Rotacion(unittest.TestCase):
     def test_la_frase_nombra_quien_entra_y_quien_sale(self):
         sectores = pd.DataFrame(
             [
-                {"Nombre": "Tecnología", "Cuadrante": "Líder", "Ritmo": "▲"},
+                {"Nombre": "Tecnología", "Cuadrante": "Líderes", "Ritmo": "▲"},
                 {"Nombre": "Energía", "Cuadrante": "Debilitándose", "Ritmo": "▼"},
             ]
         )
@@ -307,7 +307,7 @@ class Rotacion(unittest.TestCase):
         momentum = float(curva["momentum"].iloc[-1])
         self.assertGreater(fuerza, 100)
         self.assertGreater(momentum, 100)
-        self.assertEqual(cuadrante(fuerza, momentum), "Líder")
+        self.assertEqual(cuadrante(fuerza, momentum), "Líderes")
 
         flojo = [100 * (1.0003 ** i) for i in range(n)]
         techo = flojo[-40]
@@ -318,7 +318,7 @@ class Rotacion(unittest.TestCase):
         momentum_b = float(curva_b["momentum"].iloc[-1])
         self.assertLess(fuerza_b, 100)
         self.assertLess(momentum_b, 100)
-        self.assertEqual(cuadrante(fuerza_b, momentum_b), "Rezagado")
+        self.assertEqual(cuadrante(fuerza_b, momentum_b), "Rezagados")
 
     def test_las_etiquetas_no_se_pisan(self):
         puntos = [
@@ -351,6 +351,55 @@ class Rotacion(unittest.TestCase):
                 dx = abs(puestos[ti][0] - puestos[tj][0]) / ancho
                 dy = abs(puestos[ti][1] - puestos[tj][1]) / alto
                 self.assertGreater((dx ** 2 + dy ** 2) ** 0.5, 0.95, f"{ti} y {tj}")
+
+    def test_el_radar_y_la_rotacion_avisan_el_plazo_con_los_mismos_nombres(self):
+        from pathlib import Path
+
+        from zeta.vistas import (
+            HORIZONTE_RADAR,
+            HORIZONTE_ROTACION,
+            NOTA_RADAR_Y_ROTACION,
+            _grafico_radar,
+            _grafico_rotacion,
+        )
+
+        self.assertEqual(HORIZONTE_RADAR, "Corto plazo, ~2,5 meses")
+        self.assertEqual(HORIZONTE_ROTACION, "Mediano plazo, ~6 meses")
+        self.assertIn("reacciona antes", NOTA_RADAR_Y_ROTACION)
+        self.assertIn("confirma más tarde", NOTA_RADAR_Y_ROTACION)
+        vista = Path("zeta/vistas.py").read_text(encoding="utf-8")
+        self.assertEqual(vista.count("reacciona antes"), 1)
+        self.assertEqual(vista.count("NOTA_RADAR_Y_ROTACION"), 4)
+        rotacion = Path("zeta/rotacion.py").read_text(encoding="utf-8")
+        self.assertNotIn('return "Líder"\n', rotacion)
+        self.assertNotIn('return "Rezagado"\n', rotacion)
+        for nombre in ("Líderes", "Mejorando", "Debilitándose", "Rezagados"):
+            self.assertIn(f'return "{nombre}"', rotacion)
+            self.assertIn(f'"{nombre}"', Path("zeta/rrg.py").read_text(encoding="utf-8"))
+
+        radar = _grafico_radar(
+            pd.DataFrame(
+                {
+                    "Ticker": ["XLU", "XLK"],
+                    "Fuerza_X": [1.2, -0.4],
+                    "Momentum_Y": [0.3, -0.2],
+                    "Cuadrante": ["Líderes", "Rezagados"],
+                }
+            )
+        )
+        self.assertEqual(radar.layout.title.text, HORIZONTE_RADAR)
+        colas = pd.DataFrame(
+            {
+                "Ticker": ["XLU", "XLU"],
+                "Nombre": ["Servicios públicos", "Servicios públicos"],
+                "Fuerza": [108.0, 110.0],
+                "Momentum": [102.0, 104.0],
+                "Orden": [0, 1],
+            }
+        )
+        rot = _grafico_rotacion(colas)
+        self.assertEqual(rot.layout.title.text, HORIZONTE_ROTACION)
+        self.assertIn("Líderes", rot.data[-1].hovertemplate)
 
 
 if __name__ == "__main__":

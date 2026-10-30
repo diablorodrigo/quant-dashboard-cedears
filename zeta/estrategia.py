@@ -69,16 +69,18 @@ def cargar_backtest(ruta: Path | None = None) -> dict:
     return datos
 
 
-# El cálculo del RRG devuelve el singular. En la pestaña se lee como en el gráfico.
+# Un solo nombre en todo el panel. El singular viejo se muestra igual, por si queda un dato anterior.
 NOMBRE_CUADRANTE = {
     "Líder": "Líderes",
+    "Líderes": "Líderes",
     "Mejorando": "Mejorando",
     "Debilitándose": "Debilitándose",
     "Rezagado": "Rezagados",
+    "Rezagados": "Rezagados",
 }
 _A_FAVOR = {
-    "compra": {"Líder", "Mejorando"},
-    "venta": {"Debilitándose", "Rezagado"},
+    "compra": {"Líderes", "Mejorando"},
+    "venta": {"Debilitándose", "Rezagados"},
 }
 
 
@@ -178,6 +180,7 @@ def relacion_rrg(senal: str, cuadrante: str | None) -> str:
     """Compra con Líderes o Mejorando coincide. Venta con esos cuadrantes se contradice."""
     if not cuadrante:
         return "sin cuadrante"
+    cuadrante = NOMBRE_CUADRANTE.get(cuadrante, cuadrante)
     texto = (senal or "").lower()
     if "venta" in texto:
         lado = "venta"

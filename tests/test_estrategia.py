@@ -229,15 +229,17 @@ class UniversoYRrg(unittest.TestCase):
         self.assertEqual(next(u["sin_historia"] for u in cfg["universos"] if u["id"] == "etfs"), [])
 
     def test_la_compra_en_lideres_coincide_y_en_rezagados_no(self):
-        self.assertEqual(relacion_rrg("Compra fuerte", "Líder"), "coincide")
+        self.assertEqual(relacion_rrg("Compra fuerte", "Líderes"), "coincide")
         self.assertEqual(relacion_rrg("Compra débil", "Mejorando"), "coincide")
-        self.assertEqual(relacion_rrg("Compra débil", "Rezagado"), "contradice")
+        self.assertEqual(relacion_rrg("Compra débil", "Rezagados"), "contradice")
         self.assertEqual(relacion_rrg("Compra fuerte", "Debilitándose"), "contradice")
-        self.assertEqual(relacion_rrg("Venta", "Rezagado"), "coincide")
+        self.assertEqual(relacion_rrg("Venta", "Rezagados"), "coincide")
         self.assertEqual(relacion_rrg("Venta", "Debilitándose"), "coincide")
-        self.assertEqual(relacion_rrg("Venta", "Líder"), "contradice")
+        self.assertEqual(relacion_rrg("Venta", "Líderes"), "contradice")
         self.assertEqual(relacion_rrg("Venta", "Mejorando"), "contradice")
         self.assertEqual(relacion_rrg("Compra débil", None), "sin cuadrante")
+        self.assertEqual(relacion_rrg("Compra fuerte", "Líder"), "coincide")
+        self.assertEqual(relacion_rrg("Venta", "Rezagado"), "coincide")
 
     def test_las_cifras_salen_del_archivo_y_avisan_el_dia_al_azar(self):
         doc = cargar_backtest()
@@ -337,7 +339,7 @@ class UnaFilaPorEtf(unittest.TestCase):
         self.assertIn("2026-10-15", fila["detalle"])
         self.assertIn("2026-10-19", fila["detalle"])
         self.assertIn("misma posición", fila["detalle"])
-        self.assertEqual(relacion_rrg(fila["senal"], "Líder"), "coincide")
+        self.assertEqual(relacion_rrg(fila["senal"], "Líderes"), "coincide")
 
     def test_la_confirmacion_de_hoy_no_abre_otra_fila(self):
         estado = {
@@ -603,8 +605,8 @@ class UnaFilaPorEtf(unittest.TestCase):
         self.assertEqual(len({f["ticker"] for f in abiertas}), 2)
         for fila in abiertas:
             fila["cuadrante"] = "Líderes"
-            fila["rrg"] = relacion_rrg(fila["senal"], "Líder")
-        marcas = _marcas_rrg(abiertas, {"XLP": "Líder", "IJH": "Líder"})
+            fila["rrg"] = relacion_rrg(fila["senal"], "Líderes")
+        marcas = _marcas_rrg(abiertas, {"XLP": "Líderes", "IJH": "Líderes"})
         por_ticker = {m["ticker"]: m for m in marcas}
         self.assertEqual(set(por_ticker), {"XLP", "IJH"})
         self.assertEqual(por_ticker["XLP"]["senal"], "Compra fuerte")
